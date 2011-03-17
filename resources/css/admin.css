@@ -1,0 +1,63 @@
+table.topspin-stores-list {
+}
+table.topspin-stores-list th.id-column {
+	width:50px;
+}
+table.topspin-stores-list th.title-column {
+}
+table.topspin-stores-list th.shortcode-column {
+	width:200px;
+}
+table.topspin-stores-list th.date-column {
+	width:200px;
+}
+table.topspin-stores-list th.manage-column {
+	width:200px;
+}
+
+ul.group-sortable {
+}
+ul.group-sortable li.menu-item {
+	width:200px;
+	cursor:move;
+	border:1px solid #ccc;
+	padding:5px;
+	background-color:rgb(238, 238, 238);
+}
+ul.item-sortable {
+}
+ul.item-sortable li {
+	float:left;
+	width:150px;
+	height:200px;
+	margin:4px;
+	overflow:hidden;
+	position:relative;
+	text-align:center;
+	border:1px solid #777;
+	background-color:#fff;
+	cursor:move;
+}
+ul.item-sortable li .item-offer-type {
+	background-color:#000;
+	color:#fff;
+	padding:6px;
+	text-align:left;
+}
+ul.item-sortable li .item-canvas {
+}
+ul.item-sortable li .faded {
+	opacity:0.3;
+}
+ul.item-sortable li .item-hide {
+	position:absolute;
+	top:5px;
+	right:5px;
+	background-color:rgb(238, 238, 238);
+	padding:1px;
+	cursor:pointer;
+}
+
+#topspin_manual_sorting {
+	display:none;
+}
