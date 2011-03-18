@@ -3,7 +3,7 @@ Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
 Tested up to: 3.1
-Stable tag: 3.0
+Stable tag: 3.0.1
 Requires at least: 3.0.2
 
 Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages.
@@ -28,7 +28,7 @@ This new version of the Official Topspin Wordpress Plugin is a complete rebuild 
 This plugin is in active development and more features will be added regularly.  Please see the Roadmap for more information.
 
 = PLEASE NOTE =
-TO install this plugin you must deactivate and delete any previous versions of the v1 or v2 Topspin plugins.  This plugin will not upgrade them as it's completely re-written and must be installed individually / new. 
+To install this plugin you must deactivate and delete any previous versions of the v1 or v2 Topspin plugins.  This plugin will not upgrade them as it's completely re-written and must be installed individually / new. 
 
 = Features = 
 * Automatic Store Page creation based on Offer Types and Tags
@@ -83,7 +83,14 @@ If you are a pro user and are comfortable with creating and editing WordPress th
 	$storedata (array) - the array that contains the general Store Page data
 	$storeitem (array) - the array that contains all of the items on the Store Page
 
-  
+== Upgrade Notice ==
+
+= Upgrading from an earlier version = 
+This plugin is a complete re-write.  In order to upgrade from a previous version you will need to first remove any previous versions of the Topspin plugin and then follow the instructions above to install this version.  Once installed, the easiest way to upgrade to future versions is to use the automatic upgrade feature built into WordPress.  You will be automatically notified of any updates to the plugin and given the option to install them with a single click. 
+
+= Topspin Artist Account Required.  Please visit: http://topspinmedia.com to sign up. =
+
+
 == Usage ==
 
 = Adding Store Pages =
@@ -150,7 +157,23 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 * Plugin Site for further documentation, discussion, feature requests, etc
 
 
+== Screenshots ==
+
+1. Plugin Admin -> Settings Page
+2. Plugin Admin -> View Store Pages List
+3. Plugin Admin -> Edit/Create Store Page
+4. Plugin Admin -> View of the Edit/Create Store Page's Drag-And-Drop Manual Sort Interface
+5. Front-End -> View of an out-of-the-box Store Page with a 3 column display and a Featured Item
+6. Front-End -> View of a Store Page's "More Details" Colorbox overlay
+7. Front-End -> View of the Topspin Checkout Flow overlay
+
+
 == Changelog ==
+
+= 3.0.1 = 
+* Added default CSS styling for the Topspin Cart
+* Added screenshots
+* Cleaned-up documentation
 
 = 3.0 =
 * Completely rewritten from the ground-up (based on the v3.0beta plugin originally started by New Black)
