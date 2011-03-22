@@ -3,7 +3,7 @@ Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
 Tested up to: 3.1
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 Requires at least: 3.0.2
 
 Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages.
@@ -229,6 +229,9 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 
 
 == Changelog ==
+
+= 3.0.3 =
+* Fixed upgrading issue
 
 = 3.0.2 = 
 * Adding clarification to documentation for upgrading from v2.0 (Thanks to John Jacobus / TRICIL)
