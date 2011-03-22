@@ -6,8 +6,6 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
 		switch($_POST['action']) {
 			case "rebuild_cache":
 				if(isset($_POST['cache_all'])) { $store->rebuildAll(); }
-				elseif(isset($_POST['cache_items'])) { $store->rebuildItems(); }
-				elseif(isset($_POST['cache_tags'])) { $store->rebuildTags(); }
 				$success = 'Cache successfully updated.';
 				break;
 			case "general_settings":
@@ -15,6 +13,7 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
 				unset($_POST['action']);
 				foreach($_POST as $key=>$value) {
 					$store->setSetting($key,$value); //Update all posted settings on this page.
+					update_option($key,$value); //Update WordPress options table (v2.0)
 				}
 				$store->rebuildAll();
 				$success = 'Settings saved.';
@@ -22,12 +21,17 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
 		}
 	}
 }
+$apiError = '';
+$apiStatus = $store->checkAPI();
+if($apiStatus) { $apiError = $apiStatus->error_detail; }
 ?>
 
 <div class="wrap">
     <h2>Topspin General Settings</h2>
 
     <?php if($success) : ?><div class="updated settings-error"><p><strong><?php echo $success; ?></strong></p></div><?php endif; ?>
+
+    <?php if($apiError) : ?><div class="error settings-error"><p><strong><?php echo $apiError; ?></strong></p></div><?php endif; ?>
 
     <form name="topspin_form" method="post" action="<?=$_SERVER['REQUEST_URI'];?>">
     <input type="hidden" name="action" value="general_settings" />
@@ -67,24 +71,10 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
     <table class="form-table">
     	<tbody>
         	<tr valign="top">
-            	<th scope="row"><label>Rebuild All</label></th>
+            	<th scope="row"><label>Rebuild Database</label></th>
                 <td>
 					<input type="submit" name="cache_all" class="button-primary" value="<?php _e('Rebuild'); ?>" />
                     <span class="description"><?php echo ($last_cache_all=$store->getSetting('topspin_last_cache_all')) ? 'Last built: '.date('Y-m-d h:i:sa',$last_cache_all+(3600*get_option('gmt_offset'))) : 'No action yet.'; ?></span>
-                </td>
-            </tr>
-        	<tr valign="top">
-            	<th scope="row"><label>Rebuild Items</label></th>
-                <td>
-					<input type="submit" name="cache_items" class="button" value="<?php _e('Rebuild'); ?>" />
-                    <span class="description"><?php echo ($last_cache_items=$store->getSetting('topspin_last_cache_items')) ? 'Last built: '.date('Y-m-d h:i:sa',$last_cache_items+(3600*get_option('gmt_offset'))) : 'No action yet.'; ?></span>
-                </td>
-            </tr>
-        	<tr valign="top">
-            	<th scope="row"><label>Rebuild Tags</label></th>
-                <td>
-					<input type="submit" name="cache_tags" class="button" value="<?php _e('Rebuild'); ?>" />
-                    <span class="description"><?php echo ($last_cache_tags=$store->getSetting('topspin_last_cache_tags')) ? 'Last built: '.date('Y-m-d h:i:sa',$last_cache_tags+(3600*get_option('gmt_offset'))) : 'No action yet.'; ?></span>
                 </td>
             </tr>
         </tbody>

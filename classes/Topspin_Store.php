@@ -18,7 +18,7 @@ class Topspin_Store {
 	}
 
 	### GENERAL METHODS
-	
+
 	private function cacheImage($url,$width,$square=0) {
 		$upload_dir = wp_upload_dir();
 		$filepath = $upload_dir["basedir"] . "/topspin/" . md5($url) . "_" . $width . "_" . $square . ".jpg";
@@ -89,6 +89,17 @@ class Topspin_Store {
 	}
 	
 	### API METHODS
+	
+	public function checkAPI() {
+		##	RETURN
+		##		Returns the error object on authorization/misc failure
+		$url = 'http://app.topspin.net/api/v1/offers';
+		$post_args = array(
+			'artist_id' => $this->artist_id
+		);
+		$data = json_decode($this->process($url,$post_args,false));
+		if(isset($data->error_detail) && strlen($data->error_detail)) { return $data; }
+	}
 
 	private function process($url,$post_args=null,$post=true) {
 		##	PARAMETERS
@@ -163,10 +174,12 @@ class Topspin_Store {
 		$url = 'http://app.topspin.net/api/v1/artist';
 		$data = json_decode($this->process($url,null,false));
 		$artist = null;
-		foreach($data->artists as $item) {
-			if($item->id==$this->artist_id) {
-				$artist = $item;
-				break;
+		if(isset($data->artists) && count($data->artists)) {
+			foreach($data->artists as $item) {
+				if($item->id==$this->artist_id) {
+					$artist = $item;
+					break;
+				}
 			}
 		}
 		return $artist;
@@ -183,7 +196,7 @@ class Topspin_Store {
 			'artist_id' => $this->artist_id
 		);
 		$data = json_decode($this->process($url,$post_args,false));
-		if($data) { return $data->total_pages; }
+		if(isset($data->total_pages)) { return $data->total_pages; }
 	}
 
 	public function getItems($page=1) {
@@ -227,7 +240,6 @@ class Topspin_Store {
 
 	public function rebuildItems() {
 		## Rebuild and syncs the items table with Topspin
-		$this->wpdb->show_errors();
 		## Truncate Items
 		$sql = 'TRUNCATE TABLE '.$this->wpdb->prefix.'topspin_items';
 		$this->wpdb->query($sql);
@@ -266,18 +278,19 @@ class Topspin_Store {
 				}
 			}
 		}
-		$this->setSetting('topspin_last_cache_items',time());
 	}
-	
+
 	public function rebuildTags() {
 		## Rebuild and syncs the tags table with Topspin
 		$sql = 'TRUNCATE TABLE '.$this->wpdb->prefix.'topspin_tags';
 		$this->wpdb->query($sql);
+
 		$tags = $this->getTags();
-		foreach($tags as $tag) {
-			$data = array('name' => strtolower($tag));
-			$this->wpdb->insert($this->wpdb->prefix.'topspin_tags',$data,array('%s'));
-			$this->setSetting('topspin_last_cache_tags',time());
+		if($tags && count($tags)) {
+			foreach($tags as $tag) {
+				$data = array('name' => strtolower($tag));
+				$this->wpdb->insert($this->wpdb->prefix.'topspin_tags',$data,array('%s'));
+			}
 		}
 	}
 	
@@ -301,6 +314,18 @@ class Topspin_Store {
 		}
 		else {
 			$this->wpdb->update($this->wpdb->prefix.'topspin_settings',array('value'=>$value),array('name'=>$name),array('%s'));
+		}
+		##	API Credentials
+		switch($name) {
+			case 'topspin_artist_id':
+				$this->artist_id = $value;
+				break;
+			case 'topspin_api_key':
+				$this->api_key = $value;
+				break;
+			case 'topspin_api_username':
+				$this->api_username = $value;
+				break;
 		}
 	}
 	

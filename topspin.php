@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Topspin Store Plugin
-Plugin URI: http://www.topspinmedia.com
-Description: Plugin for displaying products using the TopSpin API
-Author: Topspin Media
-Version: 3.0
-Author URI: http://www.topspinmedia.com
+Plugin Name: Official Topspin Wordpress Plugin
+Plugin URI: http://wordpress.org/extend/plugins/official-topspin-wordpress-plugin/
+Description: Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages using the Topspin API
+Author: The Uprising Creative for Topspin Media
+Author URI: http://theuprisingcreative.com
+Version: 3.0.2
 */
 
 ### This File
