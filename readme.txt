@@ -3,17 +3,18 @@ Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
 Tested up to: 3.1
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 Requires at least: 3.0.2
 
 Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages.
 
 
 == Description ==
-
 This plugin allows novice and pro Topspin users alike to quickly and easily create integrated, customized, sortable and dynamically generated stores from their Topspin Offers in a few minutes.  
 
-= v2.0 Users Please Note: Check out the Upgrade Instructions before using this plugin to avoid any major problems! =
+= Live Examples =
+http://awolnationmusic.com/shop
+http://deepdarkrobot.com/store 
 
 The plugin allows for the creation of any number of individual Store Pages and configurations of Offers based on Offer Types and Tags. Store Pages can be restricted to specific Offer Type(s) and/or Tag(s).  They can then be sorted by Offer Type(s), Tag(s), or Manually using a new drag-and-drop admin interface. 
 
@@ -25,12 +26,10 @@ In addition to automatically creating Store Pages, Shortcodes are also generated
 
 The possibilities are endless. 
 
-This new version of the Official Topspin Wordpress Plugin is a complete rebuild from the ground up, simplified and optimized to make launching an integrated Topspin Wordpress store in minutes.
+This new version of the Official Topspin Wordpress Plugin is a complete rebuild from the ground up, simplified and optimized to make launching an integrated Topspin Wordpress store in minutes.  *This plugin is in active development and more features will be added regularly.  Please see the Roadmap for more information.*
 
-This plugin is in active development and more features will be added regularly.  Please see the Roadmap for more information.
-
-= PLEASE NOTE =
-This plugin will not upgrade the v2 Topspin Wordpress Plugins as it's completely re-written and must be installed individually / new. Please check out the Upgrade Instructions. 
+= v2.0 USERS PLEASE NOTE =
+This plugin will not automatically upgrade the v2.0 Topspin Wordpress Plugins - it's completely re-written and must be installed individually / new. Please check out the **Upgrade Instructions**. 
 
 = Features = 
 * Automatic Store Page creation based on Offer Types and Tags
@@ -81,7 +80,7 @@ In order to upgrade from a previous version you will need to follow the steps be
 Once installed, the easiest way to upgrade to future versions is to use the automatic upgrade feature built into WordPress.  You will be automatically notified of any updates to the plugin and given the option to install them with a single click. 
 
 = IF YOU ARE USING THE OLD PLUGIN'S THEME: =
-Please be aware that you will loose the *Landing Page* it allowed you to create, along with some of the control over the theme from the admin panel.  You will still be able to change the header image by deleting the file in the *Media Library* called `topspin-store` and uploading a new file named `topspin-store`.  *However, we recommend migrating your site to an entirely new theme if at all possible to avoid future problems.*
+Please be aware that you will lose the *Landing Page* it allowed you to create, along with some of the control over the theme from the admin panel.  You will still be able to change the header image by deleting the file in the *Media Library* called `topspin-store` and uploading a new file named `topspin-header`.  *However, we recommend migrating your site to an entirely new theme if at all possible to avoid future problems.*
 
 ---
 
@@ -120,8 +119,8 @@ If you are a pro user and are comfortable with creating and editing WordPress th
 = What's the deal with the Permalink Structure? = 
 You need to make sure you are using a *Custom Permalink Structure*.  This can be any permalink structure found on the *Settings->Permalinks* admin page EXCEPT Default.  If you use Default, the plugin will not work at all. 
 
-= The plugin isn't working. My site's links look like http://example.com/?p=123 =
-This is because you are NOT using a Custom Permalink Structure.  The *Default* setting on the *Settings->Permalinks* admin page produces site links that look like http://example.com/?=123 instead of nice descriptive links. Please change your Permalink structure to one of the other settings. 
+= The plugin isn't working. My site's links look like http://example.com/?p=123 - could this be a problem? =
+YES!  It is not working because you are NOT using a Custom Permalink Structure.  The *Default* setting on the *Settings->Permalinks* admin page produces site links that look like http://example.com/?=123 instead of nice descriptive links. Please change your Permalink structure to one of the other settings. 
 
 = I'm using the v2.0 Plugin.  Can I just delete it and install this new version? 
 Yes and no.  Please check out the `Installation` page and refer to the detailed Upgrade Instructions to avoid the potential problems upgrading from v2.0 to this version of the plugin. 
@@ -230,13 +229,19 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 
 == Changelog ==
 
+= 3.0.4 = 
+* Fixed additional foreach() warnings in Topspin_Store.php
+* Fixed documentation reference to v2 header image title 
+* Fixed documentation typos / formatting errors
+* Replaced Rebuild function with a safer INSERT INTO MySQL operation in case of rebuild error which may have been causing database tables to be truncated and not rebuilt in rare cases.
+
 = 3.0.3 =
 * Fixed upgrading issue
 
 = 3.0.2 = 
-* Adding clarification to documentation for upgrading from v2.0 (Thanks to John Jacobus / TRICIL)
+* Added documentation for upgrading from v2.0 (Thanks to John Jacobus / TRICIL)
 * Added FAQ and cleaned up documentation
-* Added functions from v2 Plugin necessary for the v2 Theme to work (Thanks to John Jacobus / TRICIL)
+* Added v2 functions necessary for the v2 Theme to work (Thanks to John Jacobus / TRICIL)
 * Added error/success messages on Settings page
 * Fixed version tagging
 * Fixed plugin name and author info

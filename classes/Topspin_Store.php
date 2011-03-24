@@ -1,5 +1,30 @@
 <?php
 
+/*
+ *	Class:				Topspin Store
+ *
+ *	Last Modified:		March 23, 2011
+ *
+ *	----------------------------------
+ *	Change Log
+ *	----------------------------------
+ *	2011-03-23
+ *		- updated getTagList()
+ *			set default tag status (php warning fix)
+ *		- updated rebuildItems()
+ *			check if tag array exists before calling the loop, checks for offer, and mobile url (php warning fix)
+ *			recoded method to INSERT ON DUPLICATE KEY UPDATE and deletes old items (that are not found in the API retrieval), now returns a timestamp
+ *		- updated rebuildAll()
+ *			updates last cache with returend timestamp from rebuildItems()
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+
 class Topspin_Store {
 
 	private $wpdb;
@@ -233,20 +258,18 @@ class Topspin_Store {
 	
 	public function rebuildAll() {
 		##	Rebuilds the items, and tags database tables
-		$this->rebuildItems();
+		$timestamp = $this->rebuildItems();
 		$this->rebuildTags();
-		$this->setSetting('topspin_last_cache_all',time());
+		$this->setSetting('topspin_last_cache_all',$timestamp);
 	}
 
 	public function rebuildItems() {
-		## Rebuild and syncs the items table with Topspin
-		## Truncate Items
-		$sql = 'TRUNCATE TABLE '.$this->wpdb->prefix.'topspin_items';
-		$this->wpdb->query($sql);
-		## Truncate Items Tags		
-		$sql = 'TRUNCATE TABLE '.$this->wpdb->prefix.'topspin_items_tags';
-		$this->wpdb->query($sql);
-		
+		##	Rebuild and syncs the items table with Topspin
+		##
+		##	RETURNS
+		##		The last modified timestamp
+		$lastModified = time();
+		$addedIDs = array();
 		$totalPages = $this->getTotalPages();
 		if($totalPages) {
 			for($i=1;$i<=$totalPages;$i++) {
@@ -268,15 +291,52 @@ class Topspin_Store {
 						'price' => $item->price,
 						'name' => $item->name,
 						'campaign' => serialize($item->campaign),
-						'offer_url' => $item->offer_url,
-						'mobile_url' => $item->mobile_url
+						'offer_url' => (isset($item->offer_url)) ? $item->offer_url : '',
+						'mobile_url' => (isset($item->mobile_url)) ? $item->mobile_url : '',
+						'last_modified' => date('Y-m-d H:i:s',$lastModified)
 					);
+					$format = array('%d','%d','%s','%s','%d','%d','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');
+					
+					## Get Keys
+					$tableFields = implode(',',array_keys($data));
+					$tableFormat = implode(',',$format);
+					$onDuplicateKeyUpdate = '';
+					$keyIndex = 0;
+					foreach($data as $key=>$field) {
+						if($keyIndex>0) { $onDuplicateKeyUpdate .= ', '; }
+						$onDuplicateKeyUpdate .= $key.'=VALUES('.$key.')';
+						$keyIndex++;
+					}
 					## Add item
-					$this->wpdb->insert($this->wpdb->prefix.'topspin_items',$data,array('%d','%d','%s','%s','%d','%d','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s'));
-					## Add item tag
-					foreach($item->tags as $tag) { $this->wpdb->insert($this->wpdb->prefix.'topspin_items_tags',array('item_id'=>$item->id,'tag_name'=>$tag),array('%d','%s')); }
-				}
-			}
+					$sql = <<<EOD
+					INSERT INTO {$this->wpdb->prefix}topspin_items ({$tableFields}) VALUES ({$tableFormat})
+					ON DUPLICATE KEY UPDATE {$onDuplicateKeyUpdate}
+EOD;
+					$this->wpdb->query($this->wpdb->prepare($sql,$data));
+					##	Deletes old item tags
+					$sql = 'DELETE FROM '.$this->wpdb->prefix.'topspin_items_tags WHERE item_id = %d';
+					$this->wpdb->query($this->wpdb->prepare($sql,array($item->id)));
+					##	Adds new item tag
+					if(isset($item->tags) && is_array($item->tags)) {
+						$tagFormat = array('%d','%s');
+						foreach($item->tags as $tag) {
+							$tagData = array(
+								'item_id' => $item->id,
+								'tag_name' => $tag
+							);
+							$this->wpdb->insert($this->wpdb->prefix.'topspin_items_tags',$tagData,$tagFormat);
+						}
+					} // end if tags exist
+					array_push($addedIDs,$item->id);
+				} //end for each item
+			} //end for each page
+			##	Removes all items that is not modified/inserted
+			$sql = 'DELETE FROM '.$this->wpdb->prefix.'topspin_items WHERE last_modified < %s';
+			$this->wpdb->query($this->wpdb->prepare($sql,array(date('Y-m-d H:i:s',$lastModified))));
+			##	Removes all item tags that is not modified/inserted
+			$sql = 'DELETE FROM '.$this->wpdb->prefix.'topspin_items_tags WHERE item_id NOT IN (SELECT id FROM '.$this->wpdb->prefix.'topspin_items)';
+			$this->wpdb->query($this->wpdb->prepare($sql));
+			return $lastModified;
 		}
 	}
 
@@ -1171,7 +1231,12 @@ EOD;
 			{$this->wpdb->prefix}topspin_tags.name
 		FROM {$this->wpdb->prefix}topspin_tags
 EOD;
-		return $this->wpdb->get_results($sql,ARRAY_A);
+		$data = $this->wpdb->get_results($sql,ARRAY_A);
+		##	Set Default Status
+		foreach($data as $key=>$row) {
+			$data[$key]['status'] = 0;
+		}
+		return $data;
 	}
 	
 	public function getStoreTags($store_id) {
