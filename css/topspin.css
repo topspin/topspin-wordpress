@@ -48,7 +48,7 @@ div.topspin-featured-item div.topspin-item-buy a {
 /* TOPSPIN ITEM LISTINGS */
 
 ul.topspin-item-listings {
-	list-style-type:none;
+	list-style-type:none !important;
 	list-style:none;
 	margin-left:0px;
 	margin-bottom:15px;
@@ -71,12 +71,6 @@ ul.topspin-item-listings li.topspin-item div.topspin-item-canvas {
 	margin-top:15px;
 	margin-left:15px;
 	margin-right:15px;
-}
-ul.topspin-item-listings li.row-start div.topspin-item-canvas {
-	margin-left:0px;
-}
-ul.topspin-item-listings li.row-end div.topspin-item-canvas {
-	margin-right:0px;
 }
 ul.topspin-item-listings li.topspin-item div.topspin-item-canvas h2.topspin-item-title {
 	clear:none;
@@ -196,13 +190,4 @@ div.topspin-view-more-canvas div.topspin-view-more-buy div.topspin-view-more-pri
 	font-size:18px;
 	margin-bottom:20px;
 	margin-left:280px;
-}
-
-/* TOPSPIN CART */
-#TSCart_header_wrap {}
-#TSCart_header_wrap #TSCart_header_container {}
-#TSCart_header_wrap #TSCart_header_container #TSCart_header {}
-#TSCart_header_wrap #TSCart_header_container #TSCart_header a {
-	color: #FFFFFF;
-	text-decoration:none;
 }

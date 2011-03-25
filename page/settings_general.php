@@ -46,16 +46,16 @@ if($apiStatus) { $apiError = $apiStatus->error_detail; }
                 </td>
             </tr>
             <tr valign="top">
-                <th scope="row"><label for="topspin_api_key">Topspin API Key</label></th>
+                <th scope="row"><label for="topspin_api_username">Topspin API User</label></th>
                 <td>
-                    <input id="topspin_api_key" class="regular-text" type="text" value="<?php echo $store->getSetting('topspin_api_key'); ?>" name="topspin_api_key" />
+                    <input id="topspin_api_username" class="regular-text" type="text" value="<?php echo $store->getSetting('topspin_api_username'); ?>" name="topspin_api_username" />
                     <span class="description">Go to <a href="http://app.topspin.net/account/profile/" target="_blank">Account Settings</a> to obtain your API credentials.</span>
                 </td>
             </tr>
             <tr valign="top">
-                <th scope="row"><label for="topspin_api_username">Topspin API Username</label></th>
+                <th scope="row"><label for="topspin_api_key">Topspin API Key</label></th>
                 <td>
-                    <input id="topspin_api_username" class="regular-text" type="text" value="<?php echo $store->getSetting('topspin_api_username'); ?>" name="topspin_api_username" />
+                    <input id="topspin_api_key" class="regular-text" type="text" value="<?php echo $store->getSetting('topspin_api_key'); ?>" name="topspin_api_key" />
                     <span class="description">Go to <a href="http://app.topspin.net/account/profile/" target="_blank">Account Settings</a> to obtain your API credentials.</span>
                 </td>
             </tr>
