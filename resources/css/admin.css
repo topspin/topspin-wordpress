@@ -1,3 +1,10 @@
+table.form-table .artist-name {
+	background-color:#cdcdcd;
+}
+table.form-table .description .hide {
+	display:none;	
+}
+
 table.topspin-stores-list {
 }
 table.topspin-stores-list th.id-column {

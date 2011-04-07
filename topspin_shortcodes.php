@@ -1,4 +1,19 @@
 <?php
+/*
+ *	Last Modified:		April 5, 2011
+ *
+ *	----------------------------------
+ *	Change Log
+ *	----------------------------------
+ *	2011-04-05
+ *		- updated topspin_shortcode_buy_buttons()
+ 			update template file path orders for new template modes:
+ 			3.1:		<current-theme>/topspin-mode, <parent-theme>/topspin-mode
+ 			3.0.0:		<current-theme>/topspin-template, <parent-theme>/topspin-template
+ 			Default:	<plugin-dir>/topspin-mode
+ *		- update topspin_shortcode_featured_item()
+ 			update template file path orders for new template modes: (see top)
+ */
 
 ###	Short Codes
 add_shortcode('topspin_buy_buttons','topspin_shortcode_buy_buttons');
@@ -39,9 +54,13 @@ function topspin_shortcode_buy_buttons($atts) {
 		$storedata['next_page'] = ($storedata['curr_page']<$storedata['total_pages']) ? get_permalink($post->ID).'?page='.($page+1) : '';
 	}
 	ob_start();
-	## Template File
-		## TEMPLATE_PATH.'/topspin-templates/item-listings.php
-	$templatefile = 'templates/item-listings.php';
+	##	Template File
+	$templateMode = $store->getSetting('topspin_template_mode');
+	$templatefile = 'templates/topspin-'.$templateMode.'/item-listings.php';
+	##	3.1
+	if(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-'.$templateMode.'/item-listings.php')) { $templatefile = TOPSPIN_CURRENT_THEME_PATH.'/topspin-'.$templateMode.'/item-listings.php'; }
+	elseif(file_exists(TOPSPIN_CURRENT_THEMEPARENT_PATH.'/topspin-'.$templateMode.'/item-listings.php')) { $templatefile = TOPSPIN_CURRENT_THEMEPARENT_PATH.'/topspin-'.$templateMode.'/item-listings.php'; }
+	##	3.0.0
 	if(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-templates/item-listings.php')) { $templatefile = TOPSPIN_CURRENT_THEME_PATH.'/topspin-templates/item-listings.php'; }
 	elseif(file_exists(TOPSPIN_CURRENT_THEMEPARENT_PATH.'/topspin-templates/item-listings.php')) { $templatefile = TOPSPIN_CURRENT_THEMEPARENT_PATH.'/topspin-templates/item-listings.php'; }
 	include($templatefile);
@@ -64,9 +83,13 @@ function topspin_shortcode_featured_item($atts) {
 	$featureditem = $store->getStoreFeaturedItem($storeID);
 	if($featureditem) {
 		ob_start();
-		## Template File
-			## TEMPLATE_PATH.'/topspin-templates/featured-item.php
-		$templatefile = 'templates/featured-item.php';
+		##	Template File
+		$templateMode = $store->getSetting('topspin_template_mode');
+		$templatefile = 'templates/topspin-'.$templateMode.'/featured-item.php';
+		##	3.1
+		if(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-'.$templateMode.'/featured-item.php')) { $templatefile = TOPSPIN_CURRENT_THEME_PATH.'/topspin-'.$templateMode.'/featured-item.php'; }
+		elseif(file_exists(TOPSPIN_CURRENT_THEMEPARENT_PATH.'/topspin-'.$templateMode.'/featured-item.php')) { $templatefile = TOPSPIN_CURRENT_THEMEPARENT_PATH.'/topspin-'.$templateMode.'/featured-item.php'; }
+		##	3.0.0
 		if(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-templates/featured-item.php')) { $templatefile = TOPSPIN_CURRENT_THEME_PATH.'/topspin-templates/featured-item.php'; }
 		elseif(file_exists(TOPSPIN_CURRENT_THEMEPARENT_PATH.'/topspin-templates/featured-item.php')) { $templatefile = TOPSPIN_CURRENT_THEMEPARENT_PATH.'/topspin-templates/featured-item.php'; }
 		include($templatefile);

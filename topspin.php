@@ -5,7 +5,7 @@ Plugin URI: http://wordpress.org/extend/plugins/official-topspin-wordpress-plugi
 Description: Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages using the Topspin API
 Author: The Uprising Creative for Topspin Media
 Author URI: http://theuprisingcreative.com
-Version: 3.0.4.1
+Version: 3.1
 */
 
 ### This File
@@ -47,14 +47,22 @@ if(is_admin()) {
 }
 ### Frontend Hooks
 else {
+	global $store;
+	$templateMode = $store->getSetting('topspin_template_mode');
 	### CSS/JS
-	wp_enqueue_style('topspin-default',TOPSPIN_PLUGIN_URL.'/css/topspin.css');
-	if(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin.css')) { wp_enqueue_style('topspin-theme',TOPSPIN_CURRENT_THEME_URL.'/topspin.css'); }
-		### IE7 CSS
-		if(strpos($_SERVER['HTTP_USER_AGENT'],'MSIE 7.0')) {
-			wp_enqueue_style('topspin-default-ie7',TOPSPIN_PLUGIN_URL.'/css/topspin-ie7.css');
-			if(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-ie7.css')) { wp_enqueue_style('topspin-theme',TOPSPIN_CURRENT_THEME_URL.'/topspin-ie7.css'); }
-		}
+	wp_enqueue_style('topspin-default',TOPSPIN_PLUGIN_URL.'/templates/topspin-'.$templateMode.'/topspin.css');
+	###	3.1
+	if(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-'.$templateMode.'/topspin.css')) { wp_enqueue_style('topspin-theme',TOPSPIN_CURRENT_THEME_URL.'/topspin-'.$templateMode.'/topspin.css'); }
+	###	3.0.0
+	elseif(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin.css')) { wp_enqueue_style('topspin-theme',TOPSPIN_CURRENT_THEME_URL.'/topspin.css'); }
+	### IE7 CSS
+	if(strpos($_SERVER['HTTP_USER_AGENT'],'MSIE 7.0')) {
+		wp_enqueue_style('topspin-default-ie7',TOPSPIN_PLUGIN_URL.'/templates/topspin-'.$templateMode.'/topspin-ie7.css');
+		###	3.1
+		if(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-'.$templateMode.'/topspin-ie7.css')) { wp_enqueue_style('topspin-theme',TOPSPIN_CURRENT_THEME_URL.'/topspin-'.$templateMode.'/topspin-ie7.css'); }
+		###	3.0.0
+		elseif(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-ie7.css')) { wp_enqueue_style('topspin-theme',TOPSPIN_CURRENT_THEME_URL.'/topspin-ie7.css'); }
+	}
 	wp_enqueue_style('topspin-colorbox',TOPSPIN_PLUGIN_URL.'/resources/js/colorbox/colorbox.css');
 	wp_enqueue_script('topspin-core','http://cdn.topspin.net/javascripts/topspin_core.js?aId='.TOPSPIN_ARTIST_ID);
 	wp_enqueue_script('topspin-colorbox',TOPSPIN_PLUGIN_URL.'/resources/js/colorbox/jquery.colorbox-min.js');

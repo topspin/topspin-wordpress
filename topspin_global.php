@@ -1,7 +1,16 @@
 <?php
+/*
+ *	Last Modified:		April 6, 2011
+ *
+ *	----------------------------------
+ *	Change Log
+ *	----------------------------------
+ *	2011-04-06
+ 		- updated the $store->setAPICredentials() call method and reordered topspin api constants
+ */
 
 ### Pathing Constants
-define('TOPSPIN_VERSION','3.0.4.1');
+define('TOPSPIN_VERSION','3.1');
 define('TOPSPIN_PLUGIN_PATH',dirname(__FILE__));
 define('TOPSPIN_PLUGIN_URL',WP_PLUGIN_URL.'/'.basename(TOPSPIN_PLUGIN_PATH));
 define('TOPSPIN_CURRENT_THEME_PATH',get_theme_root().'/'.get_stylesheet());
@@ -17,10 +26,10 @@ $store = new Topspin_Store();
 
 ### Topspin Constants
 define('TOPSPIN_ARTIST_ID',$store->getSetting('topspin_artist_id'));
-define('TOPSPIN_API_KEY',$store->getSetting('topspin_api_key'));
 define('TOPSPIN_API_USERNAME',$store->getSetting('topspin_api_username'));
+define('TOPSPIN_API_KEY',$store->getSetting('topspin_api_key'));
 
-$store->setAPICredentials(TOPSPIN_ARTIST_ID,TOPSPIN_API_KEY,TOPSPIN_API_USERNAME);
+$store->setAPICredentials(TOPSPIN_ARTIST_ID,TOPSPIN_API_USERNAME,TOPSPIN_API_KEY);
 
 ### Include Plugin Files
 require_once('topspin_activation.php');

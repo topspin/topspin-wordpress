@@ -1,6 +1,23 @@
 <?php
+
+/*
+ *	Last Modified:		April 6, 2011
+ *
+ *	----------------------------------
+ *	Change Log
+ *	----------------------------------
+ *	2011-04-06
+ 		- Updated Artist ID field to a dropdown of available artists
+ 		- Moved API credential fields to the top
+ 		- Updated submit to auto-set artist ID on first save
+ 		- Added Template description
+ *	2011-04-05
+ 		- Added a new field called "Template"
+ */
+
 global $store;
 $success = '';
+
 if($_SERVER['REQUEST_METHOD']=='POST') {
 	if(isset($_POST['action'])) {
 		switch($_POST['action']) {
@@ -11,11 +28,20 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
 			case "general_settings":
 			default:
 				unset($_POST['action']);
+				
+				## Set Each Option
 				foreach($_POST as $key=>$value) {
 					$store->setSetting($key,$value); //Update all posted settings on this page.
 					update_option($key,$value); //Update WordPress options table (v2.0)
 				}
 				$store->rebuildAll();
+
+				##	If Artists is Unset (New)
+				if(!isset($_POST['topspin_artist_id'])) {
+					$artistsList = $store->getArtistsList();
+					$store->setSetting('topspin_artist_id',$artistsList[0]['id']);
+					update_option('topspin_artist_id',$artistsList[0]['id']);
+				}
 				$success = 'Settings saved.';
 				break;
 		}
@@ -35,16 +61,13 @@ if($apiStatus) { $apiError = $apiStatus->error_detail; }
 
     <form name="topspin_form" method="post" action="<?=$_SERVER['REQUEST_URI'];?>">
     <input type="hidden" name="action" value="general_settings" />
+	<?php
+	$artistsList = $store->getArtistsList();
+	$totalArtists = count($artistsList);
+	?>
     <h3>Topspin API Settings</h3>
     <table class="form-table">
         <tbody>
-            <tr valign="top">
-                <th scope="row"><label for="topspin_artist_id">Topspin Artist ID</label></th>
-                <td>
-                    <input id="topspin_artist_id" class="regular-text" type="text" value="<?php echo $store->getSetting('topspin_artist_id'); ?>" name="topspin_artist_id" />
-                    <span class="description">Go to <a href="http://app.topspin.net/account/settings/" target="_blank">Account Profile</a> to obtain your Artist ID.</span>
-                </td>
-            </tr>
             <tr valign="top">
                 <th scope="row"><label for="topspin_api_username">Topspin API User</label></th>
                 <td>
@@ -57,6 +80,69 @@ if($apiStatus) { $apiError = $apiStatus->error_detail; }
                 <td>
                     <input id="topspin_api_key" class="regular-text" type="text" value="<?php echo $store->getSetting('topspin_api_key'); ?>" name="topspin_api_key" />
                     <span class="description">Go to <a href="http://app.topspin.net/account/profile/" target="_blank">Account Settings</a> to obtain your API credentials.</span>
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="topspin_artist_id">Topspin Artist</label></th>
+                <td>
+					<?php if(count($artistsList)>1) : ?>
+					<select id="topspin_artist_id" name="topspin_artist_id">
+	                	<?php $selected_artist = $store->getSetting('topspin_artist_id');
+	                	foreach($artistsList as $artist) : $artist_selected=($selected_artist==$artist['id'])?'selected="selected"':''; ?>
+	                		<option value="<?=$artist['id'];?>" <?=$artist_selected;?>><?=$artist['name'];?> (<?=$artist['id'];?>)</option>
+	                	<?php endforeach; ?>
+	                </select>
+                    <div class="description">
+	                    PLEASE NOTE: You have multiple Artist IDs associated with your API user / key combination.  You can easily select which artist to use for your store, however if you change the Artist after you have already created Store Pages, those pages will become blank since the old Artist's Offers will no longer exist in the plugin's cache.  You'll need to edit those pages and rebuild the Offers. 
+                    </div>
+                    <?php elseif($totalArtists && $totalArtists==1) : ?>
+                   	<input type="hidden" name="topspin_artist_id" value="<?=$artistsList[0]['id'];?>" />
+                    <input class="artist-name regular-text" type="text" disabled="disabled" value="<?=$artistsList[0]['name'];?> (<?=$artistsList[0]['id'];?>)" />
+					<?php endif; ?>
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="topspin_api_key">Template:</label></th>
+                <td>
+                	<?php
+                	$selectedTemplate = $store->getSetting('topspin_template_mode');
+                	?>
+                    <select id="topspin_template_mode" name="topspin_template_mode">
+                    	<option value="simplified" <?=($selectedTemplate=='simplified')?'selected="selected"':'';?>>Simplified</option>
+                    	<option value="standard" <?=($selectedTemplate=='standard')?'selected="selected"':'';?>>Standard</option>
+                    </select>
+                    <div class="description">
+                    	<?php
+                    	$simplified_display = ($selectedTemplate=='simplified') ? '' : 'hide';
+                    	$standard_display = ($selectedTemplate=='standard') ? '' : 'hide';
+                    	?>
+                    	<div class="template-simplified <?=$simplified_display;?>">
+							<p>
+								<strong><em>This Simplified Template is designed to give the best out-of-the box store layout if you prefer to do little or no customization.</em></strong>
+								It uses HTML Tables to construct the Store Grid and therefore is less flexible for developers who wish to heavily customize the store's output. 
+							</p>
+							<p>
+								This template can be customized just like the Standard Template, following these steps: <br/>
+								1) Copy the /topspin-simplified/ directory from the Plugin's /templates/ folder to your site's active theme folder<br/>
+								2) Edit the .php and .css files in this new /topspin-simplified/ directory in your site's active theme folder - this will override the defaults
+							</p>
+							<p><strong><em>PLEASE NOTE: Do NOT edit the files directly in the Plugin's /templates/ folder!  When you upgrade, all of your customizations will be lost if you do!</em></strong></p>
+						</div>
+                    	<div class="template-standard <?=$standard_display;?>">
+                    		<p>
+                    			<strong><em>This Standard Template is designed as a skeleton framework with the Developer in mind, allowing for the most flexibility for template customizations.</em></strong>
+                    			It uses floating HTML Divs to construct the Store Grid rather than Tables, making it easier to manipulate.
+                    		</p>
+                    		<p><strong><em>If you are looking to run the plugin out-of-the-box with little or no customization, please user the Simplified Template for the best front-end output and alignment of images and buy buttons.</em></strong></p>
+							<p>
+								This template can be fully customized following these steps: <br/>
+								1) Copy the /topspin-standard/ directory from the Plugin's /templates/ folder to your site's active theme folder<br/>
+								2) Edit the .php and .css files in this new /topspin-standard/ directory in your site's active theme folder - this will override the defaults
+							</p>
+							<p><strong><em>PLEASE NOTE: Do NOT edit the files directly in the Plugin's /templates/ folder!  When you upgrade, all of your customizations will be lost if you do!</em></strong></p>
+							<p>(<strong><em>Backward Compatibility:</em></strong> For users upgrading from a version pre-v3.1, the Plugin will still recognize your customized topspin.css, topspin-ie7.css, featured-item.php and item-listings.php files located in your site's active theme folder even if they aren't in the /topspin-standard/ sub-folder.)</p>
+                    	</div>
+                    </div>
                 </td>
             </tr>
         </tbody>
@@ -82,3 +168,15 @@ if($apiStatus) { $apiError = $apiStatus->error_detail; }
 	</form>
     
 </div>
+
+<script type="text/javascript" language="javascript">
+jQuery(function($) {
+	$('#topspin_template_mode').change(function() {
+		var open = $(this).val();
+		var close = (open=='simplified') ? 'standard' : 'simplified';
+		$('.template-'+close).slideUp(function() {
+			$('.template-'+open).slideDown();
+		});
+	});
+});
+</script>

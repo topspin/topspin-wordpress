@@ -3,25 +3,33 @@
 /*
  *	Class:				Topspin Store
  *
- *	Last Modified:		March 23, 2011
+ *	Last Modified:		April 6, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-04-06
+ 		- updated setAPICredentials()
+ 			fixed api_username, api_key
+ 		- added new method getArtistsList()
+ *	2011-04-05
+ 		- updated getItems()
+ 			now caches product images to the database in a new table
+ 		- new method getItemImages()
+ 		- updated getStoreItems()
+ 			calls getItemImages()
+ 		- updated getStoreTags()
+ 			query string prepare input
+ 		- updated getStores()
+ 			query string prepare input
  *	2011-03-23
- *		- updated getTagList()
- *			set default tag status (php warning fix)
- *		- updated rebuildItems()
- *			check if tag array exists before calling the loop, checks for offer, and mobile url (php warning fix)
- *			recoded method to INSERT ON DUPLICATE KEY UPDATE and deletes old items (that are not found in the API retrieval), now returns a timestamp
- *		- updated rebuildAll()
- *			updates last cache with returend timestamp from rebuildItems()
- *
- *
- *
- *
- *
- *
+ 		- updated getTagList()
+ 			set default tag status (php warning fix)
+ 		- updated rebuildItems()
+ 			check if tag array exists before calling the loop, checks for offer, and mobile url (php warning fix)
+ 			recoded method to INSERT ON DUPLICATE KEY UPDATE and deletes old items (that are not found in the API retrieval), now returns a timestamp
+ 		- updated rebuildAll()
+ 			updates last cache with returend timestamp from rebuildItems()
  *
  */
 
@@ -107,10 +115,10 @@ class Topspin_Store {
 			return $upload_dir["baseurl"] . '/topspin/' . md5($url) . "_" . $width . "_" . $square . ".jpg";
 	}
 	
-	public function setAPICredentials($artist_id,$api_key,$api_username) {
+	public function setAPICredentials($artist_id,$api_username,$api_key) {
 		$this->artist_id = $artist_id;
-		$this->api_key = $api_key;
 		$this->api_username = $api_username;
+		$this->api_key = $api_key;
 	}
 	
 	### API METHODS
@@ -190,6 +198,23 @@ class Topspin_Store {
 		if($res) { return $res; }
 	}
 	
+	public function getArtists() {
+		##	Retrieves the list of artists from the Artist Search API
+		##	https://docs.topspin.net/tiki-index.php?page=Artist+Search+API
+		##
+		##	RETURN
+		##		A standard object containing the artist data
+		$url = 'http://app.topspin.net/api/v1/artist';
+		$data = json_decode($this->process($url,null,false));
+		$artists = array();
+		if(isset($data->artists) && count($data->artists)) {
+			foreach($data->artists as $item) {
+				array_push($artists,$item);
+			}
+		}
+		return $artists;
+	}
+	
 	public function getArtist() {
 		##	Retrieves the artist information from the Artist Search API
 		##	https://docs.topspin.net/tiki-index.php?page=Artist+Search+API
@@ -259,6 +284,7 @@ class Topspin_Store {
 	public function rebuildAll() {
 		##	Rebuilds the items, and tags database tables
 		$timestamp = $this->rebuildItems();
+		$this->rebuildArtists();
 		$this->rebuildTags();
 		$this->setSetting('topspin_last_cache_all',$timestamp);
 	}
@@ -296,7 +322,7 @@ class Topspin_Store {
 						'last_modified' => date('Y-m-d H:i:s',$lastModified)
 					);
 					$format = array('%d','%d','%s','%s','%d','%d','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');
-					
+
 					## Get Keys
 					$tableFields = implode(',',array_keys($data));
 					$tableFormat = implode(',',$format);
@@ -313,6 +339,7 @@ class Topspin_Store {
 					ON DUPLICATE KEY UPDATE {$onDuplicateKeyUpdate}
 EOD;
 					$this->wpdb->query($this->wpdb->prepare($sql,$data));
+
 					##	Deletes old item tags
 					$sql = 'DELETE FROM '.$this->wpdb->prefix.'topspin_items_tags WHERE item_id = %d';
 					$this->wpdb->query($this->wpdb->prepare($sql,array($item->id)));
@@ -327,21 +354,67 @@ EOD;
 							$this->wpdb->insert($this->wpdb->prefix.'topspin_items_tags',$tagData,$tagFormat);
 						}
 					} // end if tags exist
+
+					##	Deletes old item images
+					$sql = 'DELETE FROM '.$this->wpdb->prefix.'topspin_items_images WHERE item_id = %d';
+					$this->wpdb->query($this->wpdb->prepare($sql,array($item->id)));
+					##	Adds new item images
+					if(isset($item->campaign->product->images) && is_array($item->campaign->product->images)) {
+						$imageFormat = array('%d','%s','%s','%s','%s');
+						foreach($item->campaign->product->images as $key=>$image) {
+							$imageData = array(
+								'item_id' => $item->id,
+								'source_url' => $item->campaign->product->images[$key]->source_url,
+								'small_url' => $item->campaign->product->images[$key]->small_url,
+								'medium_url' => $item->campaign->product->images[$key]->medium_url,
+								'large_url' => $item->campaign->product->images[$key]->large_url
+							);
+							$this->wpdb->insert($this->wpdb->prefix.'topspin_items_images',$imageData,$imageFormat);
+						}
+					} //end if images exist
+
 					array_push($addedIDs,$item->id);
 				} //end for each item
 			} //end for each page
+
 			##	Removes all items that is not modified/inserted
 			$sql = 'DELETE FROM '.$this->wpdb->prefix.'topspin_items WHERE last_modified < %s';
 			$this->wpdb->query($this->wpdb->prepare($sql,array(date('Y-m-d H:i:s',$lastModified))));
+
 			##	Removes all item tags that is not modified/inserted
 			$sql = 'DELETE FROM '.$this->wpdb->prefix.'topspin_items_tags WHERE item_id NOT IN (SELECT id FROM '.$this->wpdb->prefix.'topspin_items)';
+			$this->wpdb->query($this->wpdb->prepare($sql));
+
+			##	Removes all item images that is not modified/inserted
+			$sql = 'DELETE FROM '.$this->wpdb->prefix.'topspin_items_images WHERE item_id NOT IN (SELECT id FROM '.$this->wpdb->prefix.'topspin_items)';
 			$this->wpdb->query($this->wpdb->prepare($sql));
 			return $lastModified;
 		}
 	}
+	
+	public function rebuildArtists() {
+		##	Rebuild and syncs the artsits table with Topspin
+		$sql = 'TRUNCATE TABLE '.$this->wpdb->prefix.'topspin_artists';
+		$this->wpdb->query($sql);
+		
+		$artists = $this->getArtists();
+		if($artists && count($artists)) {
+			foreach($artists as $artist) {
+				$data = array(
+					'id' => $artist->id,
+					'name' => $artist->name,
+					'avatar_image' => $artist->avatar_image,
+					'url' => $artist->url,
+					'description' => $artist->description,
+					'website' => $artist->website
+				);
+				$this->wpdb->insert($this->wpdb->prefix.'topspin_artists',$data,array('%d','%s','%s','%s','%s','%s'));
+			}
+		}
+	}
 
 	public function rebuildTags() {
-		## Rebuild and syncs the tags table with Topspin
+		##	Rebuild and syncs the tags table with Topspin
 		$sql = 'TRUNCATE TABLE '.$this->wpdb->prefix.'topspin_tags';
 		$this->wpdb->query($sql);
 
@@ -454,9 +527,9 @@ EOD;
 		LEFT JOIN
 			{$this->wpdb->prefix}posts ON {$this->wpdb->prefix}topspin_stores.post_id = {$this->wpdb->prefix}posts.ID
 		WHERE
-			{$this->wpdb->prefix}topspin_stores.status = '{$status}'
+			{$this->wpdb->prefix}topspin_stores.status = '%s'
 EOD;
-		return $this->wpdb->get_results($sql);
+		return $this->wpdb->get_results($this->wpdb->prepare($sql,array($status)));
 	}
 	
 	public function createStore($post,$page_id) {
@@ -671,9 +744,9 @@ EOD;
 		LEFT JOIN
 			{$this->wpdb->prefix}posts ON {$this->wpdb->prefix}topspin_stores.post_id = {$this->wpdb->prefix}posts.ID
 		WHERE
-			{$this->wpdb->prefix}topspin_stores.store_id = {$store_id}
+			{$this->wpdb->prefix}topspin_stores.store_id = '%d'
 EOD;
-		$data = $this->wpdb->get_row($sql,ARRAY_A);
+		$data = $this->wpdb->get_row($this->wpdb->prepare($sql,array($store_id)),ARRAY_A);
 		## Get Offer Types
 		$data['offer_types'] = $this->getStoreOfferTypes($data['id']);
 		## Get Tags
@@ -1013,6 +1086,8 @@ EOD;
 				}
 				else { $sortedItems = $result; }
 		}
+		##	Add Images
+		foreach($sortedItems as $key=>$item) { $sortedItems[$key]['images'] = $this->getItemImages($item['id']); }
 		return $sortedItems;
 	}
 	
@@ -1162,6 +1237,25 @@ EOD;
 		return $this->wpdb->get_row($sql,ARRAY_A);
 	}
 	
+	public function getItemImages($item_id) {
+		##	Retrieves the item's images
+		##
+		##	RETURN
+		##		An array containing all the item's images and their sizes
+		##
+		$sql = <<<EOD
+		SELECT
+			{$this->wpdb->prefix}topspin_items_images.source_url,
+			{$this->wpdb->prefix}topspin_items_images.small_url,
+			{$this->wpdb->prefix}topspin_items_images.medium_url,
+			{$this->wpdb->prefix}topspin_items_images.large_url
+		FROM {$this->wpdb->prefix}topspin_items_images
+		WHERE
+			{$this->wpdb->prefix}topspin_items_images.item_id = '%d'
+EOD;
+		return $this->wpdb->get_results($this->wpdb->prepare($sql,array($item_id)),ARRAY_A);
+	}
+	
 	public function getSortByTypes() {
 		##	Retrieves the sort by types
 		##
@@ -1213,11 +1307,11 @@ EOD;
 		LEFT JOIN
 			{$this->wpdb->prefix}topspin_offer_types ON {$this->wpdb->prefix}topspin_offer_types.type = {$this->wpdb->prefix}topspin_stores_offer_type.type
 		WHERE
-			{$this->wpdb->prefix}topspin_stores_offer_type.store_id = {$store_id}
+			{$this->wpdb->prefix}topspin_stores_offer_type.store_id = '%d'
 		ORDER BY
 			{$this->wpdb->prefix}topspin_stores_offer_type.order_num ASC
 EOD;
-		$data = $this->wpdb->get_results($sql,ARRAY_A);
+		$data = $this->wpdb->get_results($this->wpdb->prepare($sql,array($store_id)),ARRAY_A);
 		return $data;
 	}
 	
@@ -1256,12 +1350,37 @@ EOD;
 		LEFT JOIN
 			{$this->wpdb->prefix}topspin_stores_tag ON {$this->wpdb->prefix}topspin_tags.name = {$this->wpdb->prefix}topspin_stores_tag.tag
 		WHERE
-			{$this->wpdb->prefix}topspin_stores_tag.store_id = {$store_id}
+			{$this->wpdb->prefix}topspin_stores_tag.store_id = '%d'
 		ORDER BY
 			{$this->wpdb->prefix}topspin_stores_tag.order_num ASC
 EOD;
-		return $this->wpdb->get_results($sql,ARRAY_A);
+		return $this->wpdb->get_results($this->wpdb->prepare($sql,array($store_id)),ARRAY_A);
 	}
+	
+	public function getArtistsList() {
+		##	Retrieves the list of artists from the database
+		##
+		##	RETURN
+		##		The artists list
+		$sql = <<<EOD
+		SELECT
+			{$this->wpdb->prefix}topspin_artists.id,
+			{$this->wpdb->prefix}topspin_artists.name,
+			{$this->wpdb->prefix}topspin_artists.avatar_image,
+			{$this->wpdb->prefix}topspin_artists.url,
+			{$this->wpdb->prefix}topspin_artists.description,
+			{$this->wpdb->prefix}topspin_artists.website
+		FROM {$this->wpdb->prefix}topspin_artists
+		ORDER BY
+			{$this->wpdb->prefix}topspin_artists.id ASC
+EOD;
+		return $this->wpdb->get_results($this->wpdb->prepare($sql),ARRAY_A);
+	}
+
+
+
+
+
 
 
 

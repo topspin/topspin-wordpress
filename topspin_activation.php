@@ -1,4 +1,18 @@
 <?php
+/*
+ *	Last Modified:		April 6, 2011
+ *
+ *	----------------------------------
+ *	Change Log
+ *	----------------------------------
+ *	2011-04-06
+ 		- updated topspin_activate()
+ 			added new file to run: topspin_artists.sql
+ *	2011-04-05
+ 		- updated topspin_activate()
+ 			added new file to run: topspin_items_images.sql
+ *
+ */
 
 ### Hooks
 register_activation_hook(TOPSPIN_PLUGIN_FILE,'topspin_activate');
@@ -23,12 +37,14 @@ function topspin_activate() {
 	topspin_run_sql_file('topspin_currency_insert.sql');
 	topspin_run_sql_file('topspin_items.sql');
 	topspin_run_sql_file('topspin_items_tags.sql');
+	topspin_run_sql_file('topspin_items_images.sql');
 	topspin_run_sql_file('topspin_offer_types.sql');
 	topspin_run_sql_file('topspin_offer_types_insert.sql');
 	topspin_run_sql_file('topspin_settings.sql');
 	topspin_run_sql_file('topspin_stores.sql');
 	topspin_run_sql_file('topspin_stores_offer_type.sql');
 	topspin_run_sql_file('topspin_stores_tag.sql');
+	topspin_run_sql_file('topspin_artists.sql');
 	topspin_run_sql_file('topspin_tags.sql');
 	
 	##	Activate Cron

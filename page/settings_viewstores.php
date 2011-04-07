@@ -1,12 +1,28 @@
 <?php
+
+/*
+ *
+ *	Last Modified:			April 6, 2011
+ *
+ *	--------------------------------------
+ *	Change Log
+ *	--------------------------------------
+ *	2011-04-06
+ 		- Updated bloginfo('home') and get_home_url() to bloginfo('wpurl');
+ *	2011-03-23
+ 		- Updated get_bloginfo('home') to get_home_url();
+ *
+ */
+
 global $store;
 $storesList = $store->getStores();
+
 ?>
 
 <div class="wrap">
 	<h2>
     	Stores
-        <a class="button add-new-h2" href="<?php bloginfo('home'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit">Add New</a>
+        <a class="button add-new-h2" href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit">Add New</a>
     </h2>
 
     <table class="topspin-stores-list wp-list-table widefat fixed" cellspacing="0">
@@ -25,16 +41,16 @@ $storesList = $store->getStores();
             <tr id="store-<?=$storeItem->store_id;?>" valign="top">
             	<td class="store-id"><?=$storeItem->store_id;?></td>
             	<td class="store-title">
-                	<strong><a href="<?=get_bloginfo('home');?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?=$storeItem->store_id;?>"><?=$storeItem->post_title;?></a></strong>
+                	<strong><a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?=$storeItem->store_id;?>"><?=$storeItem->post_title;?></a></strong>
                     <div class="row-actions">
-                    	<span class="edit"><a href="<?=get_bloginfo('home');?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?=$storeItem->store_id;?>">Edit</a> |</span>
-                        <span class="trash"><a class="submitdelete" href="<?=get_bloginfo('home');?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=delete&amp;id=<?=$storeItem->store_id;?>">Trash</a></span>
+                    	<span class="edit"><a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?=$storeItem->store_id;?>">Edit</a> |</span>
+                        <span class="trash"><a class="submitdelete" href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=delete&amp;id=<?=$storeItem->store_id;?>">Trash</a></span>
                     </div>
                 </td>
                 <td class="store-shortcode">[topspin_buy_buttons id=<?=$storeItem->store_id;?>]</td>
                 <td class="store-created-date"><?=date("F j, Y h:i:sa",strtotime($storeItem->created_date));?></td>
             	<td class="store-manage">
-					<a href="<?=get_bloginfo('home');?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?=$storeItem->store_id;?>">Edit</a> |
+					<a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?=$storeItem->store_id;?>">Edit</a> |
 					<a href="<?=get_permalink($storeItem->ID);?>" target="_blank">View</a>
                 </td>
             </tr>

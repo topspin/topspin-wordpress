@@ -1,4 +1,21 @@
 <?php
+
+/*
+ *
+ *	Last Modified:			March 23, 2011
+ *
+ *	--------------------------------------
+ *	Change Log
+ *	--------------------------------------
+ *	2011-04-04
+ 		- Fixed $item['is_public'] warning
+ 		- Fixed feature/default sorting item listings
+ 		- Added default offer types, default tags
+ *	2011-03-23
+ 		- Updated get_bloginfo('home') to get_home_url()
+ *
+ */
+
 global $store;
 
 if(!TOPSPIN_ARTIST_ID) $store->setError('No Topspin Artist ID entered.');
@@ -6,6 +23,7 @@ else if(!TOPSPIN_API_KEY) $store->setError('No Topspin API key entered.');
 else if(!TOPSPIN_API_USERNAME) $store->setError('No Topspin API username entered.');
 
 $action = (isset($_GET['action'])) ? $_GET['action'] : 'edit';
+$success = '';
 
 ### Set Default Value
 $storeData = array(
@@ -13,6 +31,7 @@ $storeData = array(
 	'name' => '',
 	'slug' => '',
 	'items_per_page' => 12,
+	'show_all_items' => 0,
 	'grid_columns' => 3,
 	'default_sorting' => 'alphabetical',
 	'default_sorting_by' => 'tag',
@@ -21,6 +40,13 @@ $storeData = array(
 	'offer_types' => $store->getOfferTypes(),
 	'tags' => $store->getTagList()
 );
+
+###	Implode OfferTypes/Tags
+$defaultOfferTypes = array();
+$defaultTags = array();
+foreach($storeData['offer_types'] as $key=>$offer_type) { array_push($defaultOfferTypes,$offer_type['type']); }
+foreach($storeData['tags'] as $key=>$tag) { array_push($defaultTags,$tag['name']); }
+
 
 ### Retrieve Store Data
 if(isset($_GET['id'])) {
@@ -32,7 +58,7 @@ switch($action) {
 		$res = $store->deleteStore($storeData['id']);
 		if($res) {
 			wp_delete_post($storeData['post_id'],0);
-			$success = 'Store has been deleted. <a href="'.get_bloginfo('home').'/wp-admin/admin.php?page=topspin/page/settings_viewstores">View Stores</a>';
+			$success = 'Store has been deleted. <a href="'.get_home_url().'/wp-admin/admin.php?page=topspin/page/settings_viewstores">View Stores</a>';
 		}
 		?>
         <div class="wrap">
@@ -214,7 +240,7 @@ switch($action) {
                         	<select id="topspin_featured_item" name="featured_item">
                             	<option value="0">None</option>
 								<?php
-								$sortedItems = $store->getStoreItems($storeData['id']);
+								$sortedItems = ($storeData['id']) ? $store->getStoreItems($storeData['id']) : $store->getFilteredItems($defaultOfferTypes,$defaultTags,TOPSPIN_ARTIST_ID);
                                 foreach($sortedItems as $item) : ?>
                                 <option value="<?=$item['id'];?>" <?=($item['id']==$storeData['featured_item'])?'selected="selected"':'';?>><?=$item['name'];?></option>
                                 <?php endforeach; ?>
@@ -235,10 +261,10 @@ switch($action) {
                             <td colspan="2">
                                 <ul id="topspin-manual-item-sorting" class="item-sortable">
                                 <?php
-                                $sortedItems = $store->getStoreItems($storeData['id']);
+								$sortedItems = ($storeData['id']) ? $store->getStoreItems($storeData['id']) : $store->getFilteredItems($defaultOfferTypes,$defaultTags,TOPSPIN_ARTIST_ID);
                                 if(count($sortedItems)) : ?>
                                     <?php foreach($sortedItems as $item) : ?>
-                                    <?php $item['is_public'] = (strlen($storeData['items_order'])) ? $item['is_public'] : 1; ?>
+                                    <?php $item['is_public'] = (isset($item['is_public']) && strlen($storeData['items_order'])) ? $item['is_public'] : 1; ?>
                                     <li id="item-<?=$item['id'];?>:<?=($item['is_public'])?$item['is_public']:0;?>">
                                     	<div class="item-offer-type"><?=$item['offer_type_name'];?></div>
                                         <div class="item-canvas <?=($item['is_public'])?'':'faded';?>">

@@ -2,8 +2,8 @@
 Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
-Tested up to: 3.1
-Stable tag: 3.0.4.1
+Tested up to: 3.1.1
+Stable tag: 3.1
 Requires at least: 3.0.2
 
 Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages.
@@ -13,8 +13,8 @@ Quickly and easily integrate your Topspin Offers into customized, sortable and d
 This plugin allows novice and pro Topspin users alike to quickly and easily create integrated, customized, sortable and dynamically generated stores from their Topspin Offers in a few minutes.  
 
 = Live Examples =
-http://awolnationmusic.com/shop
-http://deepdarkrobot.com/store 
+[AWOLNATION](http://awolnationmusic.com/shop)
+[Deep Dark Robot](http://deepdarkrobot.com/store)
 
 The plugin allows for the creation of any number of individual Store Pages and configurations of Offers based on Offer Types and Tags. Store Pages can be restricted to specific Offer Type(s) and/or Tag(s).  They can then be sorted by Offer Type(s), Tag(s), or Manually using a new drag-and-drop admin interface. 
 
@@ -45,7 +45,7 @@ This plugin will not automatically upgrade the v2.0 Topspin Wordpress Plugins - 
 
 = Topspin Artist Account Required.  Please visit: http://topspinmedia.com to sign up. =
 
-Plugin developed for Topspin Media by The Uprising Creative, http://theuprisingcreative.com
+Plugin developed for Topspin Media by [The Uprising Creative](http://theuprisingcreative.com)
 
 == Installation ==
 
@@ -58,7 +58,7 @@ These instructions are specifically for new users who are NOT currently using th
 2. Activate the plugin through the *Plugins* menu in WordPress. This will install your database tables and create a new top-level menu called *Topspin*.
 3. Make sure your template is calling `wp_head()` and `wp_footer()` to allow loading of the necessary Topspin javascript libraries, template files and CSS. *(99.9% of them do so this shouldn't be an issue)* 
 4. Go to *Settings->Permalinks* and make sure you're using some form of Custom Permalinks. It can be set to anything other than *Default*.
-5. Go to the *Topspin -> Settings* menu and add in your Topspin Artist ID, API Key, and API Username (you can get these from your Account settings at http://app.topspin.net)
+5. Go to the *Topspin -> Settings* menu and add in your Topspin API User and API Key (you can get these from your Account settings at http://app.topspin.net)
 6. Make sure the Offers you want to use have the *Offer API* checkbox selected.  If they don't, they won't be output by Topspin's API and won't show up as available Offers in the plugin.
 
 ---
@@ -84,30 +84,33 @@ Please be aware that you will lose the *Landing Page* it allowed you to create, 
 
 ---
 
-= CSS Customization = 
-All markup output by this plugin is XHTML-compliant and heavily classed to allow for easily styling with CSS. The plugin comes with basic CSS style sheets named `topspin.css` and `topspin-ie7.css` located in the `/css/` directory in the `/topspin/` plugin directory.  
+= Customization = 
+All markup output by this plugin is XHTML-compliant and heavily classed to allow for easily styling with CSS. The plugin comes with two different 'templates` called `Standard` and `Simplified`.  
 
-If you wish to edit the CSS styling, simply follow these directions.  Following this process will ensure that your custom CSS is not overwritten when upgrading the plugin in the future: 
+The `Simplified Template` is designed to give the best out-of-the box store layout if you prefer to do little or no customization.  It uses HTML Tables to construct the Store Grid and therefore is less flexible for developers who wish to heavily customize the store's output. 
 
-1. create a new `topspin.css` file in your active theme's directory. 
-2. copy any rules you wish to modify from the `topspin.css` file in the plugin's `/css/` directory into your new `topspin.css` file in your active theme's directory.
-3. if you need to create specific rules for IE7, create a new `topspin-ie7.css` in your active theme's directory and add in any necessary IE7-specific rules. 
+The `Standard Template` is designed as a skeleton framework with the Developer in mind, allowing for the most flexibility for template customizations. It uses floating HTML Divs to construct the Store Grid rather than Tables, making it easier to manipulate.
 
-These CSS style sheets in your active theme's directory are considered "override" style sheets and only need to contain rules for elements, ids and classes that you wish to modify.  The remaining rules from the default CSS style sheets will automatically be used if no overriding rules are included.
+You select which `template` you wish to use on the *Topspin->Settings* page. 
 
----
+If you wish to edit the style's CSS or Template, simply follow these directions:
+1. Copy the template's sub-directory from the Plugin's `/templates/` directory to your Site's active theme folder (`/topspin-simplified/` for the Simplified Template and `/topspin-standard/` for the Standard Template)
+2. Edit the new CSS or PHP Template file(s) in your Site's active theme folder as needed. 
 
-= Template Customization =
-If you are a pro user and are comfortable with creating and editing WordPress themes, the plugins template can be easily customized to suit your needs.  Simply follow the steps below to copy the template files from the plugin's `/templates/` directory to your active theme's directory and begin your customization. Following this process will ensure that your custom template modifications are not overwritten when upgrading the plugin in the future: 
+= CSS Customization Details ==
+These new CSS style sheets in your active theme's directory are considered "override" style sheets and only need to contain rules for elements, ids and classes that you wish to modify.  The remaining rules from the default CSS style sheets will automatically be used if no overriding rules are included.
 
-1. create a directory named `/topspin-templates/` in your active theme's directory. 
-2. copy the template files from the plugin's `/templates/` directory to your newly created `/topspin-templates/` directory. 
-3. have fun modifying! below is a list of important PHP variables used in these templates: 
+= Template Customization Details =
+If you are a pro user and are comfortable with creating and editing WordPress themes, the plugins template can be easily customized to suit your needs. Below is a list of important PHP variables used in these templates: 
 	in featured-item.php:
 	$featureditem (array) - the array that contains the Featured Item's info
 	in item-listing.php:
 	$storedata (array) - the array that contains the general Store Page data
 	$storeitem (array) - the array that contains all of the items on the Store Page
+
+= Additional Customization Details = 
+1. It is very important that you copy the Template files to your site's active theme directory.  If you edit them in the Plugin's `/templates/` directory, any changes you make will be overwritten when you upgrade the plugin! 
+2. Backwards Compatability: For users upgrading from a version pre-v3.1, the Plugin will still recognize your customized topspin.css, topspin-ie7.css, featured-item.php and item-listings.php files located in your site's active theme folder if you select the Standard Template, even if they aren't in the /topspin-standard/ sub-folder.)
 
 ---
 
@@ -129,7 +132,7 @@ Yes and no.  Please check out the `Installation` page and refer to the detailed 
 No!  If you're not using v2.0, the Installation process is pretty painless and you can have a store up and running in as little as 5min. 
 
 = I've installed the plugin, but none of my Offers are showing up.  Help! = 
-First make sure your Artist ID, API Username, and API Key are correct.  If they are, make sure the offers you wish to display on your site all have the `Offers API` checkbox marked in the Topspin App.  If your info is correct and the Offers API checkboxes are marked but it's still not working, please contact Topspin for support with your Topspin Account: http://www.topspinmedia.com/contact
+First make sure your API User and API Key are correct.  If they are, make sure the offers you wish to display on your site all have the `Offers API` checkbox marked in the Topspin App.  If your info is correct and the Offers API checkboxes are marked but it's still not working, please contact Topspin for support with your Topspin Account: http://www.topspinmedia.com/contact
 
 = Where do I get help with Topspin? = 
 Lot's of resources are available.  This is a good place to start: http://www.topspinmedia.com/help
@@ -180,8 +183,8 @@ If you are unsure how to create Offers in Topspin, please visit Topspin's Knowle
 = All Topspin Offers must have the Offers API checkbox marked. = 
 Offers without this marked will not show up in the plugin.
 
-= It is highly suggested that all Offer images are setup to be the same size for any particular Store Page. = 
-This is to ensure that the Buy Buttons for each product line up correctly. In an effort to create the most versatile default template, we haven't forced the Offers into tables or forced image resizing with Javascript but feel free to do so yourself.  In future updates we will be including phpthumb and the ability to normalize the size of the Offer images on the fly. 
+= It is highly suggested that all Offer images are setup to be the same size for any particular Store Page if using the Standard Template. = 
+This is to ensure that the Buy Buttons for each product line up correctly in the Standard Template. In an effort to create the most versatile default template, we haven't forced the Offers into tables in the Standard Template or forced image resizing with Javascript but feel free to do so yourself.  In future updates we may be including phpthumb and the ability to normalize the size of the Offer images on the fly. 
 
 We also suggest the use of the following additional plugins to maximize performance and functionality of this plugin, and your site as a whole: 
 
@@ -213,7 +216,6 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 * Admin Localization
 * Optimized output for non-Buy Button Offers
 * Plugin Site for further documentation, discussion, feature requests, etc
-* Automatic selection of Artist ID using only API Username and API Key
 * Option to display and sort by individual Artist IDs for Business Users who have access to multiple Artist IDs
 
 == Screenshots ==
@@ -226,8 +228,19 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 6. Front-End -> View of a Store Page's "More Details" Colorbox overlay
 7. Front-End -> View of the Topspin Checkout Flow overlay
 
-
 == Changelog ==
+
+= 3.1 = 
+* Added automatic selection of the Artist ID based on the API User and API Key 
+* Added ability for users with multiple Artist IDs related to their API User / Key combo to select which artist to use 
+*ÊAdded Simplified Template option for table-based template structure (ideal for out-of-the-box usage with little or no customization requirements) 
+* Added Topspin's additional images sizes to the local cache instead of just using the full-size image for everything.  Should give a significant increase in performance and decrease in load-times for users with large original images and/or lots of products.
+* Updated template structure to include sub-directories and the ability to have and select from a set group of multiple templates
+* Updated documentation with regards to new template structure and customization
+* Updated CSS and Template files to avoid being overwritten by a theme's style.css file
+* Fixed additional foreach() errors on lines 720 and 731 of Topspin_Store.php
+* Fixed upgrading schema to make sure all necessary upgrades run regardless of which version you are upgrading to/from
+* Fixed issue where the permalinks weren't working correctly if Wordpress's Home and Site URLs were different
 
 = 3.0.4.1 =
 * Updated template's default css
