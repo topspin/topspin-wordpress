@@ -19,6 +19,7 @@ SELECT COLUMN_NAME
 FROM information_schema.COLUMNS
 WHERE
 	TABLE_SCHEMA = '{$wpdb->dbname}'
+	AND TABLE_NAME = '{$wpdb->prefix}topspin_items'
 	AND COLUMN_NAME = 'last_modified'
 EOD;
 if(!$wpdb->get_var($sqlCheckItemLastModifiedField)) {

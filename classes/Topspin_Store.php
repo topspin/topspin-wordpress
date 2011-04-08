@@ -3,11 +3,22 @@
 /*
  *	Class:				Topspin Store
  *
- *	Last Modified:		April 6, 2011
+ *	Last Modified:		April 8, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-04-08
+ 		- updated rebuildItems()
+ 			added caching for 'poster_image_source'
+ 		- updated getItem()
+ 			select new field 'poster_image_source'
+ 		- updated getFilteredItems()
+ 			select new field 'poster_image_source'
+ 		- updated getStoreItems()
+ 			select new field 'poster_image_source'
+ 			set default image depending on 'poster_image_source'
+ 		- new method getItemDefaultImage()
  *	2011-04-06
  		- updated setAPICredentials()
  			fixed api_username, api_key
@@ -310,6 +321,7 @@ class Topspin_Store {
 						'height' => $item->height,
 						'url' => $item->url,
 						'poster_image' => $item->poster_image,
+						'poster_image_source' => (isset($item->poster_image_source)) ? $item->poster_image_source : '',
 						'product_type' => $item->product_type,
 						'offer_type' => $item->offer_type,
 						'description' => $item->description,
@@ -321,7 +333,7 @@ class Topspin_Store {
 						'mobile_url' => (isset($item->mobile_url)) ? $item->mobile_url : '',
 						'last_modified' => date('Y-m-d H:i:s',$lastModified)
 					);
-					$format = array('%d','%d','%s','%s','%d','%d','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');
+					$format = array('%d','%d','%s','%s','%d','%d','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');
 
 					## Get Keys
 					$tableFields = implode(',',array_keys($data));
@@ -828,6 +840,7 @@ EOD;
 							{$this->wpdb->prefix}topspin_items.height,
 							{$this->wpdb->prefix}topspin_items.url,
 							{$this->wpdb->prefix}topspin_items.poster_image,
+							{$this->wpdb->prefix}topspin_items.poster_image_source,
 							{$this->wpdb->prefix}topspin_items.product_type,
 							{$this->wpdb->prefix}topspin_items.offer_type,
 							{$this->wpdb->prefix}topspin_offer_types.name AS offer_type_name,
@@ -876,6 +889,7 @@ EOD;
 						{$this->wpdb->prefix}topspin_items.height,
 						{$this->wpdb->prefix}topspin_items.url,
 						{$this->wpdb->prefix}topspin_items.poster_image,
+						{$this->wpdb->prefix}topspin_items.poster_image_source,
 						{$this->wpdb->prefix}topspin_items.product_type,
 						{$this->wpdb->prefix}topspin_items.offer_type,
 						{$this->wpdb->prefix}topspin_offer_types.name AS offer_type_name,
@@ -928,6 +942,7 @@ EOD;
 								{$this->wpdb->prefix}topspin_items.height,
 								{$this->wpdb->prefix}topspin_items.url,
 								{$this->wpdb->prefix}topspin_items.poster_image,
+								{$this->wpdb->prefix}topspin_items.poster_image_source,
 								{$this->wpdb->prefix}topspin_items.product_type,
 								{$this->wpdb->prefix}topspin_items.offer_type,
 								{$this->wpdb->prefix}topspin_offer_types.name AS offer_type_name,
@@ -979,6 +994,7 @@ EOD;
 						{$this->wpdb->prefix}topspin_items.height,
 						{$this->wpdb->prefix}topspin_items.url,
 						{$this->wpdb->prefix}topspin_items.poster_image,
+						{$this->wpdb->prefix}topspin_items.poster_image_source,
 						{$this->wpdb->prefix}topspin_items.product_type,
 						{$this->wpdb->prefix}topspin_items.offer_type,
 						{$this->wpdb->prefix}topspin_offer_types.name AS offer_type_name,
@@ -1026,6 +1042,7 @@ EOD;
 					{$this->wpdb->prefix}topspin_items.height,
 					{$this->wpdb->prefix}topspin_items.url,
 					{$this->wpdb->prefix}topspin_items.poster_image,
+					{$this->wpdb->prefix}topspin_items.poster_image_source,
 					{$this->wpdb->prefix}topspin_items.product_type,
 					{$this->wpdb->prefix}topspin_items.offer_type,
 					{$this->wpdb->prefix}topspin_offer_types.name AS offer_type_name,
@@ -1086,8 +1103,13 @@ EOD;
 				}
 				else { $sortedItems = $result; }
 		}
-		##	Add Images
-		foreach($sortedItems as $key=>$item) { $sortedItems[$key]['images'] = $this->getItemImages($item['id']); }
+		foreach($sortedItems as $key=>$item) {
+			##	Add Images
+			$sortedItems[$key]['images'] = $this->getItemImages($item['id']);
+			##	Get Default Image
+			$sortedItems[$key]['default_image'] = (strlen($item['poster_image_source'])) ? $this->getItemDefaultImage($item['id'],$item['poster_image_source']) : $item['poster_image'];
+			$sortedItems[$key]['default_image_large'] = (strlen($item['poster_image_source'])) ? $this->getItemDefaultImage($item['id'],$item['poster_image_source'],'large') : $item['poster_image'];
+		}
 		return $sortedItems;
 	}
 	
@@ -1159,6 +1181,7 @@ EOD;
 			{$this->wpdb->prefix}topspin_items.height,
 			{$this->wpdb->prefix}topspin_items.url,
 			{$this->wpdb->prefix}topspin_items.poster_image,
+			{$this->wpdb->prefix}topspin_items.poster_image_source,
 			{$this->wpdb->prefix}topspin_items.product_type,
 			{$this->wpdb->prefix}topspin_items.offer_type,
 			{$this->wpdb->prefix}topspin_offer_types.name AS offer_type_name,
@@ -1212,6 +1235,7 @@ EOD;
 			{$this->wpdb->prefix}topspin_items.height,
 			{$this->wpdb->prefix}topspin_items.url,
 			{$this->wpdb->prefix}topspin_items.poster_image,
+			{$this->wpdb->prefix}topspin_items.poster_image_source,
 			{$this->wpdb->prefix}topspin_items.product_type,
 			{$this->wpdb->prefix}topspin_items.offer_type,
 			{$this->wpdb->prefix}topspin_offer_types.name AS offer_type_name,
@@ -1234,7 +1258,13 @@ EOD;
 		WHERE
 			{$this->wpdb->prefix}topspin_items.id = '{$item_id}'
 EOD;
-		return $this->wpdb->get_row($sql,ARRAY_A);
+		$item = $this->wpdb->get_row($sql,ARRAY_A);
+		##	Add Images
+		$item['images'] = $this->getItemImages($item['id']);
+		##	Get Default Image
+		$item['default_image'] = (strlen($item['poster_image_source'])) ? $this->getItemDefaultImage($item['id'],$item['poster_image_source']) : $item['poster_image'];
+		$item['default_image_large'] = (strlen($item['poster_image_source'])) ? $this->getItemDefaultImage($item['id'],$item['poster_image_source'],'large') : $item['poster_image'];
+		return $item;
 	}
 	
 	public function getItemImages($item_id) {
@@ -1254,6 +1284,29 @@ EOD;
 			{$this->wpdb->prefix}topspin_items_images.item_id = '%d'
 EOD;
 		return $this->wpdb->get_results($this->wpdb->prepare($sql,array($item_id)),ARRAY_A);
+	}
+	
+	public function getItemDefaultImage($item_id,$poster_image_source,$image_size='medium') {
+		##	Retrieves the item's default image
+		##
+		##	PARAMETERS
+		##		@item_id
+		##		@poster_image_source
+		##		@image_size
+		##
+		##	RETURN
+		##		The image url string if it exists (and the poster_image_source if it doesn't)
+		##
+		$sql = <<<EOD
+		SELECT
+			{$this->wpdb->prefix}topspin_items_images.{$image_size}_url
+		FROM {$this->wpdb->prefix}topspin_items_images
+		WHERE
+			{$this->wpdb->prefix}topspin_items_images.item_id = '%d'
+			AND {$this->wpdb->prefix}topspin_items_images.source_url = '%s'
+EOD;
+		$image = $this->wpdb->get_var($this->wpdb->prepare($sql,array($item_id,$poster_image_source)));
+		return ($image) ? $image : $poster_image_source;
 	}
 	
 	public function getSortByTypes() {

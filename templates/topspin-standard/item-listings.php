@@ -37,11 +37,11 @@
             switch($item['offer_type']) {
 				case 'buy_button': ?>
 					<h2 class="topspin-item-title"><?=$item['name'];?></h2>
-                    <div class="topspin-item-image"><a class="topspin-colorbox" href="#topspin-view-more-<?=$item['id'];?>"><img src="<?=(isset($item['images'][0]['medium_url']))?$item['images'][0]['medium_url']:$item['poster_image'];?>" /></a></div>
+                    <div class="topspin-item-image"><a class="topspin-colorbox" href="#topspin-view-more-<?=$item['id'];?>"><img src="<?=$item['default_image'];?>" /></a></div>
 					<div class="topspin-item-price">Price: <?=$item['symbol'];?><?=$item['price'];?></div>
 					<div class="topspin-item-buy"><a class="topspin-buy" href="<?=$item['offer_url'];?>">Buy</a></div>
                     <div id="topspin-view-more-<?=$item['id']; ?>" class="topspin-view-more-canvas">
-                        <div class="topspin-view-more-image"><img src="<?=(isset($item['images'][0]['large_url']))?$item['images'][0]['large_url']:$item['poster_image'];?>" /></div>
+                        <div class="topspin-view-more-image"><img src="<?=$item['default_image_large'];?>" /></div>
                         <h2 class="topspin-view-more-title"><?=$item['name'];?></h2>
                         <div class="topspin-view-more-desc"><?=$item['description'];?></div>
                         <div class="topspin-view-more-buy">

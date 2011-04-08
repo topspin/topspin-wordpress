@@ -3,7 +3,7 @@ Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
 Tested up to: 3.1.1
-Stable tag: 3.1
+Stable tag: 3.1.1
 Requires at least: 3.0.2
 
 Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages.
@@ -230,10 +230,15 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 
 == Changelog ==
 
+= 3.1.1 =
+* Fixed the plugin upgrading check function
+* Added caching for the poster_image_source from the API to the database (new field in the items table)
+* Updated the default item images to pull the size according to the poster_image_source (updated template files)
+
 = 3.1 = 
 * Added automatic selection of the Artist ID based on the API User and API Key 
 * Added ability for users with multiple Artist IDs related to their API User / Key combo to select which artist to use 
-*ÊAdded Simplified Template option for table-based template structure (ideal for out-of-the-box usage with little or no customization requirements) 
+* Added Simplified Template option for table-based template structure (ideal for out-of-the-box usage with little or no customization requirements) 
 * Added Topspin's additional images sizes to the local cache instead of just using the full-size image for everything.  Should give a significant increase in performance and decrease in load-times for users with large original images and/or lots of products.
 * Updated template structure to include sub-directories and the ability to have and select from a set group of multiple templates
 * Updated documentation with regards to new template structure and customization

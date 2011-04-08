@@ -7,6 +7,7 @@ CREATE TABLE `<?=$wpdb->prefix;?>topspin_items` (
   `height` int(11) NOT NULL,
   `url` varchar(255) NOT NULL,
   `poster_image` text NOT NULL,
+  `poster_image_source` text NOT NULL,
   `product_type` varchar(255) NOT NULL,
   `offer_type` varchar(255) NOT NULL,
   `description` longtext NOT NULL,

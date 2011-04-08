@@ -43,9 +43,9 @@
 		for($col=1;$col<=$storedata['grid_columns'];$col++) : $key = ($row*$storedata['grid_columns'])-($storedata['grid_columns']-($col-1)); ?>
 		<td width="<?=floor(100/$storedata['grid_columns']);?>%">
 		<?php if(isset($storeitems[$key])) : ?>
-			<a class="topspin-colorbox" href="#topspin-view-more-<?=$storeitems[$key]['id'];?>"><img src="<?=(isset($storeitems[$key]['images'][0]['medium_url']))?$storeitems[$key]['images'][0]['medium_url']:$storeitems[$key]['poster_image'];?>" /></a>
+			<a class="topspin-colorbox" href="#topspin-view-more-<?=$storeitems[$key]['id'];?>"><img src="<?=$storeitems[$key]['default_image'];?>" /></a>
 			<div id="topspin-view-more-<?=$storeitems[$key]['id']; ?>" class="topspin-view-more-canvas">
-				<div class="topspin-view-more-image"><img src="<?=(isset($storeitems[$key]['images'][0]['large_url']))?$storeitems[$key]['images'][0]['large_url']:$storeitems[$key]['poster_image'];?>" /></div>
+				<div class="topspin-view-more-image"><img src="<?=$storeitems[$key]['default_image_large'];?>" /></div>
 				<h2 class="topspin-view-more-title"><?=$storeitems[$key]['name'];?></h2>
 				<div class="topspin-view-more-desc"><?=$storeitems[$key]['description'];?></div>
 				<div class="topspin-view-more-buy">

@@ -11,9 +11,9 @@ SELECT COLUMN_NAME
 FROM information_schema.COLUMNS
 WHERE
 	TABLE_SCHEMA = '{$wpdb->dbname}'
+	AND TABLE_NAME = '{$wpdb->prefix}topspin_items'
 	AND COLUMN_NAME = 'last_modified'
 EOD;
-print_r($wpdb->get_var($sqlCheckItemLastModifiedField));
 if(!$wpdb->get_var($sqlCheckItemLastModifiedField)) {
 	$sqlUpgradeTable = <<<EOD
 ALTER TABLE `{$wpdb->prefix}topspin_items` ADD `last_modified` TIMESTAMP NOT NULL ;
