@@ -1,11 +1,13 @@
 <?php
 
 /*
- *	Last Modified:		April 6, 2011
+ *	Last Modified:		April 11, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-04-11
+ 		- Added new button for force rerun upgrade scripts
  *	2011-04-06
  		- Updated Artist ID field to a dropdown of available artists
  		- Moved API credential fields to the top
@@ -21,6 +23,10 @@ $success = '';
 if($_SERVER['REQUEST_METHOD']=='POST') {
 	if(isset($_POST['action'])) {
 		switch($_POST['action']) {
+			case "rerun_upgrades":
+				if(isset($_POST['fix_upgrades'])) { topspin_rerun_upgrades(); }
+				$success = 'Plugin upgrade scripts successfully ran.';
+				break;
 			case "rebuild_cache":
 				if(isset($_POST['cache_all'])) { $store->rebuildAll(); }
 				$success = 'Cache successfully updated.';
@@ -151,10 +157,10 @@ if($apiStatus) { $apiError = $apiStatus->error_detail; }
     <p class="submit"><input type="submit" class="button-primary" value="<?php _e('Save Changes'); ?>" /></p>
     </form>
 
-	<form name="topspin_form_rebuild_cache" method="post" action="<?=$_SERVER['REQUEST_URI'];?>">
-    <input type="hidden" name="action" value="rebuild_cache" />
     <h3>Database Cache</h3>
     <table class="form-table">
+		<form name="topspin_form_rebuild_cache" method="post" action="<?=$_SERVER['REQUEST_URI'];?>">
+	    <input type="hidden" name="action" value="rebuild_cache" />
     	<tbody>
         	<tr valign="top">
             	<th scope="row"><label>Rebuild Database</label></th>
@@ -164,8 +170,20 @@ if($apiStatus) { $apiError = $apiStatus->error_detail; }
                 </td>
             </tr>
         </tbody>
+		</form>
+		<form name="topspin_form_rerun_upgrades" method="post" action="<?=$_SERVER['REQUEST_URI'];?>">
+	    <input type="hidden" name="action" value="rerun_upgrades" />
+    	<tbody>
+        	<tr valign="top">
+            	<th scope="row"><label>Fix Plugin Installation</label></th>
+                <td>
+					<input type="submit" name="fix_upgrades" class="button-primary" value="<?php _e('Fix'); ?>" />
+                    <span class="description">Use this if you are experiencing problems with the plugin.  In an attempt to fix your installation, this will force WordPress to re-run all of the upgrade scripts and rebuild the cache.</span>
+                </td>
+            </tr>
+        </tbody>
+		</form>
     </table>
-	</form>
     
 </div>
 

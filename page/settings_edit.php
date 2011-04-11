@@ -2,11 +2,14 @@
 
 /*
  *
- *	Last Modified:			March 23, 2011
+ *	Last Modified:			April 11, 2011
  *
  *	--------------------------------------
  *	Change Log
  *	--------------------------------------
+ *	2011-04-11
+ 		- Fixed/updated error messages
+ 		- Updated thumbnails to pull from 'default_image' rather than 'poster_image'
  *	2011-04-04
  		- Fixed $item['is_public'] warning
  		- Fixed feature/default sorting item listings
@@ -18,11 +21,12 @@
 
 global $store;
 
-if(!TOPSPIN_ARTIST_ID) $store->setError('No Topspin Artist ID entered.');
-else if(!TOPSPIN_API_KEY) $store->setError('No Topspin API key entered.');
-else if(!TOPSPIN_API_USERNAME) $store->setError('No Topspin API username entered.');
+if(!TOPSPIN_API_USERNAME) { $store->setError('API Username is not set. Please check your <a href="'.get_bloginfo('wpurl').'/wp-admin/admin.php?page=topspin/page/settings_general">settings</a>.'); }
+elseif(!TOPSPIN_API_KEY) { $store->setError('API Key is not set. Please check your <a href="'.get_bloginfo('wpurl').'/wp-admin/admin.php?page=topspin/page/settings_general">settings</a>.'); }
+elseif(!TOPSPIN_ARTIST_ID) { $store->setError('Artist ID is not set. Please check your <a href="'.get_bloginfo('wpurl').'/wp-admin/admin.php?page=topspin/page/settings_general">settings</a>.'); }
 
 $action = (isset($_GET['action'])) ? $_GET['action'] : 'edit';
+$error = $store->getError();
 $success = '';
 
 ### Set Default Value
@@ -119,6 +123,7 @@ switch($action) {
 		<div class="wrap">
 			<h2>Store Setup</h2>
 		
+			<?php if(strlen($error)) : ?><div class="error settings-error"><p><strong><?php echo $error; ?></strong></p></div><?php break; endif; ?>
 			<?php if($success) : ?><div class="updated settings-error"><p><strong><?php echo $success; ?></strong></p></div><?php endif; ?>
 
 			<form name="topspin_edit_form" method="post" action="<?=$_SERVER['REQUEST_URI'];?>">
@@ -272,7 +277,7 @@ switch($action) {
                                             $campaign = unserialize($item['campaign']);
                                             $product = $campaign->product;
                                             ?>
-                                            <img src="<?=$item['poster_image'];?>" width="150" alt="<?=$item['name'];?>" /><br/>
+                                            <img src="<?=$item['default_image'];?>" width="150" alt="<?=$item['name'];?>" /><br/>
                                             <?=$item['name'];?>
                                         </div>
                                         <div class="item-hide">Hide</div>
@@ -395,7 +400,7 @@ switch($action) {
 							.appendTo(li);
 						var img = jQuery('<img />')
 						img
-							.attr('src',data.poster_image)
+							.attr('src',data.default_image)
 							.attr('width',150)
 							.attr('alt',data.name)
 							.appendTo(canvas);

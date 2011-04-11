@@ -3,7 +3,7 @@ Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
 Tested up to: 3.1.1
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 Requires at least: 3.0.2
 
 Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages.
@@ -43,7 +43,10 @@ This plugin will not automatically upgrade the v2.0 Topspin Wordpress Plugins - 
 * Immediate output of fully functional Store Pages will little or no CSS or Template customization (novice)
 * Fully customizable Template and CSS files (pro)
 
-= Topspin Artist Account Required.  Please visit: http://topspinmedia.com to sign up. =
+= Requirements =
+* Topspin Artist Account Required.  Please visit: http://topspinmedia.com to sign up
+* PHP 5.0 or higher
+* PHP cUrl (if unsure, please check with your server administrator.)
 
 Plugin developed for Topspin Media by [The Uprising Creative](http://theuprisingcreative.com)
 
@@ -229,6 +232,11 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 7. Front-End -> View of the Topspin Checkout Flow overlay
 
 == Changelog ==
+
+= 3.1.2 =
+* Fixed the PHP fatal error calling an undefined method: Topspin_Store::setError() when adding/editing a store
+* Updated the version parsing string in the plugin upgrade functions (bug for PHP versions lower than 5.2)
+* Added the ability to force re-run of all upgrade scripts (for users who are experiencing problems when upgrading their plugins)
 
 = 3.1.1 =
 * Fixed the plugin upgrading check function

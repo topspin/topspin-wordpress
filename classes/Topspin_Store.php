@@ -3,11 +3,17 @@
 /*
  *	Class:				Topspin Store
  *
- *	Last Modified:		April 8, 2011
+ *	Last Modified:		April 11, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-04-11
+ 		- new method setError()
+ 		- new method getError()
+ 		- updated getFilteredItems()
+ 			Added the 'default_image', 'default_image_large', and 'images' keys
+ 			Fixed the campaign object (unserialized to object)
  *	2011-04-08
  		- updated rebuildItems()
  			added caching for 'poster_image_source'
@@ -50,6 +56,7 @@ class Topspin_Store {
 	private $artist_id;
 	private $api_key;
 	private $api_username;
+	private $_error = '';
 
 	private $offer_types = array(
 		'key' => array(), //key value pairs
@@ -62,6 +69,14 @@ class Topspin_Store {
 	}
 
 	### GENERAL METHODS
+	
+	public function setError($msg) {
+		$this->_error = $msg;
+	}
+	
+	public function getError() {
+		return $this->_error;
+	}
 
 	private function cacheImage($url,$width,$square=0) {
 		$upload_dir = wp_upload_dir();
@@ -1208,7 +1223,12 @@ EOD;
 EOD;
 		$data = $this->wpdb->get_results($sql,ARRAY_A);
 		foreach($data as $key=>$row) {
-			$data[$key]['campaign'] = unserialize($row['campaign']);
+			$row['campaign'] = unserialize($row['campaign']);
+			##	Add Images
+			$row['images'] = $this->getItemImages($row['id']);
+			##	Get Default Image
+			$row['default_image'] = (strlen($row['poster_image_source'])) ? $this->getItemDefaultImage($row['id'],$row['poster_image_source']) : $row['poster_image'];
+			$row['default_image_large'] = (strlen($row['poster_image_source'])) ? $this->getItemDefaultImage($row['id'],$row['poster_image_source'],'large') : $row['poster_image'];
 			if(!in_array($row['id'],$addedIDs)) {
 				array_push($addedIDs,$row['id']);
 				array_push($addedItems,$row);
