@@ -77,6 +77,9 @@ table.topspin-simplified-item-listings {
 	margin-left:0px;
 	margin-bottom:15px;
 }
+table.topspin-simplified-item-listings tr {
+	border-bottom:0px !important;
+}
 table.topspin-simplified-item-listings tr.topspin-item-title {
 	clear:none;
 	font-size:18px;
@@ -89,7 +92,7 @@ table.topspin-simplified-item-listings tr.topspin-item-title td {
 	padding:15px 0px 0px 0px;
 }
 table.topspin-simplified-item-listings tr.topspin-item-title td h2.topspin-title-name {
-	border-top:1px solid #000;
+	border-top:1px solid;
 	margin:0px 15px;
 	padding-top:10px;
 	font-size:inherit;
@@ -138,8 +141,8 @@ table.topspin-simplified-item-listings tr.topspin-spacer {
 div.topspin-pagination {
 	clear:both;
 	text-align:center;
-	border-top:1px solid #000;
-	border-bottom:1px solid #000;
+	border-top:1px solid;
+	border-bottom:1px solid;
 	padding:5px 0px;
 	overflow:hidden;
 }

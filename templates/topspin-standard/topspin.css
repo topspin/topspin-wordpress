@@ -82,7 +82,7 @@ ul.topspin-item-listings li.topspin-item {
 	overflow:hidden;
 }
 ul.topspin-item-listings li.topspin-item div.topspin-item-canvas {
-	border-top:1px solid #000;
+	border-top:1px solid;
 	padding-top:15px;
 	margin-top:15px;
 	margin-left:15px;
@@ -138,8 +138,8 @@ ul.topspin-item-listings li.bundle_widget div.topspin-item-canvas {
 div.topspin-pagination {
 	clear:both;
 	text-align:center;
-	border-top:1px solid #000;
-	border-bottom:1px solid #000;
+	border-top:1px solid;
+	border-bottom:1px solid;
 	padding:5px 0px;
 	overflow:hidden;
 }

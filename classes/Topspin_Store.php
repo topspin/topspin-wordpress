@@ -3,11 +3,14 @@
 /*
  *	Class:				Topspin Store
  *
- *	Last Modified:		April 11, 2011
+ *	Last Modified:		April 12, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-04-12
+ 		- updated getStoreItems()
+ 			added GROUP BY item's ID in manual sorting query string
  *	2011-04-11
  		- new method setError()
  		- new method getError()
@@ -1082,6 +1085,7 @@ EOD;
 					{$this->wpdb->prefix}topspin_items.artist_id = {$artist_id}
 					{$WHERE_IN_TAGS}
 					{$WHERE_IN_OFFER_TYPE}
+				GROUP BY {$this->wpdb->prefix}topspin_items.id
 EOD;
 				$result = $this->wpdb->get_results($sql,ARRAY_A);
 				if($storeData['items_order']) {

@@ -5,7 +5,7 @@ Plugin URI: http://wordpress.org/extend/plugins/official-topspin-wordpress-plugi
 Description: Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages using the Topspin API
 Author: The Uprising Creative for Topspin Media
 Author URI: http://theuprisingcreative.com
-Version: 3.1.2
+Version: 3.1.3
 */
 
 ### This File
