@@ -12,9 +12,9 @@
  ?>
 
 <div class="topspin-featured-item">
-    <div class="topspin-item-image"><img src="<?=$featureditem['default_image'];?>" /></div>
-    <h2 class="topspin-item-title"><?=$featureditem['name'];?></h2>
-    <div class="topspin-item-desc"><?=$featureditem['description'];?></div>
-    <div class="topspin-item-price">Price: <?=$featureditem['symbol'];?><?=$featureditem['price'];?></div>
-    <div class="topspin-item-buy"><a class="topspin-buy" href="<?=$featureditem['offer_url'];?>">Buy</a></div>
+    <div class="topspin-item-image"><img src="<?php echo $featureditem['default_image'];?>" /></div>
+    <h2 class="topspin-item-title"><?php echo $featureditem['name'];?></h2>
+    <div class="topspin-item-desc"><?php echo $featureditem['description'];?></div>
+    <div class="topspin-item-price">Price: <?php echo $featureditem['symbol'];?><?php echo $featureditem['price'];?></div>
+    <div class="topspin-item-buy"><a class="topspin-buy" href="<?php echo $featureditem['offer_url'];?>">Buy</a></div>
 </div>

@@ -21,7 +21,7 @@
 ?>
 
 <?php if(count($storeitems)) : ?>
-<div id="topspin-store-<?=$storedata['id'];?>" class="topspin-store">
+<div id="topspin-store-<?php echo $storedata['id'];?>" class="topspin-store">
 <table class="topspin-simplified-item-listings">
 	<?php for($row=1;$row<=ceil(count($storeitems)/$storedata['grid_columns']);$row++) : ?>
 	<?php
@@ -31,9 +31,9 @@
 	<tr class="topspin-item-title">
 		<?php
 		for($col=1;$col<=$storedata['grid_columns'];$col++) : $key = ($row*$storedata['grid_columns'])-($storedata['grid_columns']-($col-1)); ?>
-		<td width="<?=floor(100/$storedata['grid_columns']);?>%">
+		<td width="<?php echo floor(100/$storedata['grid_columns']);?>%">
 			<?php if(isset($storeitems[$key])) : ?>
-			<h2 class="topspin-title-name"><?=$storeitems[$key]['name'];?></h2>
+			<h2 class="topspin-title-name"><?php echo $storeitems[$key]['name'];?></h2>
 			<?php endif; ?>
 		</td>
 		<?php endfor; ?>
@@ -41,16 +41,16 @@
 	<tr class="topspin-item-image">
 		<?php
 		for($col=1;$col<=$storedata['grid_columns'];$col++) : $key = ($row*$storedata['grid_columns'])-($storedata['grid_columns']-($col-1)); ?>
-		<td width="<?=floor(100/$storedata['grid_columns']);?>%">
+		<td width="<?php echo floor(100/$storedata['grid_columns']);?>%">
 		<?php if(isset($storeitems[$key])) : ?>
-			<a class="topspin-colorbox" href="#topspin-view-more-<?=$storeitems[$key]['id'];?>"><img src="<?=$storeitems[$key]['default_image'];?>" /></a>
-			<div id="topspin-view-more-<?=$storeitems[$key]['id']; ?>" class="topspin-view-more-canvas">
-				<div class="topspin-view-more-image"><img src="<?=$storeitems[$key]['default_image_large'];?>" /></div>
-				<h2 class="topspin-view-more-title"><?=$storeitems[$key]['name'];?></h2>
-				<div class="topspin-view-more-desc"><?=$storeitems[$key]['description'];?></div>
+			<a class="topspin-colorbox" href="#topspin-view-more-<?php echo $storeitems[$key]['id'];?>"><img src="<?php echo $storeitems[$key]['default_image'];?>" /></a>
+			<div id="topspin-view-more-<?php echo $storeitems[$key]['id']; ?>" class="topspin-view-more-canvas">
+				<div class="topspin-view-more-image"><img src="<?php echo $storeitems[$key]['default_image_large'];?>" /></div>
+				<h2 class="topspin-view-more-title"><?php echo $storeitems[$key]['name'];?></h2>
+				<div class="topspin-view-more-desc"><?php echo $storeitems[$key]['description'];?></div>
 				<div class="topspin-view-more-buy">
-					<a class="topspin-buy" href="<?=$storeitems[$key]['offer_url'];?>">Buy</a>
-					<div class="topspin-view-more-price">Price: <?=$storeitems[$key]['symbol'];?><?=$storeitems[$key]['price'];?></div>
+					<a class="topspin-buy" href="<?php echo $storeitems[$key]['offer_url'];?>">Buy</a>
+					<div class="topspin-view-more-price">Price: <?php echo $storeitems[$key]['symbol'];?><?php echo $storeitems[$key]['price'];?></div>
 				</div>
 			</div>
 		<?php endif; ?>
@@ -60,9 +60,9 @@
 	<tr class="topspin-item-price">
 		<?php
 		for($col=1;$col<=$storedata['grid_columns'];$col++) : $key = ($row*$storedata['grid_columns'])-($storedata['grid_columns']-($col-1)); ?>
-		<td width="<?=floor(100/$storedata['grid_columns']);?>%">
+		<td width="<?php echo floor(100/$storedata['grid_columns']);?>%">
 		<?php if(isset($storeitems[$key])) : ?>
-			Price: <?=$storeitems[$key]['symbol'];?><?=$storeitems[$key]['price'];?>
+			Price: <?php echo $storeitems[$key]['symbol'];?><?php echo $storeitems[$key]['price'];?>
 		<?php endif; ?>
 		</td>
 		<?php endfor; ?>
@@ -70,23 +70,23 @@
 	<tr class="topspin-item-buy">
 		<?php
 		for($col=1;$col<=$storedata['grid_columns'];$col++) : $key = ($row*$storedata['grid_columns'])-($storedata['grid_columns']-($col-1)); ?>
-		<td width="<?=floor(100/$storedata['grid_columns']);?>%">
+		<td width="<?php echo floor(100/$storedata['grid_columns']);?>%">
 		<?php if(isset($storeitems[$key])) : ?>
-		<a class="topspin-buy" href="<?=$storeitems[$key]['offer_url'];?>">Buy</a></td>
+		<a class="topspin-buy" href="<?php echo $storeitems[$key]['offer_url'];?>">Buy</a></td>
 		<?php endif; ?>
 		</td>
 		<?php endfor; ?>
 	</tr>
-	<tr class="topspin-spacer"><td colspan="<?=$storedata['grid_columns'];?>"></td></tr>
+	<tr class="topspin-spacer"><td colspan="<?php echo $storedata['grid_columns'];?>"></td></tr>
 	<?php endfor; ?>
 </table>
 
 <?php ## BEGIN PAGINATION
 if(!$storedata['show_all_items'] && $storedata['curr_page']<=$storedata['total_pages']) { ?>
    	<div class="topspin-pagination">
-   	Page <?=$storedata['curr_page'];?> of <?=$storedata['total_pages'];?>
-	<?php if($storedata['prev_page']) : ?><a class="topspin-prev" href="<?=$storedata['prev_page'];?>">Previous</a><?php endif; ?>
-	<?php if($storedata['next_page']) : ?><a class="topspin-next" href="<?=$storedata['next_page'];?>">Next</a><?php endif; ?>
+   	Page <?php echo $storedata['curr_page'];?> of <?php echo $storedata['total_pages'];?>
+	<?php if($storedata['prev_page']) : ?><a class="topspin-prev" href="<?php echo $storedata['prev_page'];?>">Previous</a><?php endif; ?>
+	<?php if($storedata['next_page']) : ?><a class="topspin-next" href="<?php echo $storedata['next_page'];?>">Next</a><?php endif; ?>
 	</div>
 <?php } ## END PAGINATION ?>
 

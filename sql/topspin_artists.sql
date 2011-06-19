@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `<?=$wpdb->prefix;?>topspin_artists` (
+CREATE TABLE IF NOT EXISTS `<?php echo $wpdb->prefix;?>topspin_artists` (
   `id` int(11) NOT NULL,
   `name` text NOT NULL,
   `avatar_image` text NOT NULL,
