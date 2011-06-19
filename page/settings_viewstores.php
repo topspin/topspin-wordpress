@@ -38,20 +38,20 @@ $storesList = $store->getStores();
         <?php if(count($storesList)) : ?>
         <tbody id="the-list">
         	<?php foreach($storesList as $storeItem) : ?>
-            <tr id="store-<?=$storeItem->store_id;?>" valign="top">
-            	<td class="store-id"><?=$storeItem->store_id;?></td>
+            <tr id="store-<?php echo $storeItem->store_id;?>" valign="top">
+            	<td class="store-id"><?php echo $storeItem->store_id;?></td>
             	<td class="store-title">
-                	<strong><a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?=$storeItem->store_id;?>"><?=$storeItem->post_title;?></a></strong>
+                	<strong><a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?php echo $storeItem->store_id;?>"><?php echo $storeItem->post_title;?></a></strong>
                     <div class="row-actions">
-                    	<span class="edit"><a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?=$storeItem->store_id;?>">Edit</a> |</span>
-                        <span class="trash"><a class="submitdelete" href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=delete&amp;id=<?=$storeItem->store_id;?>">Trash</a></span>
+                    	<span class="edit"><a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?php echo $storeItem->store_id;?>">Edit</a> |</span>
+                        <span class="trash"><a class="submitdelete" href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=delete&amp;id=<?php echo $storeItem->store_id;?>">Trash</a></span>
                     </div>
                 </td>
-                <td class="store-shortcode">[topspin_buy_buttons id=<?=$storeItem->store_id;?>]</td>
-                <td class="store-created-date"><?=date("F j, Y h:i:sa",strtotime($storeItem->created_date));?></td>
+                <td class="store-shortcode">[topspin_buy_buttons id=<?php echo $storeItem->store_id;?>]</td>
+                <td class="store-created-date"><?php echo date("F j, Y h:i:sa",strtotime($storeItem->created_date));?></td>
             	<td class="store-manage">
-					<a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?=$storeItem->store_id;?>">Edit</a> |
-					<a href="<?=get_permalink($storeItem->ID);?>" target="_blank">View</a>
+					<a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?php echo $storeItem->store_id;?>">Edit</a> |
+					<a href="<?php echo get_permalink($storeItem->ID);?>" target="_blank">View</a>
                 </td>
             </tr>
             <?php endforeach; ?>

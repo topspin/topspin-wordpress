@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `<?=$wpdb->prefix;?>topspin_stores` (
+CREATE TABLE IF NOT EXISTS `<?php echo $wpdb->prefix;?>topspin_stores` (
   `store_id` int(11) NOT NULL auto_increment,
   `post_id` int(11) NOT NULL,
   `status` varchar(50) NOT NULL,
