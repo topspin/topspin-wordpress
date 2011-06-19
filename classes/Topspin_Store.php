@@ -101,7 +101,7 @@ class Topspin_Store {
 					curl_close($ch);
 				} else {
 				  // get file without curl
-				  	$rawdata = file_get_contents(urlencode($url));
+				  	$rawdata = @file_get_contents(urlencode($url));
 				}
 
 				$fp = fopen($basefilepath,'x');
