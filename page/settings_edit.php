@@ -126,29 +126,29 @@ switch($action) {
 			<?php if(strlen($error)) : ?><div class="error settings-error"><p><strong><?php echo $error; ?></strong></p></div><?php break; endif; ?>
 			<?php if($success) : ?><div class="updated settings-error"><p><strong><?php echo $success; ?></strong></p></div><?php endif; ?>
 
-			<form name="topspin_edit_form" method="post" action="<?=$_SERVER['REQUEST_URI'];?>">
-			<input type="hidden" name="id" value="<?=(isset($storeData['id']))?$storeData['id']:0;?>" />
+			<form name="topspin_edit_form" method="post" action="<?php echo $_SERVER['REQUEST_URI'];?>">
+			<input type="hidden" name="id" value="<?php echo (isset($storeData['id']))?$storeData['id']:0;?>" />
 			<table class="form-table">
 				<tbody>
 					<tr valign="top">
 						<th scope="row"><label for="topspin_name">Store Name</label></th>
 						<td>
-							<input id="topspin_name" class="regular-text" type="text" value="<?=$storeData['name'];?>" name="name" />
-							<span class="description"><?php if($storeData['id']): ?>Shortcode: [topspin_buy_buttons id=<?=$storeData['id'];?>]<?php endif; ?></span>
+							<input id="topspin_name" class="regular-text" type="text" value="<?php echo $storeData['name'];?>" name="name" />
+							<span class="description"><?php if($storeData['id']): ?>Shortcode: [topspin_buy_buttons id=<?php echo $storeData['id'];?>]<?php endif; ?></span>
 						</td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="topspin_slug">Store Slug</label></th>
 						<td>
-							<input id="topspin_slug" class="regular-text" type="text" value="<?=$storeData['slug'];?>" name="slug" />
+							<input id="topspin_slug" class="regular-text" type="text" value="<?php echo $storeData['slug'];?>" name="slug" />
 							<span class="description">Leave field empty to automatically generate slug based on the store's name.</span>
 						</td>
 					</tr>
 					<tr valign="top">
 						<th scope="row"><label for="topspin_items_per_page">Items Per Page</label></th>
 						<td>
-							<input id="topspin_items_per_page" class="regular-text" type="text" value="<?=$storeData['items_per_page'];?>" name="items_per_page" /><br/>
-							<input id="topspin_show_all_items" name="show_all_items" type="checkbox" value="1" <?=($storeData['show_all_items'])?'checked="checked"':'';?> /> <label for="topspin_show_all_items">Show all items on one page</label>
+							<input id="topspin_items_per_page" class="regular-text" type="text" value="<?php echo $storeData['items_per_page'];?>" name="items_per_page" /><br/>
+							<input id="topspin_show_all_items" name="show_all_items" type="checkbox" value="1" <?php echo ($storeData['show_all_items'])?'checked="checked"':'';?> /> <label for="topspin_show_all_items">Show all items on one page</label>
 							<span class="description"></span>
 						</td>
 					</tr>
@@ -157,7 +157,7 @@ switch($action) {
 						<td>
 							<select id="topspin_grid_columns" name="grid_columns">
 								<?php for($i=1;$i<=5;$i++) : ?>
-								<option value="<?=$i;?>" <?=($i==$storeData['grid_columns'])?'selected="selected"':'';?>><?=$i;?></option>
+								<option value="<?php echo $i;?>" <?php echo ($i==$storeData['grid_columns'])?'selected="selected"':'';?>><?php echo $i;?></option>
 								<?php endfor; ?>
 							</select>
 							<span class="description">Specify how many columns to display.</span>
@@ -167,8 +167,8 @@ switch($action) {
 						<th scope="row"><label for="topspin_default_sorting">Default Product Sorting</label></th>
 						<td>
 							<select id="topspin_default_sorting" name="default_sorting">
-								<option value="alphabetical" <?=($storeData['default_sorting']=='alphabetical')?'selected="selected"':'';?>>Alphabetical</option>
-								<option value="chronological" <?=($storeData['default_sorting']=='chronological')?'selected="selected"':'';?>>Chronological</option>
+								<option value="alphabetical" <?php echo ($storeData['default_sorting']=='alphabetical')?'selected="selected"':'';?>>Alphabetical</option>
+								<option value="chronological" <?php echo ($storeData['default_sorting']=='chronological')?'selected="selected"':'';?>>Chronological</option>
 							</select>
 							<span class="description"></span>
 						</td>
@@ -179,7 +179,7 @@ switch($action) {
                         	<select id="topspin_default_sorting_by" name="default_sorting_by">
                             	<?php $sortByTypes = $store->getSortByTypes();
 								foreach($sortByTypes as $key=>$name) : ?>
-                                <option value="<?=$key;?>" <?=($key==$storeData['default_sorting_by'])?'selected="selected"':'';?>><?=$name;?></option>
+                                <option value="<?php echo $key;?>" <?php echo ($key==$storeData['default_sorting_by'])?'selected="selected"':'';?>><?php echo $name;?></option>
                                 <?php endforeach; ?>
                             </select>
                         </td>
@@ -198,9 +198,9 @@ switch($action) {
 							<ul id="topspin_offer_types" class="group-sortable">
 								<?php
 								foreach($storeData['offer_types'] as $type) : ?>
-								<li id="type-<?=$type['type'];?>" class="menu-item">
-									<input type="checkbox" name="offer_types[]" value="<?=$type['type'];?>" <?=($type['status'])?'checked="checked"':'';?> />
-									&nbsp;&nbsp;&nbsp;<span class="item-title"><?=$type['name'];?></span>
+								<li id="type-<?php echo $type['type'];?>" class="menu-item">
+									<input type="checkbox" name="offer_types[]" value="<?php echo $type['type'];?>" <?php echo ($type['status'])?'checked="checked"':'';?> />
+									&nbsp;&nbsp;&nbsp;<span class="item-title"><?php echo $type['name'];?></span>
 								</li>
 								<?php endforeach; ?>
 							</ul>
@@ -221,9 +221,9 @@ switch($action) {
 							<ul id="topspin_tags" class="group-sortable">
 								<?php
 								foreach($storeData['tags'] as $tag) : ?>
-								<li id="tag-<?=$tag['name'];?>" class="menu-item">
-									<input type="checkbox" name="tags[]" value="<?=$tag['name'];?>" <?=($tag['status'])?'checked="checked"':'';?> />
-									&nbsp;&nbsp;&nbsp;<span class="item-title"><?=ucfirst($tag['name']);?></span>
+								<li id="tag-<?php echo $tag['name'];?>" class="menu-item">
+									<input type="checkbox" name="tags[]" value="<?php echo $tag['name'];?>" <?php echo ($tag['status'])?'checked="checked"':'';?> />
+									&nbsp;&nbsp;&nbsp;<span class="item-title"><?php echo ucfirst($tag['name']);?></span>
 								</li>
 								<?php endforeach; ?>
 							</ul>
@@ -247,10 +247,10 @@ switch($action) {
 								<?php
 								$sortedItems = ($storeData['id']) ? $store->getStoreItems($storeData['id']) : $store->getFilteredItems($defaultOfferTypes,$defaultTags,TOPSPIN_ARTIST_ID);
                                 foreach($sortedItems as $item) : ?>
-                                <option value="<?=$item['id'];?>" <?=($item['id']==$storeData['featured_item'])?'selected="selected"':'';?>><?=$item['name'];?></option>
+                                <option value="<?php echo $item['id'];?>" <?php echo ($item['id']==$storeData['featured_item'])?'selected="selected"':'';?>><?php echo $item['name'];?></option>
                                 <?php endforeach; ?>
 							</select>
-                            <span class="description"><?php if($storeData['id']): ?>Shortcode: [topspin_featured_item id=<?=$storeData['id'];?>]<?php endif; ?></span>
+                            <span class="description"><?php if($storeData['id']): ?>Shortcode: [topspin_featured_item id=<?php echo $storeData['id'];?>]<?php endif; ?></span>
 						</td>
 					</tr>
 				</tbody>
@@ -270,15 +270,15 @@ switch($action) {
                                 if(count($sortedItems)) : ?>
                                     <?php foreach($sortedItems as $item) : ?>
                                     <?php $item['is_public'] = (isset($item['is_public']) && strlen($storeData['items_order'])) ? $item['is_public'] : 1; ?>
-                                    <li id="item-<?=$item['id'];?>:<?=($item['is_public'])?$item['is_public']:0;?>">
-                                    	<div class="item-offer-type"><?=$item['offer_type_name'];?></div>
-                                        <div class="item-canvas <?=($item['is_public'])?'':'faded';?>">
+                                    <li id="item-<?php echo $item['id'];?>:<?php echo ($item['is_public'])?$item['is_public']:0;?>">
+                                    	<div class="item-offer-type"><?php echo $item['offer_type_name'];?></div>
+                                        <div class="item-canvas <?php echo ($item['is_public'])?'':'faded';?>">
                                             <?php
                                             $campaign = unserialize($item['campaign']);
                                             $product = $campaign->product;
                                             ?>
-                                            <img src="<?=$item['default_image'];?>" width="150" alt="<?=$item['name'];?>" /><br/>
-                                            <?=$item['name'];?>
+                                            <img src="<?php echo $item['default_image'];?>" width="150" alt="<?php echo $item['name'];?>" /><br/>
+                                            <?php echo $item['name'];?>
                                         </div>
                                         <div class="item-hide">Hide</div>
                                     </li>
@@ -366,7 +366,7 @@ switch($action) {
 					
 					//Featured Items Empty
 					featuredOptions.empty();
-					var selectedFeaturedItem = <?=$storeData['featured_item'];?>;
+					var selectedFeaturedItem = <?php echo $storeData['featured_item'];?>;
 					var emptyOption = jQuery('<option />');
 					emptyOption
 						.val(0)

@@ -65,7 +65,7 @@ if($apiStatus) { $apiError = $apiStatus->error_detail; }
 
     <?php if($apiError) : ?><div class="error settings-error"><p><strong><?php echo $apiError; ?></strong></p></div><?php endif; ?>
 
-    <form name="topspin_form" method="post" action="<?=$_SERVER['REQUEST_URI'];?>">
+    <form name="topspin_form" method="post" action="<?php echo $_SERVER['REQUEST_URI'];?>">
     <input type="hidden" name="action" value="general_settings" />
 	<?php
 	$artistsList = $store->getArtistsList();
@@ -95,15 +95,15 @@ if($apiStatus) { $apiError = $apiStatus->error_detail; }
 					<select id="topspin_artist_id" name="topspin_artist_id">
 	                	<?php $selected_artist = $store->getSetting('topspin_artist_id');
 	                	foreach($artistsList as $artist) : $artist_selected=($selected_artist==$artist['id'])?'selected="selected"':''; ?>
-	                		<option value="<?=$artist['id'];?>" <?=$artist_selected;?>><?=$artist['name'];?> (<?=$artist['id'];?>)</option>
+	                		<option value="<?php echo $artist['id'];?>" <?php echo $artist_selected;?>><?php echo $artist['name'];?> (<?php echo $artist['id'];?>)</option>
 	                	<?php endforeach; ?>
 	                </select>
                     <div class="description">
 	                    PLEASE NOTE: You have multiple Artist IDs associated with your API user / key combination.  You can easily select which artist to use for your store, however if you change the Artist after you have already created Store Pages, those pages will become blank since the old Artist's Offers will no longer exist in the plugin's cache.  You'll need to edit those pages and rebuild the Offers. 
                     </div>
                     <?php elseif($totalArtists && $totalArtists==1) : ?>
-                   	<input type="hidden" name="topspin_artist_id" value="<?=$artistsList[0]['id'];?>" />
-                    <input class="artist-name regular-text" type="text" disabled="disabled" value="<?=$artistsList[0]['name'];?> (<?=$artistsList[0]['id'];?>)" />
+                   	<input type="hidden" name="topspin_artist_id" value="<?php echo $artistsList[0]['id'];?>" />
+                    <input class="artist-name regular-text" type="text" disabled="disabled" value="<?php echo $artistsList[0]['name'];?> (<?php echo $artistsList[0]['id'];?>)" />
 					<?php endif; ?>
                 </td>
             </tr>
@@ -114,15 +114,15 @@ if($apiStatus) { $apiError = $apiStatus->error_detail; }
                 	$selectedTemplate = $store->getSetting('topspin_template_mode');
                 	?>
                     <select id="topspin_template_mode" name="topspin_template_mode">
-                    	<option value="simplified" <?=($selectedTemplate=='simplified')?'selected="selected"':'';?>>Simplified</option>
-                    	<option value="standard" <?=($selectedTemplate=='standard')?'selected="selected"':'';?>>Standard</option>
+                    	<option value="simplified" <?php echo ($selectedTemplate=='simplified')?'selected="selected"':'';?>>Simplified</option>
+                    	<option value="standard" <?php echo ($selectedTemplate=='standard')?'selected="selected"':'';?>>Standard</option>
                     </select>
                     <div class="description">
                     	<?php
                     	$simplified_display = ($selectedTemplate=='simplified') ? '' : 'hide';
                     	$standard_display = ($selectedTemplate=='standard') ? '' : 'hide';
                     	?>
-                    	<div class="template-simplified <?=$simplified_display;?>">
+                    	<div class="template-simplified <?php echo $simplified_display;?>">
 							<p>
 								<strong><em>This Simplified Template is designed to give the best out-of-the box store layout if you prefer to do little or no customization.</em></strong>
 								It uses HTML Tables to construct the Store Grid and therefore is less flexible for developers who wish to heavily customize the store's output. 
@@ -134,7 +134,7 @@ if($apiStatus) { $apiError = $apiStatus->error_detail; }
 							</p>
 							<p><strong><em>PLEASE NOTE: Do NOT edit the files directly in the Plugin's /templates/ folder!  When you upgrade, all of your customizations will be lost if you do!</em></strong></p>
 						</div>
-                    	<div class="template-standard <?=$standard_display;?>">
+                    	<div class="template-standard <?php echo $standard_display;?>">
                     		<p>
                     			<strong><em>This Standard Template is designed as a skeleton framework with the Developer in mind, allowing for the most flexibility for template customizations.</em></strong>
                     			It uses floating HTML Divs to construct the Store Grid rather than Tables, making it easier to manipulate.
@@ -159,7 +159,7 @@ if($apiStatus) { $apiError = $apiStatus->error_detail; }
 
     <h3>Database Cache</h3>
     <table class="form-table">
-		<form name="topspin_form_rebuild_cache" method="post" action="<?=$_SERVER['REQUEST_URI'];?>">
+		<form name="topspin_form_rebuild_cache" method="post" action="<?php echo $_SERVER['REQUEST_URI'];?>">
 	    <input type="hidden" name="action" value="rebuild_cache" />
     	<tbody>
         	<tr valign="top">
@@ -171,7 +171,7 @@ if($apiStatus) { $apiError = $apiStatus->error_detail; }
             </tr>
         </tbody>
 		</form>
-		<form name="topspin_form_rerun_upgrades" method="post" action="<?=$_SERVER['REQUEST_URI'];?>">
+		<form name="topspin_form_rerun_upgrades" method="post" action="<?php echo $_SERVER['REQUEST_URI'];?>">
 	    <input type="hidden" name="action" value="rerun_upgrades" />
     	<tbody>
         	<tr valign="top">

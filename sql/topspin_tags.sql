@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `<?=$wpdb->prefix;?>topspin_tags` (
+CREATE TABLE IF NOT EXISTS `<?php echo $wpdb->prefix;?>topspin_tags` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`)
