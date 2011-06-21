@@ -46,7 +46,6 @@ This plugin will not automatically upgrade the v2.0 Topspin Wordpress Plugins - 
 = Requirements =
 * Topspin Artist Account Required.  Please visit: http://topspinmedia.com to sign up
 * PHP 5.0 or higher
-* PHP cUrl (if unsure, please check with your server administrator.)
 
 Plugin developed for Topspin Media by [The Uprising Creative](http://theuprisingcreative.com)
 
