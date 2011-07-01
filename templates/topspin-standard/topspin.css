@@ -68,7 +68,9 @@ body div#colorbox, body div#cboxOverlay, body div#cboxWrapper { z-index:4000; }
 /* TOPSPIN ITEM LISTINGS */
 
 ul.topspin-item-listings {
-	list-style-type:none;	
+	list-style-type:none;
+	clear:both;
+	overflow:auto;
 }
 ul.topspin-store-row {
 	list-style:none;

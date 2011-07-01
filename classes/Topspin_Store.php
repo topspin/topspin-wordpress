@@ -3,11 +3,13 @@
 /*
  *	Class:				Topspin Store
  *
- *	Last Modified:		April 12, 2011
+ *	Last Modified:		June 30, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-06-30
+ 		- updated getItemDefaultImage() default size parameter to "large"
  *	2011-04-12
  		- updated getStoreItems()
  			added GROUP BY item's ID in manual sorting query string
@@ -89,15 +91,21 @@ class Topspin_Store {
 				mkdir($upload_dir["basedir"] . "/topspin");
 			$basefilepath = $upload_dir["basedir"] . "/topspin/" . md5($url) . ".jpg";
 			if (!file_exists($basefilepath)) {
-				$ch = curl_init();
+				// Test if curl is installed, or not like on debian
+				if (function_exists('curl_init') ) {
+					$ch = curl_init();
 
-				curl_setopt($ch, CURLOPT_URL, $url);
-				curl_setopt($ch, CURLOPT_HEADER, 0);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-				curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-				$rawdata = curl_exec($ch);
-				curl_close($ch);
-	
+					curl_setopt($ch, CURLOPT_URL, $url);
+					curl_setopt($ch, CURLOPT_HEADER, 0);
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+					curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+					$rawdata = curl_exec($ch);
+					curl_close($ch);
+				} else {
+				  // get file without curl
+				  	$rawdata = file_get_contents(urlencode($url));
+				}
+
 				$fp = fopen($basefilepath,'x');
 				fwrite($fp, $rawdata);
 				fclose($fp);
@@ -185,45 +193,67 @@ class Topspin_Store {
 				}
 			}
 		}
-		$ch = curl_init();
-		curl_setopt($ch,CURLOPT_URL,$url);
-		curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-		curl_setopt($ch,CURLOPT_USERPWD,$this->api_username.':'.$this->api_key);
-		curl_setopt($ch,CURLOPT_HTTPAUTH,CURLAUTH_ANY);
-		if($post) {
-			curl_setopt($ch,CURLOPT_POST,true);
-			curl_setopt($ch,CURLOPT_POSTFIELDS,$post_args);
-		}
-		$res = curl_exec($ch);
-		$res_info = curl_getinfo($ch);
-		$res_error = curl_error($ch);
-		## CURL ERROR
-		if($res_error) {
-			$ts = $res_error;
-			$res = '{"error_detail":"'.$ts.'","request_url":"'.$url.'"}';
-		}
-		else {
-			## RESPONSE ERROR
-			if($res_info['http_code']!=200) {
-				$ts = '';
-				switch($res_info['http_code']) {
-					case '401':
-						$ts = '401 Unauthorized request. Please check your API username and key.';
-						break;
-					case '404':
-						$ts = '404 Target not found.';
-						break;
-					case '500':
-						$ts = '500 Internal server error.';
-						break;
-					default:
-						$ts = $res['http_code'].' Unknown error.';
-						break;
+		// Use curl if installed on the system
+		if (function_exists('curl_init') ) {
+			$ch = curl_init();
+			curl_setopt($ch,CURLOPT_URL,$url);
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+			curl_setopt($ch,CURLOPT_USERPWD,$this->api_username.':'.$this->api_key);
+			curl_setopt($ch,CURLOPT_HTTPAUTH,CURLAUTH_ANY);
+			if($post) {
+				curl_setopt($ch,CURLOPT_POST,true);
+				curl_setopt($ch,CURLOPT_POSTFIELDS,$post_args);
+			}
+			$res = curl_exec($ch);
+			$res_info = curl_getinfo($ch);
+			$res_error = curl_error($ch);
+			## CURL ERROR
+			if($res_error) {
+				$ts = $res_error;
+				$res = '{"error_detail":"'.$ts.'","request_url":"'.$url.'"}';
+			}
+			else {
+				## RESPONSE ERROR
+				if($res_info['http_code']!=200) {
+					$ts = '';
+					switch($res_info['http_code']) {
+						case '401':
+							$ts = '401 Unauthorized request. Please check your API username and key.';
+							break;
+						case '404':
+							$ts = '404 Target not found.';
+							break;
+						case '500':
+							$ts = '500 Internal server error.';
+							break;
+						default:
+							$ts = $res['http_code'].' Unknown error.';
+							break;
+					}
+					$res = '{"error_detail":"'.$ts.'","request_url":"'.$url.'"}';
 				}
+			}
+			curl_close($ch);
+		} else {
+			$context = @stream_context_create( array(
+				'http' => array(
+					'method' => 'POST',
+					'header' => "Authorization: Basic " .
+						base64_encode("$this->api_username:$this->api_key").
+						"\r\nContent-type: application/x-www-form-urlencoded\r\n",
+					'content' => $post_args,
+				)
+			));
+			// get file without curl
+	  		$res = file_get_contents(urlencode($url), false, $context);
+			if ( $res === flase ) {
+				// handle errors
+				$ts = $http_response_header[0];
+				if ( ereg( '^HTTP\\[0-9]+\.[0-9]+ 401 .*', $ts ) )
+					$ts = '401 Unauthorized request. Please check your API username and key.';
 				$res = '{"error_detail":"'.$ts.'","request_url":"'.$url.'"}';
 			}
 		}
-		curl_close($ch);
 		if($res) { return $res; }
 	}
 	
@@ -1088,6 +1118,7 @@ EOD;
 				GROUP BY {$this->wpdb->prefix}topspin_items.id
 EOD;
 				$result = $this->wpdb->get_results($sql,ARRAY_A);
+				## If items order exists (editing)
 				if($storeData['items_order']) {
 					## Global Items ID array
 					$itemsIDs = array();
@@ -1120,8 +1151,10 @@ EOD;
 						}
 					}
 				}
+				## Else doesn't exist (new store)
 				else { $sortedItems = $result; }
 		}
+		## Retrieve the default images of the final items array
 		foreach($sortedItems as $key=>$item) {
 			##	Add Images
 			$sortedItems[$key]['images'] = $this->getItemImages($item['id']);
@@ -1310,7 +1343,7 @@ EOD;
 		return $this->wpdb->get_results($this->wpdb->prepare($sql,array($item_id)),ARRAY_A);
 	}
 	
-	public function getItemDefaultImage($item_id,$poster_image_source,$image_size='medium') {
+	public function getItemDefaultImage($item_id,$poster_image_source,$image_size='large') {
 		##	Retrieves the item's default image
 		##
 		##	PARAMETERS
