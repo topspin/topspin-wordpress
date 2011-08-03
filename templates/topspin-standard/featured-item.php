@@ -12,9 +12,34 @@
  ?>
 
 <div class="topspin-featured-item">
-    <div class="topspin-item-image"><img src="<?php echo $featureditem['default_image'];?>" /></div>
-    <h2 class="topspin-item-title"><?php echo $featureditem['name'];?></h2>
+    <div class="topspin-item-image"><a class="topspin-view-item" href="#!/<?php echo $featureditem['id']; ?>"><img src="<?php echo $featureditem['default_image'];?>" /></a></div>
+    <h2 class="topspin-item-title"><a class="topspin-view-item" href="#!/<?php echo $featureditem['id']; ?>"><?php echo $featureditem['name'];?></a></h2>
     <div class="topspin-item-desc"><?php echo $featureditem['description'];?></div>
     <div class="topspin-item-price">Price: <?php echo $featureditem['symbol'];?><?php echo $featureditem['price'];?></div>
     <div class="topspin-item-buy"><a class="topspin-buy" href="<?php echo $featureditem['offer_url'];?>">Buy</a></div>
+	<div id="topspin-view-more-<?php echo $featureditem['id']; ?>" class="topspin-view-more-canvas">
+		<div class="topspin-view-more-image">
+			<div class="topspin-view-more-image-default">
+				<div class="topspin-view-more-image-default-cell">
+					<a href="#!/<?php echo $featureditem['id']; ?>"><img src="<?php echo $featureditem['default_image_large'];?>" /></a>
+				</div>
+			</div>
+		</div>
+	    <h2 class="topspin-view-more-title"><?php echo $featureditem['name'];?></h2>
+	    <div class="topspin-view-more-desc"><?php echo $featureditem['description'];?></div>
+		<?php $totalImages = count($featureditem['images']);
+		if($totalImages>1) : ?>
+		<ul class="topspin-view-more-image-pager">
+			<?php foreach($featureditem['images'] as $image) : ?>
+			<li class="topspin-view-more-image-pager-item">
+				<div class="topspin-view-more-image-pager-item-cell"><a href="#"><img src="<?php echo $image['large_url']; ?>" /></a></div>
+			</li>
+			<?php endforeach; ?>
+		</ul>
+		<?php endif; ?>
+	    <div class="topspin-view-more-buy">
+	    	<a class="topspin-buy" href="<?php echo $featureditem['offer_url'];?>">Buy</a>
+	        <div class="topspin-view-more-price">Price: <?php echo $featureditem['symbol'];?><?php echo $featureditem['price'];?></div>
+			</div>
+	</div>
 </div>

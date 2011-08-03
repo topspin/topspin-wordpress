@@ -1,11 +1,13 @@
 <?php
 
 /*
- *	Last Modified:		April 11, 2011
+ *	Last Modified:		August 1, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-08-01
+ 		- Updated saving to delete all currently created store if the artist ID is switched.
  *	2011-04-11
  		- Added new button for force rerun upgrade scripts
  *	2011-04-06
@@ -34,7 +36,16 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
 			case "general_settings":
 			default:
 				unset($_POST['action']);
-				
+
+				## Empty all stores and store settings if different artist ID is set
+				if($_POST['topspin_artist_id']!=$store->getSetting('topspin_artist_id')) {
+					$stores = $store->getStores('all');
+					foreach($stores as $_store) {
+						$store->deleteStore($_store->store_id,1);
+						wp_delete_post($_store->ID,1);	//deletes the page from the posts table
+					}
+				}
+
 				## Set Each Option
 				foreach($_POST as $key=>$value) {
 					$store->setSetting($key,$value); //Update all posted settings on this page.

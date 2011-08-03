@@ -1,16 +1,18 @@
 <?php
 /*
- *	Last Modified:		June 30, 2011
+ *	Last Modified:		August 1, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-07-26
+ 		- included 2 new file "topspin_db.php", and "topspin_template_tags.php"
  *	2011-04-06
  		- updated the $store->setAPICredentials() call method and reordered topspin api constants
  */
 
 ### Pathing Constants
-define('TOPSPIN_VERSION','3.1.3.5.6');
+define('TOPSPIN_VERSION','3.2');
 define('TOPSPIN_PLUGIN_PATH',dirname(__FILE__));
 define('TOPSPIN_PLUGIN_URL',WP_PLUGIN_URL.'/'.basename(TOPSPIN_PLUGIN_PATH));
 define('TOPSPIN_CURRENT_THEME_PATH',get_theme_root().'/'.get_stylesheet());
@@ -32,9 +34,11 @@ define('TOPSPIN_API_KEY',$store->getSetting('topspin_api_key'));
 $store->setAPICredentials(TOPSPIN_ARTIST_ID,TOPSPIN_API_USERNAME,TOPSPIN_API_KEY);
 
 ### Include Plugin Files
+require_once('topspin_db.php');
 require_once('topspin_activation.php');
 require_once('topspin_upgrade.php');
 require_once('topspin_cron.php');
+require_once('topspin_template_tags.php');
 require_once('topspin_shortcodes.php');
 require_once('topspin_ajax.php');
 

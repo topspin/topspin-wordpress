@@ -10,7 +10,19 @@ table.topspin-stores-list {
 table.topspin-stores-list th.id-column {
 	width:50px;
 }
+table.topspin-stores-list th.thumb-column {
+	width:80px;
+}
 table.topspin-stores-list th.title-column {
+}
+table.topspin-stores-list th.price-column {
+	width:75px;
+}
+table.topspin-stores-list th.offertype-column {
+	width:150px;
+}
+table.topspin-stores-list th.tags-column {
+	width:150px;
 }
 table.topspin-stores-list th.shortcode-column {
 	width:200px;
@@ -31,9 +43,11 @@ ul.group-sortable li.menu-item {
 	padding:5px;
 	background-color:rgb(238, 238, 238);
 }
-ul.item-sortable {
+ul.item-sortable,
+ul.item-listing {
 }
-ul.item-sortable li {
+ul.item-sortable li,
+ul.item-listing li {
 	float:left;
 	width:150px;
 	height:200px;
@@ -45,18 +59,49 @@ ul.item-sortable li {
 	background-color:#fff;
 	cursor:move;
 }
-ul.item-sortable li .item-offer-type {
+ul.item-listing li {
+	cursor:default;
+}
+ul.item-sortable li .item-offer-type,
+ul.item-listing li .item-offer-type {
 	background-color:#000;
 	color:#fff;
 	padding:6px;
 	text-align:left;
 }
-ul.item-sortable li .item-canvas {
+ul.item-sortable li .item-canvas,
+ul.item-listing li .item-canvas {
+	width:150px;
+	height:172px;
+	overflow:hidden;
 }
-ul.item-sortable li .faded {
+	ul.item-sortable li .item-canvas-cell,
+	ul.item-listing li .item-canvas-cell {
+		display:table-cell;
+		vertical-align:middle;
+		text-align:center;
+		width:150px;
+		height:172px;
+	}
+ul.item-sortable li .item-canvas {
+	height:150px;
+}
+	ul.item-sortable li .item-canvas .item-canvas-cell {
+		height:150px;
+	}
+ul.item-sortable li .item-name,
+ul.item-listing li .item-name {
+	height:30px;
+	line-height:15px;
+	text-align:center;
+	font-size:12px;
+}
+ul.item-sortable li .faded,
+ul.item-listing li .faded {
 	opacity:0.3;
 }
-ul.item-sortable li .item-hide {
+ul.item-sortable li .item-hide,
+ul.item-listing li .item-hide {
 	position:absolute;
 	top:5px;
 	right:5px;

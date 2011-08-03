@@ -2,11 +2,15 @@
 
 /*
  *
- *	Last Modified:			April 11, 2011
+ *	Last Modified:			August 2, 2011
  *
  *	--------------------------------------
  *	Change Log
  *	--------------------------------------
+ *	2011-08-02
+ 		- Added previewing of filtered items
+ *	2011-08-01
+ 		- Updated form to allow for multiple featured items selection
  *	2011-04-11
  		- Fixed/updated error messages
  		- Updated thumbnails to pull from 'default_image' rather than 'poster_image'
@@ -40,7 +44,7 @@ $storeData = array(
 	'default_sorting' => 'alphabetical',
 	'default_sorting_by' => 'tag',
 	'items_order' => '',
-	'featured_item' => 0,
+	'featured_item' => array(),
 	'offer_types' => $store->getOfferTypes(),
 	'tags' => $store->getTagList()
 );
@@ -50,7 +54,6 @@ $defaultOfferTypes = array();
 $defaultTags = array();
 foreach($storeData['offer_types'] as $key=>$offer_type) { array_push($defaultOfferTypes,$offer_type['type']); }
 foreach($storeData['tags'] as $key=>$tag) { array_push($defaultTags,$tag['name']); }
-
 
 ### Retrieve Store Data
 if(isset($_GET['id'])) {
@@ -235,22 +238,80 @@ switch($action) {
             
             <hr/>
             
-            <h3>Featured Item</h3>
+            <div id="topspin-preview-sorting">
+	            <h3>Preview</h3>
+	            
+	            <table id="topspin-preview-table" class="form-table">
+	            	<tbody>
+	            		<tr>
+	            			<th scope="row"><label>Items</label></th>
+	            			<td>
+	                            <ul id="topspin-preview-item-listing" class="item-listing">
+		                        <?php if(count($sortedItems)) : ?>
+		                            <?php foreach($sortedItems as $item) : ?>
+		                            <li id="preview-item-<?php echo $item['id'];?>">
+		                                <div class="item-canvas">
+		                                    <div class="item-canvas-cell">
+			                                    <?php
+			                                    $campaign = unserialize($item['campaign']);
+			                                    $product = $campaign->product;
+			                                    ?><img src="<?php echo $item['default_image'];?>" width="150" alt="<?php echo $item['name'];?>" /><br/>
+			                                    <?php echo $item['name'];?>
+		                                    </div>
+		                                </div>
+		                            </li>
+		                            <?php endforeach; ?>
+		                        <?php else : ?>
+	                        		<li>There are no items to be displayed.</li>
+		                        <?php endif; ?>
+	                           	</ul>
+	            			</td>
+	            		</tr>
+	            	</tbody>
+	            </table>
+	            
+	            <hr/>
+			</div>
+            
+            <h3>
+            	Featured Item
+            	<span class="description"><input class="topspin-add-new-featured-item button" type="button" value="Add another" /></span>
+            	<span class="description"><?php if($storeData['id']): ?>Shortcode: [topspin_featured_item id=<?php echo $storeData['id'];?>]<?php endif; ?></span>
+            </h3>
 
-            <table class="form-table">
+			<?php //Retrieve the sorted/filtered store items
+	        $sortedItems = ($storeData['id']) ? $store->getStoreItems($storeData['id']) : $store->getFilteredItems($defaultOfferTypes,$defaultTags,TOPSPIN_ARTIST_ID);
+	        ?>
+
+            <table id="topspin-featured-items-table" class="form-table">
 				<tbody>
                 	<tr>
 						<th scope="row"><label for="topspin_featured_item">Featured Item</label></th>
-						<td>
-                        	<select id="topspin_featured_item" name="featured_item">
-                            	<option value="0">None</option>
-								<?php
-								$sortedItems = ($storeData['id']) ? $store->getStoreItems($storeData['id']) : $store->getFilteredItems($defaultOfferTypes,$defaultTags,TOPSPIN_ARTIST_ID);
-                                foreach($sortedItems as $item) : ?>
-                                <option value="<?php echo $item['id'];?>" <?php echo ($item['id']==$storeData['featured_item'])?'selected="selected"':'';?>><?php echo $item['name'];?></option>
-                                <?php endforeach; ?>
-							</select>
-                            <span class="description"><?php if($storeData['id']): ?>Shortcode: [topspin_featured_item id=<?php echo $storeData['id'];?>]<?php endif; ?></span>
+						<td class="topspin-featured-item-selectors">
+                            <?php //Retrieve all current featured items
+                            if(count($storeData['featured_item'])) : ?>
+                            	<?php foreach($storeData['featured_item'] as $featuredItem) : ?>
+									<div>
+										<select class="topspin_featured_items" name="featured_item[]">
+			                            	<option value="0">None</option>
+			                            	<?php //Display new featured item selector
+			                                foreach($sortedItems as $item) : ?>
+			                                <option value="<?php echo $item['id'];?>" <?php echo ($item['id']==$featuredItem['id'])?'selected="selected"':'';?>><?php echo $item['name'];?></option>
+			                                <?php endforeach; ?>
+										</select>
+									</div>
+                            	<?php endforeach; ?>
+                            <?php endif; ?>
+                            
+                            <div>
+	                        	<select class="topspin_featured_items" name="featured_item[]">
+	                            	<option value="0">None</option>
+	                            	<?php //Display new featured item selector
+	                                foreach($sortedItems as $item) : ?>
+	                                <option value="<?php echo $item['id'];?>"><?php echo $item['name'];?></option>
+	                                <?php endforeach; ?>
+								</select>
+                            </div>
 						</td>
 					</tr>
 				</tbody>
@@ -265,9 +326,7 @@ switch($action) {
                         <tr valign="top">
                             <td colspan="2">
                                 <ul id="topspin-manual-item-sorting" class="item-sortable">
-                                <?php
-								$sortedItems = ($storeData['id']) ? $store->getStoreItems($storeData['id']) : $store->getFilteredItems($defaultOfferTypes,$defaultTags,TOPSPIN_ARTIST_ID);
-                                if(count($sortedItems)) : ?>
+                                <?php if(count($sortedItems)) : ?>
                                     <?php foreach($sortedItems as $item) : ?>
                                     <?php $item['is_public'] = (isset($item['is_public']) && strlen($storeData['items_order'])) ? $item['is_public'] : 1; ?>
                                     <li id="item-<?php echo $item['id'];?>:<?php echo ($item['is_public'])?$item['is_public']:0;?>">
@@ -299,7 +358,7 @@ switch($action) {
 		</div>
 
 		<script type="text/javascript" language="javascript">
-		
+
 		var updateItemsOrder = function() {
 			var aOrder = new Array();
 			var containers = jQuery('ul.item-sortable > li');
@@ -342,12 +401,154 @@ switch($action) {
 			return tags;
 		};
 		
+		//Adds a new featured item selector
+		var addNewFeaturedItem = function() {
+			var newDiv = jQuery('<div />');
+			var offer_types = getCheckedOfferTypes();
+			var tags = getCheckedTags();
+			jQuery.ajax({
+				url : ajaxurl,
+				data : {
+					action : 'topspin_get_items',
+					offer_types : offer_types,
+					tags : tags
+				},
+				success : function(ret) {
+					var json = jQuery.parseJSON(ret);
+					var featuredItems = jQuery('<select />');
+					featuredItems
+						.attr('name','featured_item[]')
+						.addClass('topspin_featured_items')
+						.appendTo(newDiv);
+					var emptyOption = jQuery('<option />');
+					emptyOption
+						.val(0)
+						.html('None')
+						.appendTo(featuredItems);
+					//Featured Items Append
+					jQuery(json).each(function(key,data) {
+						var option = jQuery('<option />');
+						option
+							.val(data.id)
+							.html(data.name)
+							.appendTo(featuredItems);
+					});
+					newDiv.appendTo(jQuery('#topspin-featured-items-table .topspin-featured-item-selectors'));
+				}
+			});
+		};
+		jQuery('.topspin-add-new-featured-item').live('click',function(e) {
+			addNewFeaturedItem();
+		});
+
+		// Updates the Preview Display
+		var updatePreviewDisplay = function(json) {
+			var previewItems = jQuery('#topspin-preview-item-listing');
+			var sortBy = jQuery('#topspin_default_sorting_by option:selected').val();
+			//Preview Items Empty
+			previewItems.empty();
+
+			//Get Tags Order
+			var sortSelector = '';
+			var sortOrder = new Array();
+			switch(sortBy) {
+				case "tag":
+					sortSelector = 'input[name="tags[]"]';
+					break;
+				case "offertype":
+					sortSelector = 'input[name="offer_types[]"]';
+					break;
+			}
+			jQuery(sortSelector).each(function(idx,el) {
+				sortOrder.push(jQuery(el).val());
+			});
+
+			//Sort Objects
+			var addedIDs = new Array();
+			var sortedJson = new Array();
+			jQuery.each(sortOrder,function(sortKey,sortName) {
+				jQuery.each(json,function(itemKey,itemData) {
+					switch(sortBy) {
+						case 'tag':
+							if(itemData.tag_name==sortName) {
+								addedIDs.push(itemData.id);
+								sortedJson.push(itemData);
+							}
+							break;
+						case 'offertype':
+							if(itemData.offer_type==sortName) {
+								addedIDs.push(itemData.id);
+								sortedJson.push(itemData);
+							}
+							break;
+					}
+				});
+			});
+
+			//Add the rest of the items (if nothing is checked)
+			switch(sortBy) {
+				case 'tag':
+					var checkedTags = jQuery('input[name="tags[]"]:checked');
+					if(!checkedTags.length) {
+						jQuery.each(json,function(itemKey,itemData) {
+							if(addedIDs.indexOf(itemData.id)==-1) {
+								addedIDs.push(itemData.id);
+								sortedJson.push(itemData);
+							}
+						});
+					}
+					break;
+				case 'offertype':
+					var checkedOfferTypes = jQuery('input[name="offer_types[]"]:checked');
+					if(!checkedOfferTypes.length) {
+						jQuery.each(json,function(itemKey,itemData) {
+							if(addedIDs.indexOf(itemData.id)==-1) {
+								addedIDs.push(itemData.id);
+								sortedJson.push(itemData);
+							}
+						});
+					}
+					break;
+			}
+			
+			console.log(addedIDs);
+
+
+			//Create DOM
+			jQuery(sortedJson).each(function(key,data) {
+				//Items Append
+				var li = jQuery('<li />');
+				li
+					.attr('id','preview-item-'+data.id);
+				var canvas = jQuery('<div />');
+				canvas
+					.addClass('item-canvas')
+					.appendTo(li);
+				var canvasCell = jQuery('<div />');
+				canvasCell
+					.addClass('item-canvas-cell')
+					.appendTo(canvas);
+				var img = jQuery('<img />')
+				img
+					.attr('src',data.default_image)
+					.attr('width',150)
+					.attr('alt',data.name)
+					.appendTo(canvasCell);
+				var name = jQuery('<div />');
+				name
+					.addClass('item-name')
+					.html(data.name)
+					.appendTo(li);
+				li.appendTo(previewItems);
+			});
+		};
+
 		// Updates the Items Display
 		var updateItemDisplay = function() {
 			// Begin Disable AJAX Controls
-			var featuredOptions = jQuery('#topspin_featured_item');
+			var featuredItems = jQuery('.topspin_featured_items');
 			jQuery("input[name='offer_types[]'], input[name='tags[]']").attr('disabled','disabled');
-			featuredOptions.attr('disabled','disabled');
+			featuredItems.attr('disabled','disabled');
 
 			var manualItems = jQuery('#topspin-manual-item-sorting');
 			
@@ -363,27 +564,35 @@ switch($action) {
 				},
 				success : function(ret) {
 					var json = jQuery.parseJSON(ret);
-					
+					updatePreviewDisplay(json);
+
 					//Featured Items Empty
-					featuredOptions.empty();
-					var selectedFeaturedItem = <?php echo $storeData['featured_item'];?>;
+					featuredItems.empty();
+
+					var selectedFeaturedItems = new Array();
+					<?php foreach($storeData['featured_item'] as $featuredItem) : ?>
+					selectedFeaturedItems.push('<?php echo $featuredItem['id']; ?>');
+					<?php endforeach; ?>
+
 					var emptyOption = jQuery('<option />');
 					emptyOption
 						.val(0)
 						.html('None')
-						.appendTo(featuredOptions);
+						.appendTo(featuredItems);
 
 					//Manual Items Empty
 					manualItems.empty();
 
 					jQuery(json).each(function(key,data) {
 						//Featured Items Append
-						var option = jQuery('<option />');
-						option
-							.val(data.id)
-							.html(data.name)
-							.appendTo(featuredOptions);
-						if(selectedFeaturedItem==data.id) { option.attr('selected','selected'); }
+						featuredItems.each(function(fidx,fel) {
+							var option = jQuery('<option />');
+							option
+								.val(data.id)
+								.html(data.name)
+								.appendTo(fel);
+							if(selectedFeaturedItems[fidx]==data.id) { option.attr('selected','selected'); }
+						});
 
 						//Manual Items Append
 						var li = jQuery('<li />');
@@ -398,13 +607,21 @@ switch($action) {
 						canvas
 							.addClass('item-canvas')
 							.appendTo(li);
+						var canvasCell = jQuery('<div />')
+						canvasCell
+							.addClass('item-canvas-cell')
+							.appendTo(canvas);
 						var img = jQuery('<img />')
 						img
 							.attr('src',data.default_image)
 							.attr('width',150)
 							.attr('alt',data.name)
-							.appendTo(canvas);
-						canvas.append('<br/>'+data.name);
+							.appendTo(canvasCell);
+						var name = jQuery('<div />')
+						name
+							.addClass('item-name')
+							.html(data.name)
+							.appendTo(li);
 						var hide = jQuery('<div />')
 						hide
 							.addClass('item-hide')
@@ -417,7 +634,7 @@ switch($action) {
 				complete : function() {
 					// Renabled AJAX Controls
 					jQuery("input[name='offer_types[]'], input[name='tags[]']").removeAttr('disabled');
-					featuredOptions.removeAttr('disabled');
+					featuredItems.removeAttr('disabled');
 					updateItemsOrder();
 				}
 			});
@@ -426,9 +643,11 @@ switch($action) {
 		var toggleManualSorting = function() {
 			if(jQuery('option:selected',this).val()=='manual') {
 				jQuery('#topspin_manual_sorting').fadeIn();
+				jQuery('#topspin-preview-sorting').fadeOut();
 			}
 			else {
 				jQuery('#topspin_manual_sorting').fadeOut();
+				jQuery('#topspin-preview-sorting').fadeIn();
 			}
 		};
 
@@ -442,11 +661,37 @@ switch($action) {
 			$('select#topspin_default_sorting_by').bind('change',toggleManualSorting);
 
 			//Group Sorting
-			$('ul.group-sortable').sortable();
+			$('ul.group-sortable').sortable({
+				stop : function(e,ui) {
+					// Begin Disable AJAX Controls
+					var featuredItems = jQuery('.topspin_featured_items');
+					jQuery("input[name='offer_types[]'], input[name='tags[]']").attr('disabled','disabled');
+					featuredItems.attr('disabled','disabled');
+
+					var offer_types = getCheckedOfferTypes();
+					var tags = getCheckedTags();
+					jQuery.ajax({
+						url : ajaxurl,
+						data : {
+							action : 'topspin_get_items',
+							offer_types : offer_types,
+							tags : tags
+						},
+						success : function(ret) {
+							var json = jQuery.parseJSON(ret);
+							updatePreviewDisplay(json);
+							// Renabled AJAX Controls
+							jQuery("input[name='offer_types[]'], input[name='tags[]']").removeAttr('disabled');
+							featuredItems.removeAttr('disabled');
+							updateItemsOrder();
+						}
+					});
+				}
+			});
 
 			//Item Sorting
 			$('ul.item-sortable').sortable({
-				stop : function(event,ui) {
+				stop : function(e,ui) {
 					updateItemsOrder();
 				}
 			});
