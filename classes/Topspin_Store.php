@@ -3,11 +3,13 @@
 /*
  *	Class:				Topspin Store
  *
- *	Last Modified:		August 1, 2011
+ *	Last Modified:		August 5, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-08-05
+ 		- updated getStoreFeaturedItem() to return only those with an item ID set (featured item shortcode bug returning empty item)
  *	2011-08-01
  		- updated getStoreFeaturedItem() to return multiple featured items
  		- updated getStore() to return multiple featured items
@@ -1232,7 +1234,8 @@ EOD;
 		LEFT JOIN
 			{$this->wpdb->prefix}topspin_offer_types ON {$this->wpdb->prefix}topspin_items.offer_type = {$this->wpdb->prefix}topspin_offer_types.type
 		WHERE
-			{$this->wpdb->prefix}topspin_stores_featured_items.store_id = %d
+			{$this->wpdb->prefix}topspin_stores_featured_items.store_id = %d AND
+			{$this->wpdb->prefix}topspin_stores_featured_items.item_id > 0
 		GROUP BY
 			{$this->wpdb->prefix}topspin_stores_featured_items.order_num
 		ORDER BY

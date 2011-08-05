@@ -21,49 +21,56 @@ body div#colorbox, body div#cboxOverlay, body div#cboxWrapper { z-index:4000; }
 }
 
 /* TOPSPIN FEATURED ITEMS */
-
 .topspin-featured-item {
 	margin-bottom:30px;
 	overflow:hidden;
 }
-.topspin-featured-item div.topspin-item-image {
-	float:left;
-	width:250px;
-	margin-bottom:10px;	
-}
-.topspin-featured-item div.topspin-item-image img {
-	width:100% !important;
-	margin-bottom:20px;
-}
-.topspin-featured-item h2.topspin-item-title {
-	clear:none;
-	font-size:24px;
-	line-height:30px;
-	margin-left:280px !important;
-	margin-bottom:20px;
-}
-.topspin-featured-item div.topspin-item-desc {
-	margin-left:280px;
-	margin-bottom:20px;
-}
-.topspin-featured-item div.topspin-item-price {
-	color:#ff0000;
-	font-size:18px;
-	margin-bottom:20px;
-	margin-left:280px;
-}
-.topspin-featured-item div.topspin-item-buy {
-	margin-bottom:10px;
-	margin-left:280px;
-}
-.topspin-featured-item div.topspin-item-buy a {
-	font-size:24px;
-	line-height:30px;
-	background-color:#ff0000;
-	color:#fff;
-	text-decoration:none;
-	padding:10px 15px;
-}
+	.topspin-featured-item div.topspin-item-image {
+		float:left;
+		width:33%;
+		margin-bottom:10px;	
+	}
+		.topspin-featured-item div.topspin-item-image img {
+			width:100% !important;
+			margin-bottom:20px;
+		}
+	.topspin-featured-item h2.topspin-item-title {
+		clear:none;
+		font-size:24px;
+		line-height:30px;
+		margin-bottom:20px;
+		/* 3.2.1 fluid layout */
+		width:65%;
+		float:right;
+	}
+	.topspin-featured-item div.topspin-item-desc {
+		margin-bottom:20px;
+		/* 3.2.1 fluid layout */
+		width:65%;
+		float:right;
+	}
+	.topspin-featured-item div.topspin-item-price {
+		color:#ff0000;
+		font-size:18px;
+		margin-bottom:20px;
+		/* 3.2.1 fluid layout */
+		width:65%;
+		float:right;
+	}
+	.topspin-featured-item div.topspin-item-buy {
+		margin-bottom:10px;
+		/* 3.2.1 fluid layout */
+		width:65%;
+		float:right;
+	}
+		.topspin-featured-item div.topspin-item-buy a {
+			font-size:24px;
+			line-height:30px;
+			background-color:#ff0000;
+			color:#fff;
+			text-decoration:none;
+			padding:10px 15px;
+		}
 	.topspin-featured-item .topspin-view-more-canvas {
 		display:none;
 	}

@@ -3,7 +3,7 @@ Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
 Tested up to: 3.2.1
-Stable tag: 3.2
+Stable tag: 3.2.1
 Requires at least: 3.0.2
 
 Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages.
@@ -259,6 +259,12 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 8. Front-End -> View of the Topspin Checkout Flow overlay
 
 == Changelog ==
+
+= 3.2.1 =
+* Updated [topspin_featured_item] shortcode bug (returning empty item if no featured item is set).
+* Updated the installation script to add unique key for the currency table.
+* Updated the default standard/simplified featured item template css to work with fluid layouts.
+* Fixed the colorbox issue where it loads on all URL hashes.
 
 = 3.2 = 
 * Added the ability to add multiple featured items per Store Page

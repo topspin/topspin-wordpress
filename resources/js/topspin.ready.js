@@ -2,14 +2,20 @@ jQuery(function($) {
 
 	var viewProduct = function(productID) {
 		var href = '#topspin-view-more-' + productID;
-		$.colorbox({
-			inline : true,
-			href : href
-		});
+		if($(href).length) {
+			$.colorbox({
+				inline : true,
+				href : href
+			});
+		}
 	};
 
-	var productID = (window.location.hash) ? window.location.hash.replace('#!/','') : 0;
-	if(productID) { viewProduct(productID); }
+	if(window.location.hash) {
+		if(window.location.hash.indexOf('#!/')!=-1) {
+			var productID = (window.location.hash) ? window.location.hash.replace('#!/','') : 0;
+			if(productID) { viewProduct(productID); }
+		}
+	}
 
 	$('a.topspin-view-item').live('click',function(e) {
 		var pid = $(this).attr('href').replace('#!/','');
