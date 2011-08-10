@@ -2,11 +2,15 @@
 
 /*
  *
- *	Last Modified:			August 2, 2011
+ *	Last Modified:			August 10, 2011
  *
  *	--------------------------------------
  *	Change Log
  *	--------------------------------------
+ *	2011-08-10
+ 		- Added new variable called storePost (the store's Post object array)
+ 		- Added "Store Parent" selector
+ 		- Added "Store Template" selector
  *	2011-08-02
  		- Added previewing of filtered items
  *	2011-08-01
@@ -48,6 +52,7 @@ $storeData = array(
 	'offer_types' => $store->getOfferTypes(),
 	'tags' => $store->getTagList()
 );
+$storePost = array();
 
 ###	Implode OfferTypes/Tags
 $defaultOfferTypes = array();
@@ -58,6 +63,7 @@ foreach($storeData['tags'] as $key=>$tag) { array_push($defaultTags,$tag['name']
 ### Retrieve Store Data
 if(isset($_GET['id'])) {
 	$storeData = array_merge($storeData,$store->getStore($_GET['id']));
+	$storePost = array_merge($storePost,get_post($storeData['post_id'],ARRAY_A));
 }
 
 switch($action) {
@@ -84,7 +90,7 @@ switch($action) {
 			### Offer Types/Tags Ordering
 			$storeData['offer_types'] = (isset($_POST['offer_types']) && count($_POST['offer_types'])) ? $storeData['offer_types'] : array();
 			$storeData['tags'] = (isset($_POST['tags']) && count($_POST['tags'])) ? $storeData['tags'] : array();
-			
+
 			### Create A New Store
 			if($storeData['id']==0) {
 				$page = array(
@@ -92,7 +98,8 @@ switch($action) {
 					'post_name' => $storeData['slug'],
 					'post_status' => 'publish',
 					'post_type' => 'page',
-					'post_content' => '[topspin_featured_item]&nbsp;[topspin_buy_buttons]'
+					'post_content' => '[topspin_featured_item]&nbsp;[topspin_buy_buttons]',
+					'post_parent' => $storeData['parent_id']
 				);
 
 				$pageID = wp_insert_post($page);
@@ -102,6 +109,7 @@ switch($action) {
 					$storeID = $store->createStore($storeData,$pageID);
 					if($storeID) {
 						$storeData['id'] = $storeID;
+						update_post_meta($pageID,'_wp_page_template',$storeData['page_template']);
 						$success = 'Store created. <a href="'.get_permalink($pageID).'" target="_blank">View Store</a>';
 					}
 				}
@@ -111,16 +119,21 @@ switch($action) {
 				$page = array(
 					'post_title' => $storeData['name'],
 					'post_name' => $storeData['slug'],
+					'post_parent' => $storeData['parent_id'],
 					'ID' => $storeData['post_id']
 				);
 				$pageID = wp_update_post($page);
+				update_post_meta($pageID,'_wp_page_template',$storeData['page_template']);
 				if($pageID) {
 					$store->updateStore($storeData,$storeData['id']);
 					$success = 'Store updated. <a href="'.get_permalink($pageID).'" target="_blank">View Store</a>';
 				}
 			}
 		}
-		if(isset($storeData['id']) && $storeData['id']) { $storeData = array_merge($storeData,$store->getStore($storeData['id'])); }
+		if(isset($storeData['id']) && $storeData['id']) {
+			$storeData = array_merge($storeData,$store->getStore($storeData['id']));
+			$storePost = array_merge($storePost,get_post($storeData['post_id'],ARRAY_A));
+		}
 		?>
 
 		<div class="wrap">
@@ -177,7 +190,7 @@ switch($action) {
 						</td>
 					</tr>
                     <tr valign="top">
-                    	<th scope="row"><labe for="topspin_default_sorting_by">Sort By</label></th>
+                    	<th scope="row"><label for="topspin_default_sorting_by">Sort By</label></th>
                         <td>
                         	<select id="topspin_default_sorting_by" name="default_sorting_by">
                             	<?php $sortByTypes = $store->getSortByTypes();
@@ -186,6 +199,41 @@ switch($action) {
                                 <?php endforeach; ?>
                             </select>
                         </td>
+                    </tr>
+                    <tr valign="top">
+                    	<th scope="row"><label for="topspin_parent_id">WordPress Page Parent</label></th>
+                    	<td>
+                    		<?php
+                    		$pageArgs = array(
+                    			'post_type' => 'page',
+                    			'exclude_tree' => $storeData['post_id'],
+                    			'selected' => (isset($storePost['post_parent'])) ? $storePost['post_parent'] : 0,
+                    			'name' => 'parent_id',
+                    			'show_option_none' => __('(no parent)'),
+                    			'sort_column'=> 'menu_order, post_title'
+                    		);
+                    		wp_dropdown_pages($pageArgs);
+                    		?>
+                    		<span class="description">For advanced users, specify the page parent for this store. <a href="http://codex.wordpress.org/Pages#Organizing_Your_Pages" target="_blank">Organizing Your Pages</a></span>
+                    	</td>
+                    </tr>
+                    <tr valign="top">
+                    	<th scope="row"><label for="topspin_page_template">WordPress Page Template</label></th>
+                    	<td>
+                    		<?php
+                    		$templates = get_page_templates();
+                    		$pageTemplate = get_post_meta($storeData['post_id'],'_wp_page_template',1);
+                    		?>
+                    		<select id="topspin_page_template" name="page_template">
+                    			<option value="">Default Template</option>
+                    			<?php if(count($templates)) : ?>
+                    			<?php foreach($templates as $templateName=>$templateFile) : ?>
+                    			<option value="<?php echo $templateFile; ?>" <?php echo ($pageTemplate==$templateFile) ? 'selected="selected"' : ''; ?>><?php echo $templateName; ?></option>
+                    			<?php endforeach; ?>
+                    			<?php endif; ?>
+                    		</select>
+                    		<span class="description">For advanced users, specify the template file for this store. <a href="http://codex.wordpress.org/Pages#Page_Templates" target="_blank">Custom Page Templates</a></span>
+                    	</td>
                     </tr>
 				</tbody>
 			</table>

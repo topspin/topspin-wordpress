@@ -3,7 +3,7 @@
 /*
  *	Class:				Topspin Store
  *
- *	Last Modified:		August 5, 2011
+ *	Last Modified:		August 10, 2011
  *
  *	----------------------------------
  *	Change Log
