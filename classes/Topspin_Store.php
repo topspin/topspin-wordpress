@@ -3,11 +3,13 @@
 /*
  *	Class:				Topspin Store
  *
- *	Last Modified:		August 10, 2011
+ *	Last Modified:		August 12, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-08-12
+ 		- updated getFilteredItems() to return items with new argument $order
  *	2011-08-05
  		- updated getStoreFeaturedItem() to return only those with an item ID set (featured item shortcode bug returning empty item)
  *	2011-08-01
@@ -1254,13 +1256,15 @@ EOD;
 		}
 	}
 
-	public function getFilteredItems($offer_types,$tags,$artist_id=null) {
-		##	Retrieves the list of items with the set filters
-		##
-		##	PARAMETERS
-		##		@offer_types		An array containing the list of offer types
-		##		@tags				An array containing the list of tags
-		##		@artist_id			(Optional) The artist's ID
+	public function getFilteredItems($offer_types,$tags,$artist_id=null,$order='chronological') {
+		/*	Retrieves the list of items with the set filters
+		 *
+		 *	PARAMETERS
+		 *		@offer_types		An array containing the list of offer types
+		 *		@tags				An array containing the list of tags
+		 *		@artist_id			(Optional) The artist's ID
+		 *		@order				(Optional) alphabetical, chronological (default)
+		 */
 		if(!$artist_id) { $artist_id = $this->artist_id; }
 		$addedIDs = array();
 		$addedItems = array();
@@ -1286,6 +1290,8 @@ EOD;
 			}
 		}
 		$WHERE_IN_TAGS  = ($total_tags) ? ' AND '.$this->wpdb->prefix.'topspin_items_tags.tag_name IN ('.$in_tags.')' : '';
+		## Order By
+		$order_by = ($order=='alphabetical') ? $this->wpdb->prefix.'topspin_items.name ASC' : $this->wpdb->prefix.'topspin_items.id ASC';
 		$sql = <<<EOD
 		SELECT
 			{$this->wpdb->prefix}topspin_items.id,
@@ -1317,11 +1323,13 @@ EOD;
 		LEFT JOIN
 			{$this->wpdb->prefix}topspin_offer_types ON {$this->wpdb->prefix}topspin_items.offer_type = {$this->wpdb->prefix}topspin_offer_types.type
 		WHERE
-			{$this->wpdb->prefix}topspin_items.artist_id = {$artist_id}
+			{$this->wpdb->prefix}topspin_items.artist_id = %d
 			{$WHERE_IN_TAGS}
 			{$WHERE_IN_OFFER_TYPE}
+		ORDER BY
+			{$order_by}
 EOD;
-		$data = $this->wpdb->get_results($sql,ARRAY_A);
+		$data = $this->wpdb->get_results($this->wpdb->prepare($sql,$artist_id),ARRAY_A);
 		foreach($data as $key=>$row) {
 			$row['campaign'] = unserialize($row['campaign']);
 			##	Add Images

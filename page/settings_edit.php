@@ -2,11 +2,14 @@
 
 /*
  *
- *	Last Modified:			August 10, 2011
+ *	Last Modified:			August 11, 2011
  *
  *	--------------------------------------
  *	Change Log
  *	--------------------------------------
+ *	2011-08-11
+ 		- Fixed some PHP warnings
+ 		- Fixed sorting preview bug (product sorting and sort by select boxes)
  *	2011-08-10
  		- Added new variable called storePost (the store's Post object array)
  		- Added "Store Parent" selector
@@ -206,7 +209,7 @@ switch($action) {
                     		<?php
                     		$pageArgs = array(
                     			'post_type' => 'page',
-                    			'exclude_tree' => $storeData['post_id'],
+                    			'exclude_tree' => (isset($storeData['post_id'])) ? $storeData['post_id'] : '',
                     			'selected' => (isset($storePost['post_parent'])) ? $storePost['post_parent'] : 0,
                     			'name' => 'parent_id',
                     			'show_option_none' => __('(no parent)'),
@@ -222,7 +225,7 @@ switch($action) {
                     	<td>
                     		<?php
                     		$templates = get_page_templates();
-                    		$pageTemplate = get_post_meta($storeData['post_id'],'_wp_page_template',1);
+                    		$pageTemplate = (isset($storeData['post_id'])) ? get_post_meta($storeData['post_id'],'_wp_page_template',1) : '';
                     		?>
                     		<select id="topspin_page_template" name="page_template">
                     			<option value="">Default Template</option>
@@ -295,7 +298,7 @@ switch($action) {
 	            			<th scope="row"><label>Items</label></th>
 	            			<td>
 	                            <ul id="topspin-preview-item-listing" class="item-listing">
-		                        <?php if(count($sortedItems)) : ?>
+		                        <?php if(isset($sortedItems) && count($sortedItems)) : ?>
 		                            <?php foreach($sortedItems as $item) : ?>
 		                            <li id="preview-item-<?php echo $item['id'];?>">
 		                                <div class="item-canvas">
@@ -558,8 +561,6 @@ switch($action) {
 					}
 					break;
 			}
-			
-			console.log(addedIDs);
 
 
 			//Create DOM
@@ -599,6 +600,9 @@ switch($action) {
 			featuredItems.attr('disabled','disabled');
 
 			var manualItems = jQuery('#topspin-manual-item-sorting');
+			//	Manual Item Sorting
+			var selected = jQuery('select#topspin_default_sorting option:selected');
+			var order = selected.val();
 			
 			// End Disable AJAX Controls
 			var offer_types = getCheckedOfferTypes();
@@ -608,7 +612,8 @@ switch($action) {
 				data : {
 					action : 'topspin_get_items',
 					offer_types : offer_types,
-					tags : tags
+					tags : tags,
+					order : order
 				},
 				success : function(ret) {
 					var json = jQuery.parseJSON(ret);
@@ -618,9 +623,11 @@ switch($action) {
 					featuredItems.empty();
 
 					var selectedFeaturedItems = new Array();
-					<?php foreach($storeData['featured_item'] as $featuredItem) : ?>
-					selectedFeaturedItems.push('<?php echo $featuredItem['id']; ?>');
-					<?php endforeach; ?>
+					<?php if(isset($storeData['featured_item']) && count($storeData['featured_item'])) : ?>
+						<?php foreach($storeData['featured_item'] as $featuredItem) : ?>
+						selectedFeaturedItems.push('<?php echo $featuredItem['id']; ?>');
+						<?php endforeach; ?>
+					<?php endif; ?>
 
 					var emptyOption = jQuery('<option />');
 					emptyOption
@@ -702,11 +709,26 @@ switch($action) {
 		jQuery(function($) {
 
 			//AJAX Items Update
-			$('select#topspin_default_sorting_by').bind('change',updateItemDisplay);
-			$("input[name='tags[]'], input[name='offer_types[]']").bind('click',updateItemDisplay);
-
-			//AJAX Manual Sorting Toggle
-			$('select#topspin_default_sorting_by').bind('change',toggleManualSorting);
+			$('select#topspin_default_sorting').bind('change',function() {
+				var sortBy = $('select#topspin_default_sorting_by option:selected').val();
+				if(sortBy=='manual') { return true; }
+				else { updateItemDisplay(); }
+			});
+			$('select#topspin_default_sorting_by').bind('change',function(e) {
+				var selected = $('option:selected',this);
+				switch(selected.val()) {
+					case 'manual':
+						toggleManualSorting.call(this);
+						break;
+					case 'offertype':
+					case 'tags':
+						updateItemDisplay();
+						break;
+				}
+			});
+			$('input[name="tags[]"], input[name="offer_types[]"]').bind('click',function() {
+				updateItemDisplay();
+			});
 
 			//Group Sorting
 			$('ul.group-sortable').sortable({
