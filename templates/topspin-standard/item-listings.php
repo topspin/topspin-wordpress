@@ -36,14 +36,30 @@
         	<?php ## BEGIN SWITCH OFFER TYPE
             switch($item['offer_type']) {
 				case 'buy_button': ?>
-					<h2 class="topspin-item-title"><?php echo $item['name'];?></h2>
-                    <div class="topspin-item-image"><a class="topspin-colorbox" href="#topspin-view-more-<?php echo $item['id'];?>"><img src="<?php echo $item['default_image'];?>" /></a></div>
+					<h2 class="topspin-item-title"><a class="topspin-view-item" href="#!/<?php echo $item['id']; ?>"><?php echo $item['name'];?></a></h2>
+                    <div class="topspin-item-image"><a class="topspin-view-item" href="#!/<?php echo $item['id']; ?>"><img src="<?php echo $item['default_image'];?>" /></a></div>
 					<div class="topspin-item-price">Price: <?php echo $item['symbol'];?><?php echo $item['price'];?></div>
 					<div class="topspin-item-buy"><a class="topspin-buy" href="<?php echo $item['offer_url'];?>">Buy</a></div>
                     <div id="topspin-view-more-<?php echo $item['id']; ?>" class="topspin-view-more-canvas">
-                        <div class="topspin-view-more-image"><img src="<?php echo $item['default_image_large'];?>" /></div>
+						<div class="topspin-view-more-image">
+							<div class="topspin-view-more-image-default">
+								<div class="topspin-view-more-image-default-cell">
+									<a href="#!/<?php echo $item['id']; ?>"><img src="<?php echo $storeitems[$key]['default_image_large'];?>" /></a>
+								</div>
+							</div>
+						</div>
                         <h2 class="topspin-view-more-title"><?php echo $item['name'];?></h2>
                         <div class="topspin-view-more-desc"><?php echo $item['description'];?></div>
+				    	<?php $totalImages = count($storeitems[$key]['images']);
+				    	if($totalImages>1) : ?>
+				    	<ul class="topspin-view-more-image-pager">
+				    		<?php foreach($storeitems[$key]['images'] as $image) : ?>
+				    		<li class="topspin-view-more-image-pager-item">
+				    			<div class="topspin-view-more-image-pager-item-cell"><a href="#"><img src="<?php echo $image['large_url']; ?>" /></a></div>
+				    		</li>
+				    		<?php endforeach; ?>
+				    	</ul>
+				    	<?php endif; ?>
                         <div class="topspin-view-more-buy">
                         	<a class="topspin-buy" href="<?php echo $item['offer_url'];?>">Buy</a>
 	                        <div class="topspin-view-more-price">Price: <?php echo $item['symbol'];?><?php echo $item['price'];?></div>

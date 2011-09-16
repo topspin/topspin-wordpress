@@ -33,7 +33,7 @@
 		for($col=1;$col<=$storedata['grid_columns'];$col++) : $key = ($row*$storedata['grid_columns'])-($storedata['grid_columns']-($col-1)); ?>
 		<td width="<?php echo floor(100/$storedata['grid_columns']);?>%">
 			<?php if(isset($storeitems[$key])) : ?>
-			<h2 class="topspin-title-name"><?php echo $storeitems[$key]['name'];?></h2>
+			<h2 class="topspin-title-name"><a class="topspin-view-item" href="#!/<?php echo $storeitems[$key]['id']; ?>"><?php echo $storeitems[$key]['name'];?></a></h2>
 			<?php endif; ?>
 		</td>
 		<?php endfor; ?>
@@ -43,15 +43,32 @@
 		for($col=1;$col<=$storedata['grid_columns'];$col++) : $key = ($row*$storedata['grid_columns'])-($storedata['grid_columns']-($col-1)); ?>
 		<td width="<?php echo floor(100/$storedata['grid_columns']);?>%">
 		<?php if(isset($storeitems[$key])) : ?>
-			<a class="topspin-colorbox" href="#topspin-view-more-<?php echo $storeitems[$key]['id'];?>"><img src="<?php echo $storeitems[$key]['default_image'];?>" /></a>
+			<a class="topspin-view-item" href="#!/<?php echo $storeitems[$key]['id']; ?>"><img src="<?php echo $storeitems[$key]['default_image'];?>" /></a>
 			<div id="topspin-view-more-<?php echo $storeitems[$key]['id']; ?>" class="topspin-view-more-canvas">
-				<div class="topspin-view-more-image"><img src="<?php echo $storeitems[$key]['default_image_large'];?>" /></div>
+				<div class="topspin-view-more-image">
+					<div class="topspin-view-more-image-default">
+						<div class="topspin-view-more-image-default-cell">
+							<a href="#!/<?php echo $storeitems[$key]['id']; ?>"><img src="<?php echo $storeitems[$key]['default_image_large'];?>" /></a>
+						</div>
+					</div>
+				</div>
 				<h2 class="topspin-view-more-title"><?php echo $storeitems[$key]['name'];?></h2>
 				<div class="topspin-view-more-desc"><?php echo $storeitems[$key]['description'];?></div>
+		    	<?php $totalImages = count($storeitems[$key]['images']);
+		    	if($totalImages>1) : ?>
+		    	<ul class="topspin-view-more-image-pager">
+		    		<?php foreach($storeitems[$key]['images'] as $image) : ?>
+		    		<li class="topspin-view-more-image-pager-item">
+		    			<div class="topspin-view-more-image-pager-item-cell"><a href="#"><img src="<?php echo $image['large_url']; ?>" /></a></div>
+		    		</li>
+		    		<?php endforeach; ?>
+		    	</ul>
+		    	<?php endif; ?>
 				<div class="topspin-view-more-buy">
 					<a class="topspin-buy" href="<?php echo $storeitems[$key]['offer_url'];?>">Buy</a>
 					<div class="topspin-view-more-price">Price: <?php echo $storeitems[$key]['symbol'];?><?php echo $storeitems[$key]['price'];?></div>
 				</div>
+				<div class="topspin-clear"></div>
 			</div>
 		<?php endif; ?>
 		</td>

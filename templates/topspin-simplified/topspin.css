@@ -21,49 +21,59 @@ body div#colorbox, body div#cboxOverlay, body div#cboxWrapper { z-index:4000; }
 }
 
 /* TOPSPIN FEATURED ITEMS */
-
 .topspin-featured-item {
 	margin-bottom:30px;
 	overflow:hidden;
 }
-.topspin-featured-item div.topspin-item-image {
-	float:left;
-	width:250px;
-	margin-bottom:10px;	
-}
-.topspin-featured-item div.topspin-item-image img {
-	width:100% !important;
-	margin-bottom:20px;
-}
-.topspin-featured-item h2.topspin-item-title {
-	clear:none;
-	font-size:24px;
-	line-height:30px;
-	margin-left:280px !important;
-	margin-bottom:20px;
-}
-.topspin-featured-item div.topspin-item-desc {
-	margin-left:280px;
-	margin-bottom:20px;
-}
-.topspin-featured-item div.topspin-item-price {
-	color:#ff0000;
-	font-size:18px;
-	margin-bottom:20px;
-	margin-left:280px;
-}
-.topspin-featured-item div.topspin-item-buy {
-	margin-bottom:10px;
-	margin-left:280px;
-}
-.topspin-featured-item div.topspin-item-buy a {
-	font-size:24px;
-	line-height:30px;
-	background-color:#ff0000;
-	color:#fff;
-	text-decoration:none;
-	padding:10px 15px;
-}
+	.topspin-featured-item div.topspin-item-image {
+		float:left;
+		width:33%;
+		margin-bottom:10px;	
+	}
+		.topspin-featured-item div.topspin-item-image img {
+			width:100% !important;
+			margin-bottom:20px;
+		}
+	.topspin-featured-item h2.topspin-item-title {
+		clear:none;
+		font-size:24px;
+		line-height:30px;
+		margin-bottom:20px;
+		/* 3.2.1 fluid layout */
+		width:65%;
+		float:right;
+	}
+	.topspin-featured-item div.topspin-item-desc {
+		margin-bottom:20px;
+		/* 3.2.1 fluid layout */
+		width:65%;
+		float:right;
+	}
+	.topspin-featured-item div.topspin-item-price {
+		color:#ff0000;
+		font-size:18px;
+		margin-bottom:20px;
+		/* 3.2.1 fluid layout */
+		width:65%;
+		float:right;
+	}
+	.topspin-featured-item div.topspin-item-buy {
+		margin-bottom:10px;
+		/* 3.2.1 fluid layout */
+		width:65%;
+		float:right;
+	}
+		.topspin-featured-item div.topspin-item-buy a {
+			font-size:24px;
+			line-height:30px;
+			background-color:#ff0000;
+			color:#fff;
+			text-decoration:none;
+			padding:10px 15px;
+		}
+	.topspin-featured-item .topspin-view-more-canvas {
+		display:none;
+	}
 
 /* TOPSPIN ITEM LISTINGS */
 
@@ -161,51 +171,115 @@ div.topspin-pagination a.topspin-next {
 
 /* TOPSPIN VIEW MORE */
 div.topspin-view-more-canvas {
+	clear:both;
 	width:790px;
 	padding:5px;
 }
 div.topspin-view-more-canvas div.topspin-view-more-image {
 	float:left;
-	width:280px;
+	width:400px;
 	font-size:24px;
 	line-height:22px;
-	margin-bottom:20px;
 }
-div.topspin-view-more-canvas div.topspin-view-more-image img {
-	width:inherit !important;
-	margin-bottom:20px;
+	div.topspin-view-more-canvas div.topspin-view-more-image img {
+		width:100%;
+	}
+	div.topspin-view-more-canvas div.topspin-view-more-image div.topspin-view-more-image-default {
+		width:400px;
+		height:400px;
+		text-align:center;
+		overflow:hidden;
+	}
+		div.topspin-view-more-canvas div.topspin-view-more-image div.topspin-view-more-image-default div.topspin-view-more-image-default-cell {
+			display:table-cell;
+			vertical-align:middle;
+			text-align:center;
+			width:400px;
+			height:400px;
+		}
+			div.topspin-view-more-canvas div.topspin-view-more-image div.topspin-view-more-image-default div.topspin-view-more-image-default-cell img {
+				width:auto;
+				max-width:400px;
+				max-height:400px;
+			}
+div.topspin-view-more-canvas div.topspin-view-more-image-zoom {
+	position:absolute;
+	background-color:#fff;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
 }
+	div.topspin-view-more-canvas div.topspin-view-more-image-zoom div.topspin-view-more-image-default {
+		width:600px;
+		margin:0px auto;
+	}
+		div.topspin-view-more-canvas div.topspin-view-more-image-zoom div.topspin-view-more-image-default div.topspin-view-more-image-default-cell {
+			width:600px;
+		}
+				div.topspin-view-more-canvas div.topspin-view-more-image-zoom div.topspin-view-more-image-default div.topspin-view-more-image-default-cell img {
+					max-width:600px;
+					max-height:auto;
+				}
 div.topspin-view-more-canvas h2.topspin-view-more-title {
 	clear:none;
 	font-size:24px;
 	line-height:30px;
 	margin-bottom:20px;
-	margin-left:290px;
+	margin-right:10px;
+	margin-left:410px;
 }
 div.topspin-view-more-canvas div.topspin-view-more-desc {
-	margin-left:290px;
+	margin-left:410px;
 	margin-bottom:20px;
+	margin-right:10px;
 }
+div.topspin-view-more-canvas ul.topspin-view-more-image-pager {
+	list-style-type:none;
+	margin-left:410px;
+	margin-right:10px;
+	margin-bottom:20px;
+	height:80px;
+}
+	div.topspin-view-more-canvas ul.topspin-view-more-image-pager li.topspin-view-more-image-pager-item {
+		float:left;
+		width:74px;
+		height:74px;
+	}
+		div.topspin-view-more-canvas ul.topspin-view-more-image-pager li.topspin-view-more-image-pager-item div.topspin-view-more-image-pager-item-cell {
+			width:74px;
+			height:74px;
+			display:table-cell;
+			vertical-align:middle;
+			text-align:center;
+		}
+			div.topspin-view-more-canvas ul.topspin-view-more-image-pager li.topspin-view-more-image-pager-item div.topspin-view-more-image-pager-item-cell img {
+				max-width:74px;
+				max-height:74px;
+			}
 div.topspin-view-more-canvas div.topspin-view-more-buy {
 	height:50px;
 	margin-bottom:10px;
-	margin-left:290px;
+	margin-left:410px;
 }
-div.topspin-view-more-canvas div.topspin-view-more-buy a.topspin-buy {
-	float:left;
-	font-size:24px;
-	line-height:30px;
-	background-color:#ff0000;
-	color:#fff;
-	text-decoration:none;
-	padding:10px 15px;
-}
-div.topspin-view-more-canvas div.topspin-view-more-buy div.topspin-view-more-price {
-	float:right;
-	height:50px;
-	line-height:50px;
-	color:#ff0000;
-	font-size:18px;
-	margin-bottom:20px;
-	margin-left:280px;
+	div.topspin-view-more-canvas div.topspin-view-more-buy a.topspin-buy {
+		float:left;
+		font-size:24px;
+		line-height:30px;
+		background-color:#ff0000;
+		color:#fff;
+		text-decoration:none;
+		padding:10px 15px;
+	}
+	div.topspin-view-more-canvas div.topspin-view-more-buy div.topspin-view-more-price {
+		float:right;
+		height:50px;
+		line-height:50px;
+		color:#ff0000;
+		font-size:18px;
+		margin-bottom:20px;
+		margin-right:10px;
+	}
+div.topspin-view-more-canvas div.topspin-clear {
+	clear:both;
 }

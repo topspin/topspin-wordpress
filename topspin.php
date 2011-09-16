@@ -5,7 +5,7 @@ Plugin URI: http://wordpress.org/extend/plugins/official-topspin-wordpress-plugi
 Description: Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages using the Topspin API
 Author: The Uprising Creative for Topspin Media
 Author URI: http://theuprisingcreative.com
-Version: 3.1.3
+Version: 3.2.3
 */
 
 ### This File
@@ -21,6 +21,9 @@ function topspin_page_settings_general() {
 function topspin_page_settings_viewstores() {
 	include('page/settings_viewstores.php');
 }
+function topspin_page_settings_viewitems() {
+	include('page/settings_viewitems.php');
+}
 function topspin_page_settings_edit() {
 	include('page/settings_edit.php');
 }
@@ -30,6 +33,7 @@ function topspin_add_menus() {
 	add_menu_page('Topspin','Topspin',6,'topspin/page/settings_general','topspin_page_settings_general');
 		add_submenu_page('topspin/page/settings_general','Settings','Settings',6,'topspin/page/settings_general','topspin_page_settings_general');
 		add_submenu_page('topspin/page/settings_general','View Stores','View Stores',6,'topspin/page/settings_viewstores','topspin_page_settings_viewstores');
+		add_submenu_page('topspin/page/settings_general','View Items','View Items',6,'topspin/page/settings_viewitems','topspin_page_settings_viewitems');
 		add_submenu_page('topspin/page/settings_general','Store Setup','Add Store',6,'topspin/page/settings_edit','topspin_page_settings_edit');
 }
 
