@@ -42,4 +42,32 @@ function topspin_get_item($item_id) {
 	return $item;
 }
 
+function topspin_get_store_items($store_id) {
+	/*
+	 *	Retrieves the item list for the specified store
+	 *
+	 *	PARAMETERS
+	 *		@store_id (int)		The store ID
+	 *
+	 *	RETURNS
+	 *		An array of the store's items
+	 */
+	global $store;
+	return $store->getStoreItems($store_id);
+}
+
+function topspin_get_most_popular_items($limit=null) {
+	/*
+	 *	Retrieves the most popular items
+	 *
+	 *	PARAMETERS
+	 *		@limit (int)		How many items to return
+	 *
+	 *	RETURNS
+	 *		An array of the most popular items
+	 */
+	global $store;
+	return $store->product_get_most_popular_list($limit);
+}
+
 ?>

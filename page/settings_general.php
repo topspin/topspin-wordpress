@@ -36,13 +36,14 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
 			case "general_settings":
 			default:
 				unset($_POST['action']);
-
 				## Empty all stores and store settings if different artist ID is set
 				if($_POST['topspin_artist_id']!=$store->getSetting('topspin_artist_id')) {
-					$stores = $store->getStores('all');
-					foreach($stores as $_store) {
-						$store->deleteStore($_store->store_id,1);
-						wp_delete_post($_store->ID,1);	//deletes the page from the posts table
+					$stores = $store->stores_get_list();
+					if(count($stores)) {
+						foreach($stores as $_store) {
+							$store->deleteStore($_store->store_id,1);
+							wp_delete_post($_store->ID,1);	//deletes the page from the posts table
+						}
 					}
 				}
 

@@ -2,11 +2,16 @@
 
 /*
  *
- *	Last Modified:			April 6, 2011
+ *	Last Modified:			September 7, 2011
  *
  *	--------------------------------------
  *	Change Log
  *	--------------------------------------
+ *	2011-09-23
+ 		- Updated Topspin_Store::getStores() to Topspin_Store::stores_get_nested_list()
+ *	2011-09-07
+ 		- Updated list to display in a nested format
+ 		- Added permalink and internal name for administrative purposes
  *	2011-04-06
  		- Updated bloginfo('home') and get_home_url() to bloginfo('wpurl');
  *	2011-03-23
@@ -15,7 +20,37 @@
  */
 
 global $store;
-$storesList = $store->getStores();
+$storesList = $store->stores_get_nested_list('publish',0);
+
+function topspin_viewstore_item($storeItem,$level=0) { ?>
+			<tr id="store-<?php echo $storeItem->store_id;?>" class="store-level-<?php echo $level; ?>" valign="top">
+				<td class="store-id"><?php echo $storeItem->store_id;?></td>
+				<td class="store-title">
+					<?php for($i=0;$i<$level;$i++) { echo '&mdash; '; } ?>
+			    	<strong><a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?php echo $storeItem->store_id;?>"><?php echo $storeItem->post_title;?></a></strong>
+					<?php if(strlen($storeItem->internal_name)) : ?>
+					(<?php echo $storeItem->internal_name; ?>)
+					<?php endif; ?>
+			    	<div class="row-permalink"><em><?php echo get_permalink($storeItem->ID);?></em></div>
+			        <div class="row-actions">
+			        	<span class="edit"><a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?php echo $storeItem->store_id;?>">Edit</a> |</span>
+			            <span class="trash"><a class="submitdelete" href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=delete&amp;id=<?php echo $storeItem->store_id;?>">Trash</a></span>
+			        </div>
+			    </td>
+			    <td class="store-shortcode">[topspin_buy_buttons id=<?php echo $storeItem->store_id;?>]</td>
+			    <td class="store-created-date"><?php echo date("F j, Y h:i:sa",strtotime($storeItem->created_date));?></td>
+				<td class="store-manage">
+					<a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?php echo $storeItem->store_id;?>">Edit</a> |
+					<a href="<?php echo get_permalink($storeItem->ID);?>" target="_blank">View</a>
+			    </td>
+			</tr>
+<?php
+	if($storeItem->store_childs) {
+		foreach($storeItem->store_childs as $storeChild) {
+			topspin_viewstore_item($storeChild,$level+1);
+		}
+	}
+} //end topspin_viewstore_item
 
 ?>
 
@@ -38,22 +73,7 @@ $storesList = $store->getStores();
         <?php if(count($storesList)) : ?>
         <tbody id="the-list">
         	<?php foreach($storesList as $storeItem) : ?>
-            <tr id="store-<?php echo $storeItem->store_id;?>" valign="top">
-            	<td class="store-id"><?php echo $storeItem->store_id;?></td>
-            	<td class="store-title">
-                	<strong><a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?php echo $storeItem->store_id;?>"><?php echo $storeItem->post_title;?></a></strong>
-                    <div class="row-actions">
-                    	<span class="edit"><a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?php echo $storeItem->store_id;?>">Edit</a> |</span>
-                        <span class="trash"><a class="submitdelete" href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=delete&amp;id=<?php echo $storeItem->store_id;?>">Trash</a></span>
-                    </div>
-                </td>
-                <td class="store-shortcode">[topspin_buy_buttons id=<?php echo $storeItem->store_id;?>]</td>
-                <td class="store-created-date"><?php echo date("F j, Y h:i:sa",strtotime($storeItem->created_date));?></td>
-            	<td class="store-manage">
-					<a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=topspin/page/settings_edit&amp;action=edit&amp;id=<?php echo $storeItem->store_id;?>">Edit</a> |
-					<a href="<?php echo get_permalink($storeItem->ID);?>" target="_blank">View</a>
-                </td>
-            </tr>
+        		<?php topspin_viewstore_item($storeItem); ?>
             <?php endforeach; ?>
         </tbody>
         <?php else : ?>

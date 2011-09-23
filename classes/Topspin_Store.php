@@ -3,11 +3,28 @@
 /*
  *	Class:				Topspin Store
  *
- *	Last Modified:		August 12, 2011
+ *	Last Modified:		September 23, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-09-23
+ 		- Updated orders_get_list() and product_get_most_popular_list() to return items within the current artist ID.
+ 		- Updated getStoreItems() to unserialize the campaign serialized string.
+ *	2011-09-22
+ 		- Added new method orders_get_list()
+ 		- Added new method orders_get_items_list()
+ 		- Updated getStores() to stores_get_nested_list()
+ *	2011-09-19
+ 		- New method rebuildOrders()
+ 		- Updated rebuildItems() to parse the offer URL to retrieve/cache the campaign ID in it's own field
+ 		- Updated rebuildAll() to call the new method rebuildOrders()
+ *	2011-09-07
+ 		- fixed PHP warning in rebuildItems() - [@ckcoyle - https://github.com/topspin/topspin-wordpress/issues/16]
+ 		- updated rebuildAll() to check for API credentials before rebuilding
+ 		- updated createStore() and updateStore() with new field: internal_name
+ 		- updated getStore() and getStores() to retrieve new field: internal_name
+ 		- updated getStores() with new parameter to fetch childs of a parent store
  *	2011-08-12
  		- updated getFilteredItems() to return items with new argument $order
  *	2011-08-05
@@ -261,12 +278,23 @@ class Topspin_Store {
 		##	https://docs.topspin.net/tiki-index.php?page=Store+API
 		##
 		##	RETURN
-		##		An array containing the list of items
+		##		The number of total pages of Items
 		$url = 'http://app.topspin.net/api/v1/offers';
 		$post_args = array(
 			'artist_id' => $this->artist_id
 		);
 		$data = json_decode($this->process($url,$post_args,false));
+		if(isset($data->total_pages)) { return $data->total_pages; }
+	}
+	
+	public function ordersGetTotalPages() {
+		##	Retrieves the total number of pages from the Order API
+		##	https://docs.topspin.net/tiki-index.php?page=Order+API#View_Orders
+		##
+		##	RETURN
+		##		The number of total pages of Orders
+		$url = 'http://app.topspin.net/api/v1/order';
+		$data = json_decode($this->process($url,null,false));
 		if(isset($data->total_pages)) { return $data->total_pages; }
 	}
 
@@ -287,8 +315,25 @@ class Topspin_Store {
 			'artist_id' => $this->artist_id,
 			'page' => $page
 		);
-		$data = json_decode($this->process($url,$post_args,false));
+		$data = json_decode($this->process($url,$post_args,false));		
 		if($data) { return $data->offers; }
+	}
+
+	public function getOrders($page=1) {
+		##	Retrieves the orders from the Order API
+		##	https://docs.topspin.net/tiki-index.php?page=Order+API#View_Orders
+		##
+		##	PARAMETERS
+		##		@page				Requested page number.
+		##
+		##	RETURN
+		##		An array containing the list of orders
+		$url = 'http://app.topspin.net/api/v1/order';
+		$post_args = array(
+			'page' => $page
+		);
+		$data = json_decode($this->process($url,$post_args));
+		return $data;
 	}
 
 	public function getTags() {
@@ -304,9 +349,104 @@ class Topspin_Store {
 	
 	public function rebuildAll() {
 		##	Rebuilds the items, and artists database tables
-		$timestamp = $this->rebuildItems();
-		$this->rebuildArtists();
-		$this->setSetting('topspin_last_cache_all',$timestamp);
+		$apiStatus = $this->checkAPI();
+		if(!$apiStatus->error_detail) {
+			$timestamp = $this->rebuildItems();
+			$this->rebuildArtists();
+			$this->rebuildOrders();
+			$this->setSetting('topspin_last_cache_all',$timestamp);
+		}
+	}
+	
+	public function rebuildOrders() {
+		##	Rebuild and syncs the orders table with Topspin
+		$totalOrdersPage = $this->ordersGetTotalPages();
+		for($i=1;$i<=$totalOrdersPage;$i++) {
+			$page = $this->getOrders($i);
+			if(count($page->response)) {
+				foreach($page->response as $order) {
+					$data = array(
+						'id' => $order->id,
+						'artist_id' => $order->artist_id,
+						'created_at' => $order->created_at,
+						'subtotal' => $order->subtotal,
+						'tax' => $order->tax,
+						'currency' => $order->currency,
+						'phone' => $order->phone,
+						'shipping_method_calculator' => $order->shipping_method_calculator,
+						'reshipment' => $order->reshipment,
+						'fan' => $order->fan,
+						'details_url' => $order->details_url,
+						'exchange_rate' => $order->exchange_rate,
+						'shipping_method_code' => $order->shipping_method_code,
+						'shipping_address_firstname' => $order->shipping_address->firstname,
+						'shipping_address_lastname' => $order->shipping_address->lastname,
+						'shipping_address_address1' => $order->shipping_address->address1,
+						'shipping_address_address2' => $order->shipping_address->address2,
+						'shipping_address_city' => $order->shipping_address->city,
+						'shipping_address_state' => $order->shipping_address->state,
+						'shipping_address_postal_code' => $order->shipping_address->postal_code,
+						'shipping_address_country' => $order->shipping_address->country,
+						'shipping_address_phone' => $order->shipping_address->phone
+					);
+					$format = array('%d','%d','%s','%f','%f','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');
+					$tableFields = implode(',',array_keys($data));
+					$tableFormat = implode(',',$format);
+					$orderOnDuplicateUpdate = '';
+					$keyIndex = 0;
+					foreach($data as $key=>$field) {
+						if($keyIndex>0) { $orderOnDuplicateUpdate .= ', '; }
+						$orderOnDuplicateUpdate .= $key.'=VALUES('.$key.')';
+						$keyIndex++;
+					}
+					$orderSQL = <<<EOD
+					INSERT INTO {$this->wpdb->prefix}topspin_orders ({$tableFields}) VALUES ({$tableFormat})
+					ON DUPLICATE KEY UPDATE {$orderOnDuplicateUpdate}
+EOD;
+					$this->wpdb->query($this->wpdb->prepare($orderSQL,$data));
+					
+					//Build items for the order
+					foreach($order->items as $item) {
+						$itemData = array(
+							'id' => $item->id,
+							'order_id' => $order->id,
+							'campaign_id' => $item->campaign_id,
+							'line_item_id' => $item->line_item_id,
+							'spin_name' => $item->spin_name,
+							'product_id' => $item->product_id,
+							'product_name' => $item->product_name,
+							'product_type' => $item->product_type,
+							'merchandise_type' => $item->merchandise_type,
+							'quantity' => $item->quantity,
+							'sku_id' => $item->sku_id,
+							'sku_upc' => $item->sku_upc,
+							'sku_attributes' => serialize($item->sku_attributes),
+							'factory_sku' => $item->factory_sku,
+							'shipped' => $item->shipped,
+							'status' => $item->status,
+							'weight' => serialize($item->weight),
+							'bundle_sku_id' => $item->bundle_sku_id,
+							'shipping_date' => $item->shipping_date
+						);
+						$itemFormat = array('%d','%d','%d','%d','%s','%d','%s','%s','%s','%d','%d','%s','%s','%s','%d','%s','%s','%d','%s');
+						$itemTableFields = implode(',',array_keys($itemData));
+						$itemTableFormats = implode(',',$itemFormat);
+						$itemOnDuplicateUpdate = '';
+						$itemKeyIndex = 0;
+						foreach($itemData as $itemKey=>$itemField) {
+							if($itemKeyIndex>0) { $itemOnDuplicateUpdate .= ', '; }
+							$itemOnDuplicateUpdate .= $itemKey.'=VALUES('.$itemKey.')';
+							$itemKeyIndex++;
+						}
+						$itemSQL = <<<EOD
+						INSERT INTO {$this->wpdb->prefix}topspin_orders_items ({$itemTableFields}) VALUES ({$itemTableFormats})
+						ON DUPLICATE KEY UPDATE {$itemOnDuplicateUpdate}
+EOD;
+						$this->wpdb->query($this->wpdb->prepare($itemSQL,$itemData));
+					}
+				}
+			}
+		}
 	}
 
 	public function rebuildItems() {
@@ -320,82 +460,88 @@ class Topspin_Store {
 		if($totalPages) {
 			for($i=1;$i<=$totalPages;$i++) {
 				$items = $this->getItems($i);
-				foreach($items as $item) {
-					$data = array(
-						'id' => $item->id,
-						'artist_id' => $item->artist_id,
-						'reporting_name' => $item->reporting_name,
-						'embed_code' => $item->embed_code,
-						'width' => $item->width,
-						'height' => $item->height,
-						'url' => $item->url,
-						'poster_image' => $item->poster_image,
-						'poster_image_source' => (isset($item->poster_image_source)) ? $item->poster_image_source : '',
-						'product_type' => $item->product_type,
-						'offer_type' => $item->offer_type,
-						'description' => $item->description,
-						'currency' => $item->currency,
-						'price' => $item->price,
-						'name' => $item->name,
-						'campaign' => serialize($item->campaign),
-						'offer_url' => (isset($item->offer_url)) ? $item->offer_url : '',
-						'mobile_url' => (isset($item->mobile_url)) ? $item->mobile_url : '',
-						'last_modified' => date('Y-m-d H:i:s',$lastModified)
-					);
-					$format = array('%d','%d','%s','%s','%d','%d','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');
-
-					## Get Keys
-					$tableFields = implode(',',array_keys($data));
-					$tableFormat = implode(',',$format);
-					$onDuplicateKeyUpdate = '';
-					$keyIndex = 0;
-					foreach($data as $key=>$field) {
-						if($keyIndex>0) { $onDuplicateKeyUpdate .= ', '; }
-						$onDuplicateKeyUpdate .= $key.'=VALUES('.$key.')';
-						$keyIndex++;
-					}
-					## Add item
-					$sql = <<<EOD
-					INSERT INTO {$this->wpdb->prefix}topspin_items ({$tableFields}) VALUES ({$tableFormat})
-					ON DUPLICATE KEY UPDATE {$onDuplicateKeyUpdate}
+				if($items && count($items)) {
+					foreach($items as $item) {
+						$parts = parse_url($item->offer_url);
+						$query = array();
+						parse_str($parts['query'],$query);
+						$data = array(
+							'id' => $item->id,
+							'campaign_id' => $query['cId'],
+							'artist_id' => $item->artist_id,
+							'reporting_name' => $item->reporting_name,
+							'embed_code' => $item->embed_code,
+							'width' => $item->width,
+							'height' => $item->height,
+							'url' => $item->url,
+							'poster_image' => $item->poster_image,
+							'poster_image_source' => (isset($item->poster_image_source)) ? $item->poster_image_source : '',
+							'product_type' => $item->product_type,
+							'offer_type' => $item->offer_type,
+							'description' => $item->description,
+							'currency' => $item->currency,
+							'price' => $item->price,
+							'name' => $item->name,
+							'campaign' => serialize($item->campaign),
+							'offer_url' => (isset($item->offer_url)) ? $item->offer_url : '',
+							'mobile_url' => (isset($item->mobile_url)) ? $item->mobile_url : '',
+							'last_modified' => date('Y-m-d H:i:s',$lastModified)
+						);
+						$format = array('%d','%d','%d','%s','%s','%d','%d','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');
+	
+						## Get Keys
+						$tableFields = implode(',',array_keys($data));
+						$tableFormat = implode(',',$format);
+						$onDuplicateKeyUpdate = '';
+						$keyIndex = 0;
+						foreach($data as $key=>$field) {
+							if($keyIndex>0) { $onDuplicateKeyUpdate .= ', '; }
+							$onDuplicateKeyUpdate .= $key.'=VALUES('.$key.')';
+							$keyIndex++;
+						}
+						## Add item
+						$sql = <<<EOD
+						INSERT INTO {$this->wpdb->prefix}topspin_items ({$tableFields}) VALUES ({$tableFormat})
+						ON DUPLICATE KEY UPDATE {$onDuplicateKeyUpdate}
 EOD;
-					$this->wpdb->query($this->wpdb->prepare($sql,$data));
-
-					##	Deletes old item tags
-					$sql = 'DELETE FROM '.$this->wpdb->prefix.'topspin_items_tags WHERE item_id = %d';
-					$this->wpdb->query($this->wpdb->prepare($sql,array($item->id)));
-					##	Adds new item tag
-					if(isset($item->tags) && is_array($item->tags)) {
-						$tagFormat = array('%d','%s');
-						foreach($item->tags as $tag) {
-							$tagData = array(
-								'item_id' => $item->id,
-								'tag_name' => $tag
-							);
-							$this->wpdb->insert($this->wpdb->prefix.'topspin_items_tags',$tagData,$tagFormat);
-						}
-					} // end if tags exist
-
-					##	Deletes old item images
-					$sql = 'DELETE FROM '.$this->wpdb->prefix.'topspin_items_images WHERE item_id = %d';
-					$this->wpdb->query($this->wpdb->prepare($sql,array($item->id)));
-					##	Adds new item images
-					if(isset($item->campaign->product->images) && is_array($item->campaign->product->images)) {
-						$imageFormat = array('%d','%s','%s','%s','%s');
-						foreach($item->campaign->product->images as $key=>$image) {
-							$imageData = array(
-								'item_id' => $item->id,
-								'source_url' => $item->campaign->product->images[$key]->source_url,
-								'small_url' => $item->campaign->product->images[$key]->small_url,
-								'medium_url' => $item->campaign->product->images[$key]->medium_url,
-								'large_url' => $item->campaign->product->images[$key]->large_url
-							);
-							$this->wpdb->insert($this->wpdb->prefix.'topspin_items_images',$imageData,$imageFormat);
-						}
-					} //end if images exist
-
-					array_push($addedIDs,$item->id);
-				} //end for each item
+						$this->wpdb->query($this->wpdb->prepare($sql,$data));
+	
+						##	Deletes old item tags
+						$sql = 'DELETE FROM '.$this->wpdb->prefix.'topspin_items_tags WHERE item_id = %d';
+						$this->wpdb->query($this->wpdb->prepare($sql,array($item->id)));
+						##	Adds new item tag
+						if(isset($item->tags) && is_array($item->tags)) {
+							$tagFormat = array('%d','%s');
+							foreach($item->tags as $tag) {
+								$tagData = array(
+									'item_id' => $item->id,
+									'tag_name' => $tag
+								);
+								$this->wpdb->insert($this->wpdb->prefix.'topspin_items_tags',$tagData,$tagFormat);
+							}
+						} // end if tags exist
+	
+						##	Deletes old item images
+						$sql = 'DELETE FROM '.$this->wpdb->prefix.'topspin_items_images WHERE item_id = %d';
+						$this->wpdb->query($this->wpdb->prepare($sql,array($item->id)));
+						##	Adds new item images
+						if(isset($item->campaign->product->images) && is_array($item->campaign->product->images)) {
+							$imageFormat = array('%d','%s','%s','%s','%s');
+							foreach($item->campaign->product->images as $key=>$image) {
+								$imageData = array(
+									'item_id' => $item->id,
+									'source_url' => $item->campaign->product->images[$key]->source_url,
+									'small_url' => $item->campaign->product->images[$key]->small_url,
+									'medium_url' => $item->campaign->product->images[$key]->medium_url,
+									'large_url' => $item->campaign->product->images[$key]->large_url
+								);
+								$this->wpdb->insert($this->wpdb->prefix.'topspin_items_images',$imageData,$imageFormat);
+							}
+						} //end if images exist
+	
+						array_push($addedIDs,$item->id);
+					} //end for each item
+				} //end if items
 			} //end for each page
 
 			##	Removes all items that is not modified/inserted
@@ -516,15 +662,16 @@ EOD;
 EOD;
 		return $this->wpdb->get_var($this->wpdb->prepare($sql,$name));
 	}
-
-	public function getStores($status='publish') {
-		##	Retrieves a list of Stores
-		##
-		##	PARAMETERS
-		##		@status				Enumeration: publish, trash, all
-		##
-		##	RETURN
-		##		The stores table as a multi-dimensional array
+	
+	public function stores_get_list($status=null) {
+		/*	Retrieves a list of stores
+		 *
+		 *	PARAMETERS
+		 *		@status						Enumeration: publish, trash, or null (all)
+		 *
+		 *	RETURN
+		 *		The stores table as a multi-dimensional array
+		 */
 		$sql = <<<EOD
 		SELECT
 			{$this->wpdb->prefix}posts.ID,
@@ -539,18 +686,101 @@ EOD;
 			{$this->wpdb->prefix}topspin_stores.default_sorting,
 			{$this->wpdb->prefix}topspin_stores.default_sorting_by,
 			{$this->wpdb->prefix}topspin_stores.items_order,
+			{$this->wpdb->prefix}topspin_stores.internal_name,
+			{$this->wpdb->prefix}topspin_stores.featured_item
+		FROM {$this->wpdb->prefix}topspin_stores
+		LEFT JOIN
+			{$this->wpdb->prefix}posts ON {$this->wpdb->prefix}topspin_stores.post_id = {$this->wpdb->prefix}posts.ID
+EOD;
+		if(!is_null($status)) {
+			if(in_array($status,array('publish','trash'))) {
+				$sql .= <<<EOD
+		WHERE
+			{$this->wpdb->prefix}topspin_stores.status = '%s'
+EOD;
+			}
+		}
+		$prepareArgs = array($status);
+		$stores =  $this->wpdb->get_results($this->wpdb->prepare($sql,$prepareArgs));
+		return $stores;
+	}
+
+	public function stores_get_nested_list($status='publish',$storeParent=0) {	//to be deprecated
+		/*	Retrieves a list of Stores in a nested order
+		 *
+		 *	PARAMETERS
+		 *		@status						Enumeration: publish, trash, all
+		 *		@storeParent (int)			The store parent ID
+		 *
+		 *	RETURN
+		 *		The stores table as a multi-dimensional array
+		 */
+		$prepareArgs = array($status);
+		$sql = <<<EOD
+		SELECT
+			{$this->wpdb->prefix}posts.ID,
+			{$this->wpdb->prefix}posts.post_title,
+			{$this->wpdb->prefix}posts.post_name,
+			{$this->wpdb->prefix}topspin_stores.store_id,
+			{$this->wpdb->prefix}topspin_stores.status,
+			{$this->wpdb->prefix}topspin_stores.created_date,
+			{$this->wpdb->prefix}topspin_stores.items_per_page,
+			{$this->wpdb->prefix}topspin_stores.show_all_items,
+			{$this->wpdb->prefix}topspin_stores.grid_columns,
+			{$this->wpdb->prefix}topspin_stores.default_sorting,
+			{$this->wpdb->prefix}topspin_stores.default_sorting_by,
+			{$this->wpdb->prefix}topspin_stores.items_order,
+			{$this->wpdb->prefix}topspin_stores.internal_name,
 			{$this->wpdb->prefix}topspin_stores.featured_item
 		FROM {$this->wpdb->prefix}topspin_stores
 		LEFT JOIN
 			{$this->wpdb->prefix}posts ON {$this->wpdb->prefix}topspin_stores.post_id = {$this->wpdb->prefix}posts.ID
 EOD;
 		if(in_array($status,array('publish','trash'))) {
-			$sql .= <<<EOD
+			//If the parent is set, get only stores under the specified parent
+			if($storeParent) {
+				$sql .= <<<EOD
 		WHERE
 			{$this->wpdb->prefix}topspin_stores.status = '%s'
+			AND {$this->wpdb->prefix}posts.post_parent IN (
+				SELECT
+					{$this->wpdb->prefix}topspin_stores.post_id
+				FROM {$this->wpdb->prefix}topspin_stores
+				WHERE
+					{$this->wpdb->prefix}topspin_stores.store_id = '%d'
+				)
 EOD;
+				$prepareArgs[] = $storeParent;
+			}
+			//Else, get the parent stores
+			else {
+				$sql .= <<<EOD
+		WHERE
+			(
+				{$this->wpdb->prefix}topspin_stores.status = '%s'
+				AND {$this->wpdb->prefix}posts.post_parent = 0
+			)
+			OR
+			(
+				{$this->wpdb->prefix}posts.post_parent NOT IN (
+				SELECT
+					{$this->wpdb->prefix}topspin_stores.post_id
+				FROM {$this->wpdb->prefix}topspin_stores
+				)
+			)
+EOD;
+			}
 		}
-		if(in_array($status,array('publish','trash','all'))) { return $this->wpdb->get_results($this->wpdb->prepare($sql,array($status))); }
+		if(in_array($status,array('publish','trash','all'))) {
+			$stores = $this->wpdb->get_results($this->wpdb->prepare($sql,$prepareArgs));
+			if(count($stores)) {
+				//Get childs
+				foreach($stores as $storeKey=>$storeRow) {
+					$stores[$storeKey]->store_childs = $this->stores_get_nested_list($status,$storeRow->store_id);
+				}
+			}
+			return $stores;
+		}
 	}
 	
 	public function createStore($post,$page_id) {
@@ -571,10 +801,11 @@ EOD;
 			'default_sorting' => $post['default_sorting'],
 			'default_sorting_by' => $post['default_sorting_by'],
 			'items_order' => $post['items_order'],
+			'internal_name' => $post['internal_name'],
 			'featured_item' => $post['featured_item']				//to be deprecated
 		);
 		//Add to the store table
-		$this->wpdb->insert($this->wpdb->prefix.'topspin_stores',$data,array('%d','%s','%d','%d','%d','%s','%s','%s','%d'));
+		$this->wpdb->insert($this->wpdb->prefix.'topspin_stores',$data,array('%d','%s','%d','%d','%d','%s','%s','%s','%s','%d'));
 		$store_id = $this->wpdb->insert_id;
 		## Add Featured images
 		$this->createStoreFeaturedItems($post['featured_item'],$store_id);
@@ -728,9 +959,10 @@ EOD;
 			'grid_columns' => $post['grid_columns'],
 			'default_sorting' => $post['default_sorting'],
 			'default_sorting_by' => $post['default_sorting_by'],
-			'items_order' => $post['items_order']
+			'items_order' => $post['items_order'],
+			'internal_name' => $post['internal_name']
 		);
-		$this->wpdb->update($this->wpdb->prefix.'topspin_stores',$data,array('store_id'=>$store_id),array('%d','%d','%d','%s','%s','%s'),array('%d'));
+		$this->wpdb->update($this->wpdb->prefix.'topspin_stores',$data,array('store_id'=>$store_id),array('%d','%d','%d','%s','%s','%s','%s'),array('%d'));
 		## Add Featured Items
 		$this->updateStoreFeaturedItems($post['featured_item'],$store_id);
 		## Add Offer Types
@@ -797,7 +1029,7 @@ EOD;
 		##	Retrieves the Store entry with the attached Page
 		##
 		##	PARAMETERS
-		##		@store_id			The store ID
+		##		@store_id (int)			The store ID
 		##
 		##	RETURN
 		##		The store object array
@@ -814,7 +1046,8 @@ EOD;
 			{$this->wpdb->prefix}topspin_stores.grid_columns,
 			{$this->wpdb->prefix}topspin_stores.default_sorting,
 			{$this->wpdb->prefix}topspin_stores.default_sorting_by,
-			{$this->wpdb->prefix}topspin_stores.items_order
+			{$this->wpdb->prefix}topspin_stores.items_order,
+			{$this->wpdb->prefix}topspin_stores.internal_name
 		FROM {$this->wpdb->prefix}topspin_stores
 		LEFT JOIN
 			{$this->wpdb->prefix}posts ON {$this->wpdb->prefix}topspin_stores.post_id = {$this->wpdb->prefix}posts.ID
@@ -1174,6 +1407,7 @@ EOD;
 		}
 		## Retrieve the default images of the final items array
 		foreach($sortedItems as $key=>$item) {
+			$sortedItems[$key]['campaign'] = unserialize($sortedItems[$key]['campaign']);
 			##	Add Images
 			$sortedItems[$key]['images'] = $this->getItemImages($item['id']);
 			##	Get Default Image
@@ -1638,6 +1872,165 @@ EOD;
 			{$this->wpdb->prefix}topspin_artists.id ASC
 EOD;
 		return $this->wpdb->get_results($this->wpdb->prepare($sql),ARRAY_A);
+	}
+	
+	public function orders_get_list() {
+		/*	Retrieves the list of orders from the database
+		 *
+		 *	RETURN
+		 *		The orders list ordered by the order's created date from newest to oldest
+		 */
+		 $sql = <<<EOD
+		 SELECT
+		 	{$this->wpdb->prefix}topspin_orders.id,
+		 	{$this->wpdb->prefix}topspin_orders.artist_id,
+		 	{$this->wpdb->prefix}topspin_orders.created_at,
+		 	{$this->wpdb->prefix}topspin_orders.subtotal,
+			{$this->wpdb->prefix}topspin_currency.currency,
+			{$this->wpdb->prefix}topspin_currency.symbol,
+		 	{$this->wpdb->prefix}topspin_orders.tax,
+		 	{$this->wpdb->prefix}topspin_orders.phone,
+		 	{$this->wpdb->prefix}topspin_orders.shipping_method_calculator,
+		 	{$this->wpdb->prefix}topspin_orders.reshipment,
+		 	{$this->wpdb->prefix}topspin_orders.fan,
+		 	{$this->wpdb->prefix}topspin_orders.details_url,
+		 	{$this->wpdb->prefix}topspin_orders.exchange_rate,
+		 	{$this->wpdb->prefix}topspin_orders.shipping_method_code,
+		 	{$this->wpdb->prefix}topspin_orders.shipping_address_firstname,
+		 	{$this->wpdb->prefix}topspin_orders.shipping_address_lastname,
+		 	{$this->wpdb->prefix}topspin_orders.shipping_address_lastname,
+		 	{$this->wpdb->prefix}topspin_orders.shipping_address_address1,
+		 	{$this->wpdb->prefix}topspin_orders.shipping_address_address2,
+		 	{$this->wpdb->prefix}topspin_orders.shipping_address_city,
+		 	{$this->wpdb->prefix}topspin_orders.shipping_address_state,
+		 	{$this->wpdb->prefix}topspin_orders.shipping_address_postal_code,
+		 	{$this->wpdb->prefix}topspin_orders.shipping_address_country,
+		 	{$this->wpdb->prefix}topspin_orders.shipping_address_phone
+		 FROM {$this->wpdb->prefix}topspin_orders
+		 LEFT JOIN
+		 	{$this->wpdb->prefix}topspin_currency ON {$this->wpdb->prefix}topspin_orders.currency = {$this->wpdb->prefix}topspin_currency.currency
+		 WHERE
+		 	{$this->wpdb->prefix}topspin_orders.artist_id = '%d'
+		 GROUP BY
+		 	{$this->wpdb->prefix}topspin_orders.id
+		 ORDER BY
+		 	{$this->wpdb->prefix}topspin_orders.created_at DESC
+EOD;
+		$ordersList = $this->wpdb->get_results($this->wpdb->prepare($sql,array($this->artist_id)));
+		if(count($ordersList)) {
+			foreach($ordersList as $key=>$order) {
+				$ordersList[$key]->items_list = $this->orders_get_items_list($order->id);
+			}
+		}
+		return $ordersList;
+	}
+	
+	public function orders_get_items_list($orderID) {
+		/*	Retrieves the list of items in the given order from the database
+		 *
+		 *	RETURN
+		 *		The items list in the given order
+		 */
+		 $sql = <<<EOD
+		 SELECT
+		 	{$this->wpdb->prefix}topspin_orders_items.id,
+		 	{$this->wpdb->prefix}topspin_orders_items.order_id,
+		 	{$this->wpdb->prefix}topspin_orders_items.campaign_id,
+		 	{$this->wpdb->prefix}topspin_orders_items.line_item_id,
+		 	{$this->wpdb->prefix}topspin_orders_items.spin_name,
+		 	{$this->wpdb->prefix}topspin_orders_items.product_id,
+		 	{$this->wpdb->prefix}topspin_orders_items.product_name,
+		 	{$this->wpdb->prefix}topspin_orders_items.product_type,
+		 	{$this->wpdb->prefix}topspin_orders_items.merchandise_type,
+		 	{$this->wpdb->prefix}topspin_orders_items.quantity,
+		 	{$this->wpdb->prefix}topspin_orders_items.sku_id,
+		 	{$this->wpdb->prefix}topspin_orders_items.sku_upc,
+		 	{$this->wpdb->prefix}topspin_orders_items.sku_attributes,
+		 	{$this->wpdb->prefix}topspin_orders_items.factory_sku,
+		 	{$this->wpdb->prefix}topspin_orders_items.shipped,
+		 	{$this->wpdb->prefix}topspin_orders_items.status,
+		 	{$this->wpdb->prefix}topspin_orders_items.weight,
+		 	{$this->wpdb->prefix}topspin_orders_items.bundle_sku_id,
+		 	{$this->wpdb->prefix}topspin_orders_items.shipping_date
+		 FROM {$this->wpdb->prefix}topspin_orders_items
+		 WHERE
+		 	{$this->wpdb->prefix}topspin_orders_items.order_id = '%d'
+EOD;
+		$itemsList = $this->wpdb->get_results($this->wpdb->prepare($sql,array($orderID)));
+		$unserialize = array('sku_attributes','weight');
+		foreach($unserialize as $key) {
+			foreach($itemsList as $itemKey=>$item) {
+				$itemsList[$itemKey]->$key = unserialize($itemsList[$itemKey]->$key);
+			}
+		}
+		return $itemsList;
+	}
+	
+	public function product_get_most_popular_list($count=null) {
+		/*	Retrieves the list of the most popular ordered items
+		 *
+		 *	PARAMETERS
+		 *		@count (int)			How many items to return
+		 *
+		 *	RETURN
+		 *		The items list ordered by the most ordered to least
+		 */
+		 $LIMIT = ($count) ? "LIMIT '%d'" : "";
+		 $sql = <<<EOD
+		 SELECT
+			{$this->wpdb->prefix}topspin_items.id,
+		 	{$this->wpdb->prefix}topspin_items.campaign_id,
+		 	COUNT({$this->wpdb->prefix}topspin_orders_items.campaign_id) AS `order_count`,
+		 	SUM({$this->wpdb->prefix}topspin_orders_items.quantity) AS `total_count`,
+			{$this->wpdb->prefix}topspin_items.artist_id,
+			{$this->wpdb->prefix}topspin_items.reporting_name,
+			{$this->wpdb->prefix}topspin_items.embed_code,
+			{$this->wpdb->prefix}topspin_items.width,
+			{$this->wpdb->prefix}topspin_items.height,
+			{$this->wpdb->prefix}topspin_items.url,
+			{$this->wpdb->prefix}topspin_items.poster_image,
+			{$this->wpdb->prefix}topspin_items.poster_image_source,
+			{$this->wpdb->prefix}topspin_items.product_type,
+			{$this->wpdb->prefix}topspin_items.offer_type,
+			{$this->wpdb->prefix}topspin_offer_types.name AS offer_type_name,
+			{$this->wpdb->prefix}topspin_items.description,
+			{$this->wpdb->prefix}topspin_items.price,
+			{$this->wpdb->prefix}topspin_items.name,
+			{$this->wpdb->prefix}topspin_items.campaign,
+			{$this->wpdb->prefix}topspin_items.offer_url,
+			{$this->wpdb->prefix}topspin_items.mobile_url,
+			GROUP_CONCAT(DISTINCT {$this->wpdb->prefix}topspin_items_tags.tag_name SEPARATOR ',') AS `tags`,
+			{$this->wpdb->prefix}topspin_currency.currency,
+			{$this->wpdb->prefix}topspin_currency.symbol,
+		 	{$this->wpdb->prefix}topspin_items.last_modified
+		 FROM
+		 	{$this->wpdb->prefix}topspin_orders_items
+		 LEFT JOIN
+		 	{$this->wpdb->prefix}topspin_items ON {$this->wpdb->prefix}topspin_orders_items.campaign_id = {$this->wpdb->prefix}topspin_items.campaign_id
+		 LEFT JOIN
+		 	{$this->wpdb->prefix}topspin_items_tags ON {$this->wpdb->prefix}topspin_items.id = {$this->wpdb->prefix}topspin_items_tags.item_id
+		 LEFT JOIN
+		 	{$this->wpdb->prefix}topspin_currency ON {$this->wpdb->prefix}topspin_items.currency = {$this->wpdb->prefix}topspin_currency.currency
+		 LEFT JOIN
+		 	{$this->wpdb->prefix}topspin_offer_types ON {$this->wpdb->prefix}topspin_items.offer_type = {$this->wpdb->prefix}topspin_offer_types.type
+		 WHERE
+		 	{$this->wpdb->prefix}topspin_items.offer_type = 'buy_button' AND
+		 	{$this->wpdb->prefix}topspin_items.artist_id = '%d'
+		 GROUP BY
+		 	{$this->wpdb->prefix}topspin_orders_items.campaign_id
+		 ORDER BY
+		 	`total_count` DESC
+		 {$LIMIT}
+EOD;
+		$items = $this->wpdb->get_results($this->wpdb->prepare($sql,array($this->artist_id,$count)));
+		foreach($items as $item) {		
+			##	Add Images
+			$item->images = $this->getItemImages($item->id);
+			##	Get Default Image
+			$item->default_image = (strlen($item->poster_image_source)) ? $this->getItemDefaultImage($item->id,$item->poster_image_source) : $item->poster_image;
+			$item->default_image_large = (strlen($item->poster_image_source)) ? $this->getItemDefaultImage($item->id,$item->poster_image_source,'large') : $item->poster_image;
+		}
+		return $items;
 	}
 
 }

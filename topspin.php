@@ -5,7 +5,7 @@ Plugin URI: http://wordpress.org/extend/plugins/official-topspin-wordpress-plugi
 Description: Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages using the Topspin API
 Author: The Uprising Creative for Topspin Media
 Author URI: http://theuprisingcreative.com
-Version: 3.2.3
+Version: 3.3
 */
 
 ### This File
@@ -21,8 +21,14 @@ function topspin_page_settings_general() {
 function topspin_page_settings_viewstores() {
 	include('page/settings_viewstores.php');
 }
+function topspin_page_settings_viewmostpopular() {
+	include('page/settings_viewmostpopular.php');
+}
 function topspin_page_settings_viewitems() {
 	include('page/settings_viewitems.php');
+}
+function topspin_page_settings_vieworders() {
+	include('page/settings_vieworders.php');
 }
 function topspin_page_settings_edit() {
 	include('page/settings_edit.php');
@@ -33,7 +39,9 @@ function topspin_add_menus() {
 	add_menu_page('Topspin','Topspin',6,'topspin/page/settings_general','topspin_page_settings_general');
 		add_submenu_page('topspin/page/settings_general','Settings','Settings',6,'topspin/page/settings_general','topspin_page_settings_general');
 		add_submenu_page('topspin/page/settings_general','View Stores','View Stores',6,'topspin/page/settings_viewstores','topspin_page_settings_viewstores');
+		add_submenu_page('topspin/page/settings_general','View Most Popular','View Most Popular',6,'topspin/page/settings_viewmostpopular','topspin_page_settings_viewmostpopular');
 		add_submenu_page('topspin/page/settings_general','View Items','View Items',6,'topspin/page/settings_viewitems','topspin_page_settings_viewitems');
+		add_submenu_page('topspin/page/settings_general','View Orders','View Orders',6,'topspin/page/settings_vieworders','topspin_page_settings_vieworders');
 		add_submenu_page('topspin/page/settings_general','Store Setup','Add Store',6,'topspin/page/settings_edit','topspin_page_settings_edit');
 }
 
@@ -67,10 +75,10 @@ else {
 		###	3.0.0
 		elseif(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-ie7.css')) { wp_enqueue_style('topspin-theme',TOPSPIN_CURRENT_THEME_URL.'/topspin-ie7.css'); }
 	}
-	wp_enqueue_style('topspin-colorbox',TOPSPIN_PLUGIN_URL.'/resources/js/colorbox/colorbox.css');
-	wp_enqueue_script('topspin-core','http://cdn.topspin.net/javascripts/topspin_core.js?aId='.TOPSPIN_ARTIST_ID);
-	wp_enqueue_script('topspin-colorbox',TOPSPIN_PLUGIN_URL.'/resources/js/colorbox/jquery.colorbox-min.js');
-	wp_enqueue_script('topspin-ready',TOPSPIN_PLUGIN_URL.'/resources/js/topspin.ready.js');
+	wp_enqueue_style('jquery.colorbox',TOPSPIN_PLUGIN_URL.'/resources/js/colorbox/colorbox.css');
+	wp_enqueue_script('jquery.colorbox',TOPSPIN_PLUGIN_URL.'/resources/js/colorbox/jquery.colorbox-min.js',array('jquery'),'1.3.17.2',true);
+	wp_enqueue_script('topspin-core','http://cdn.topspin.net/javascripts/topspin_core.js?aId='.TOPSPIN_ARTIST_ID,null,'3.3',true);
+	wp_enqueue_script('topspin-ready',TOPSPIN_PLUGIN_URL.'/resources/js/topspin.ready.js',array('jquery'),'3.3',true);
 }
 
 ?>

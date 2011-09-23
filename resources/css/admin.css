@@ -113,3 +113,23 @@ ul.item-listing li .item-hide {
 #topspin_manual_sorting {
 	display:none;
 }
+
+table.topspin-orders-list {
+}
+	table.topspin-orders-list .id-column {
+		width:100px;
+	}
+	table.topspin-orders-list .shipping-column {
+	}
+	table.topspin-orders-list .phone-column {
+		width:150px;
+	}
+	table.topspin-orders-list .fan-column {
+		width:250px;
+	}
+	table.topspin-orders-list .details-column {
+		width:250px;
+	}
+	table.topspin-orders-list .subtotal-column {
+		width:100px;
+	}

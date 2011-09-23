@@ -2,11 +2,15 @@
 
 /*
  *
- *	Last Modified:			August 11, 2011
+ *	Last Modified:			September 22, 2011
  *
  *	--------------------------------------
  *	Change Log
  *	--------------------------------------
+ *	2011-09-23
+ 		- Removed unnecessary campaign variable declaration
+ *	2011-09-07
+ 		- Added store internal name field
  *	2011-08-11
  		- Fixed some PHP warnings
  		- Fixed sorting preview bug (product sorting and sort by select boxes)
@@ -51,6 +55,7 @@ $storeData = array(
 	'default_sorting' => 'alphabetical',
 	'default_sorting_by' => 'tag',
 	'items_order' => '',
+	'internal_name' => '',
 	'featured_item' => array(),
 	'offer_types' => $store->getOfferTypes(),
 	'tags' => $store->getTagList()
@@ -161,6 +166,13 @@ switch($action) {
 						<td>
 							<input id="topspin_slug" class="regular-text" type="text" value="<?php echo $storeData['slug'];?>" name="slug" />
 							<span class="description">Leave field empty to automatically generate slug based on the store's name.</span>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row"><label for="topspin_internal_name">Store Internal Name</label></th>
+						<td>
+							<input id="topspin_internal_name" class="regular-text" type="text" value="<?php echo $storeData['internal_name'];?>" name="internal_name" />
+							<span class="description"><?php if($storeData['id']): ?>Optional: Choose an internal name for this store (for administrative purposes).<?php endif; ?></span>
 						</td>
 					</tr>
 					<tr valign="top">
@@ -303,10 +315,7 @@ switch($action) {
 		                            <li id="preview-item-<?php echo $item['id'];?>">
 		                                <div class="item-canvas">
 		                                    <div class="item-canvas-cell">
-			                                    <?php
-			                                    $campaign = unserialize($item['campaign']);
-			                                    $product = $campaign->product;
-			                                    ?><img src="<?php echo $item['default_image'];?>" width="150" alt="<?php echo $item['name'];?>" /><br/>
+			                                    <img src="<?php echo $item['default_image'];?>" width="150" alt="<?php echo $item['name'];?>" /><br/>
 			                                    <?php echo $item['name'];?>
 		                                    </div>
 		                                </div>
@@ -383,10 +392,6 @@ switch($action) {
                                     <li id="item-<?php echo $item['id'];?>:<?php echo ($item['is_public'])?$item['is_public']:0;?>">
                                     	<div class="item-offer-type"><?php echo $item['offer_type_name'];?></div>
                                         <div class="item-canvas <?php echo ($item['is_public'])?'':'faded';?>">
-                                            <?php
-                                            $campaign = unserialize($item['campaign']);
-                                            $product = $campaign->product;
-                                            ?>
                                             <img src="<?php echo $item['default_image'];?>" width="150" alt="<?php echo $item['name'];?>" /><br/>
                                             <?php echo $item['name'];?>
                                         </div>

@@ -8,18 +8,16 @@
  *	Change Log
  *	--------------------------------------
  *	2011-09-22
- 		- Removed Add New button
- *	2011-07-26
  		- Created page
  *
  */
 
 global $store;
-$itemsList = $store->getArtistItems();
+$itemsList = $store->product_get_most_popular_list();
 ?>
 
 <div class="wrap">
-	<h2>Items</h2>
+	<h2>Most Popular Items</h2>
 
     <table class="topspin-stores-list wp-list-table widefat fixed" cellspacing="0">
         <thead>

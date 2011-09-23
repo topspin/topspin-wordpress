@@ -3,7 +3,7 @@ Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
 Tested up to: 3.2.1
-Stable tag: 3.2.3
+Stable tag: 3.3
 Requires at least: 3.0.2
 
 Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages.
@@ -131,6 +131,8 @@ in item-listing.php:
 Additional template tags are now available, as of v3.2: 
 * topspin_get_item_photos($item_id) - retrieves all the images of the item
 * topspin_get_item($item_id) - retrieves all the information of the item
+* topspin_get_store_items($store_id) - retrieves all the items of the store
+* topspin_get_most_popular_items($limit) - retrieves the most popular items
 
 = Additional Customization Details = 
 1. It is very important that you copy the Template files to your site's active theme directory.  If you edit them in the Plugin's `/templates/` directory, any changes you make will be overwritten when you upgrade the plugin! 
@@ -164,6 +166,9 @@ More than OK!  This plugin is completely open-source and to top it off, Topspin 
 
 = I upgraded form a pre-v3.2 version of the plugin so that I can use multiple images and permalinks, but neither are working.  What do I need to do to enable them? = 
 These features require use of some new elements introduced in the v3.2 templates.  If you are using the default templates located in the Plugins directory (meaning you haven't copied the templates to your theme folder and customized them), these updates will automatically be usable.  However, if you ARE using customized templates located in your Theme folder, you'll need to either manually update the theme with the new code or copy over the new default theme and re-style it as needed.  
+
+= Is it possible to use the plugin with a Topspin child account? =
+Unfortunately it’s not. This is due to a limitation in the Topspin API regarding information being passed via the API for child accounts. If you enter your API information into the plugin and none of your products show up, and if you’r account details were setup or given to you by someone else, there’s a good chance you’re on a child account. If this happens, check with your Topspin account administrator and see if you are indeed using a child account. If you are, you’ll need to get the parent account API details in order for the plugin to work.
 
 == Usage ==
 
@@ -259,6 +264,18 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 8. Front-End -> View of the Topspin Checkout Flow overlay
 
 == Changelog ==
+
+= 3.3 =
+* Fixed some PHP warnings.
+* Added caching from the Orders API.
+* Added internal names for each Store for administrative purposes.
+* Added new sections in the WordPress Admin: View Most Popular, and View Orders.
+* Updated colorbox to the latest version and resolves how it is loaded. @blauwers
+* Updated View Stores to now display store pages in a nested list, the full permalink, and the new internal name.
+* Updated the items caching method store the campaign ID.
+* Updated FAQ.
+* Added new topspin template tags/functions: topspin_get_store_items(), and topspin_get_most_popular_items().
+* Moved JS to footer for faster page load performance. @blauwers
 
 = 3.2.3 =
 * Fixed the Product Sorting and Sort By bug to now work with the Preview.

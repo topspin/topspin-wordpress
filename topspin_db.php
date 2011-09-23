@@ -1,10 +1,12 @@
 <?php
 /*
- *	Last Modified:		July 26, 2011
+ *	Last Modified:		September 7, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-09-07
+ 		- Fixed topspin_table_column_add column (removed AFTER key)
  *	2011-07-26
  		- File created
  		- New function topspin_table_column_exists()
@@ -51,7 +53,7 @@ function topspin_table_column_add($table,$column,$type='text') {
 	 */
 	 global $wpdb;
 $sql = <<<EOD
-ALTER TABLE  `{$wpdb->prefix}{$table}` ADD  `{$column}` {$type} NOT NULL AFTER  `id` ;
+ALTER TABLE  `{$wpdb->prefix}{$table}` ADD  `{$column}` {$type} NOT NULL;
 EOD;
 $wpdb->query($sql);
 }

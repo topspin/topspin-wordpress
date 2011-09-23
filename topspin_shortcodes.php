@@ -1,10 +1,12 @@
 <?php
 /*
- *	Last Modified:		August 1, 2011
+ *	Last Modified:		September 19, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-09-19
+ 		- Fixed shortcode content positioning - [@bryanlanders - https://github.com/topspin/topspin-wordpress/issues/19]
  *	2011-08-01
  		- Updated topspin_shortcode_featured_item() to display multiple featured images
  		- Fixed the pagination to work with and without permalinks
@@ -46,7 +48,7 @@ function topspin_shortcode_store_item($atts) {
 			include($templatefile);
 			$html = ob_get_contents();
 			ob_end_clean();
-			echo $html;
+			return $html;
 		}
 	}
 }
@@ -102,7 +104,7 @@ function topspin_shortcode_buy_buttons($atts) {
 	include($templatefile);
 	$html = ob_get_contents();
 	ob_end_clean();
-	echo $html;
+	return $html;
 }
 
 ### [topspin_featured_item]
@@ -135,7 +137,7 @@ function topspin_shortcode_featured_item($atts) {
 			$html .= ob_get_contents();
 		}
 		ob_end_clean();
-		echo $html;
+		return $html;
 	}
 }
 

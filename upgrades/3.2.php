@@ -38,7 +38,7 @@ if(!topspin_table_column_exists('topspin_tags','artist_id','INT')) {
 topspin_run_sql_file('topspin_stores_featured_item.sql');
 
 // Migrate all featured item ID to the new featured items table
-$stores = $store->getStores('all');
+$stores = $store->stores_get_list();
 foreach($stores as $_store) {
 	$store->updateStoreFeaturedItems($_store->featured_item,$_store->store_id);
 }
