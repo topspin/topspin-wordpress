@@ -9,6 +9,8 @@
  *	Change Log
  *	----------------------------------
  *	2011-09-23
+ 		- Updated product_get_most_popular_list() LIMIT format string
+ 		- Updated getStoreItems() to check count of offer types and tags before appending to query.
  		- Updated orders_get_list() and product_get_most_popular_list() to return items within the current artist ID.
  		- Updated getStoreItems() to unserialize the campaign serialized string.
  *	2011-09-22
@@ -1102,25 +1104,29 @@ EOD;
 		## In Offer Types
 		$in_offer_type = '';
 		$total_offer_types = 0;
-		foreach($storeData['offer_types'] as $key=>$offer_type) {
-			if($offer_type['status']) {
-				$total_offer_types++;
-				if($key==0) { $in_offer_type .= '\''.$offer_type['type'].'\''; }
-				else { $in_offer_type .= ', \''.$offer_type['type'].'\''; }
+		if(count($storeData['offer_types'])) {
+			foreach($storeData['offer_types'] as $key=>$offer_type) {
+				if($offer_type['status']) {
+					$total_offer_types++;
+					if($key==0) { $in_offer_type .= '\''.$offer_type['type'].'\''; }
+					else { $in_offer_type .= ', \''.$offer_type['type'].'\''; }
+				}
 			}
-		}
 		$WHERE_IN_OFFER_TYPE  = ($total_offer_types) ? ' AND '.$this->wpdb->prefix.'topspin_items.offer_type IN ('.$in_offer_type.')' : '';
+		}
 		## In Tags
 		$in_tags = '';
 		$total_tags = 0;
-		foreach($storeData['tags'] as $key=>$tag) {
-			if($tag['status']) {
-				$total_tags++;
-				if($key==0) { $in_tags .= '\''.$tag['name'].'\''; }
-				else { $in_tags .= ', \''.$tag['name'].'\''; }
+		if(count($storeData['tags'])) {
+			foreach($storeData['tags'] as $key=>$tag) {
+				if($tag['status']) {
+					$total_tags++;
+					if($key==0) { $in_tags .= '\''.$tag['name'].'\''; }
+					else { $in_tags .= ', \''.$tag['name'].'\''; }
+				}
 			}
-		}
 		$WHERE_IN_TAGS  = ($total_tags) ? ' AND '.$this->wpdb->prefix.'topspin_items_tags.tag_name IN ('.$in_tags.')' : '';
+		}
 		## Order By
 		$order_by = ($storeData['default_sorting']=='alphabetical') ? $this->wpdb->prefix.'topspin_items.name ASC' : $this->wpdb->prefix.'topspin_items.id ASC';
 		## Switch Sorting By
@@ -1975,7 +1981,7 @@ EOD;
 		 *	RETURN
 		 *		The items list ordered by the most ordered to least
 		 */
-		 $LIMIT = ($count) ? "LIMIT '%d'" : "";
+		 $LIMIT = ($count) ? "LIMIT %d" : "";
 		 $sql = <<<EOD
 		 SELECT
 			{$this->wpdb->prefix}topspin_items.id,
