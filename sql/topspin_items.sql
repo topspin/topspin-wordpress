@@ -19,6 +19,6 @@ CREATE TABLE IF NOT EXISTS `<?php echo $wpdb->prefix;?>topspin_items` (
   `offer_url` text NOT NULL,
   `mobile_url` text NOT NULL,
   `last_modified` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
   KEY `campaign_id` (`campaign_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

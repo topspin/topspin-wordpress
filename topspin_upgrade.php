@@ -1,10 +1,12 @@
 <?php
 /*
- *	Last Modified:		April 11, 2011
+ *	Last Modified:		September 27, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2011-09-27
+ 		- Updated topspin_rerun_upgrades() to run all initial SQL files before the upgrade scripts.
  *	2011-04-11
  		- added new function topspin_rerun_check()
  		- fixed version upgrade script sorting
@@ -59,6 +61,23 @@ function topspin_upgrade() {
 
 function topspin_rerun_upgrades() {
 	global $store;
+	##	Create Tables
+	topspin_run_sql_file('topspin_currency.sql');
+	topspin_run_sql_file('topspin_currency_insert.sql');
+	topspin_run_sql_file('topspin_items.sql');
+	topspin_run_sql_file('topspin_items_tags.sql');
+	topspin_run_sql_file('topspin_items_images.sql');
+	topspin_run_sql_file('topspin_offer_types.sql');
+	topspin_run_sql_file('topspin_offer_types_insert.sql');
+	topspin_run_sql_file('topspin_orders.sql');
+	topspin_run_sql_file('topspin_orders_items.sql');
+	topspin_run_sql_file('topspin_settings.sql');
+	topspin_run_sql_file('topspin_stores.sql');
+	topspin_run_sql_file('topspin_stores_featured_items.sql');
+	topspin_run_sql_file('topspin_stores_offer_type.sql');
+	topspin_run_sql_file('topspin_stores_tag.sql');
+	topspin_run_sql_file('topspin_artists.sql');
+	topspin_run_sql_file('topspin_tags.sql');
 	##	Find All Upgrade Script
 	$versions = array();
 	if($handle=opendir(TOPSPIN_PLUGIN_PATH.'/upgrades')) {

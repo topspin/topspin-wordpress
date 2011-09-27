@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `<?php echo $wpdb->prefix;?>topspin_stores` (
   `default_sorting_by` varchar(255) NOT NULL,
   `items_order` longtext NOT NULL,
   `featured_item` int(11) NOT NULL,
+  `page_template` varchar(255) NOT NULL,
   `internal_name` varchar(255) NOT NULL,
   PRIMARY KEY  (`store_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
