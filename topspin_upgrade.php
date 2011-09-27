@@ -7,6 +7,7 @@
  *	----------------------------------
  *	2011-09-27
  		- Updated topspin_rerun_upgrades() to run all initial SQL files before the upgrade scripts.
+ 		- Updated topspin_rerun_upgrades with a new parameter to allow for skipping current version script.
  *	2011-04-11
  		- added new function topspin_rerun_check()
  		- fixed version upgrade script sorting
@@ -59,7 +60,7 @@ function topspin_upgrade() {
 	update_option('topspin_update_check',1);
 }
 
-function topspin_rerun_upgrades() {
+function topspin_rerun_upgrades($skipCurrent=false) {
 	global $store;
 	##	Create Tables
 	topspin_run_sql_file('topspin_currency.sql');
@@ -85,6 +86,7 @@ function topspin_rerun_upgrades() {
 			if($file!='.' && $file!='..') {
 				$fileInfo = pathinfo($file);
 				$fileVersion = str_replace('.'.$fileInfo['extension'],'',$fileInfo['basename']);
+				if($skipCurrent && version_compare($fileVersion,TOPSPIN_VERSION,'=')) { continue; }
 				array_push($versions,$fileVersion);
 			}
 		}
