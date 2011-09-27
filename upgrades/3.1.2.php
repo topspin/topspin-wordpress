@@ -16,7 +16,7 @@ if($handle=opendir(TOPSPIN_PLUGIN_PATH.'/upgrades')) {
 		if($file!='.' && $file!='..') {
 			$fileInfo = pathinfo($file);
 			$fileVersion = str_replace('.'.$fileInfo['extension'],'',$fileInfo['basename']);
-			if($fileVersion=='3.1.2') { continue; }
+			if($fileVersion=='3.1.2' || version_compare($fileVersion,'3.3.2','=')) { continue; }
 			else { array_push($versions,$fileVersion); }
 		}
 	}
