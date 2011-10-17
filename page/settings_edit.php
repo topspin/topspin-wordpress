@@ -2,11 +2,14 @@
 
 /*
  *
- *	Last Modified:			September 22, 2011
+ *	Last Modified:			October 16, 2011
  *
  *	--------------------------------------
  *	Change Log
  *	--------------------------------------
+ *      2011-10-16
+		- Added shortcode for nav menu
+		- Added code to set nav menu position to $storeData array
  *	2011-09-23
  		- Removed unnecessary campaign variable declaration
  *	2011-09-07
@@ -58,7 +61,8 @@ $storeData = array(
 	'internal_name' => '',
 	'featured_item' => array(),
 	'offer_types' => $store->getOfferTypes(),
-	'tags' => $store->getTagList()
+	'tags' => $store->getTagList(),
+	'navmenu_position' => ( count($store->getStore()) + 1 )
 );
 $storePost = array();
 
@@ -106,7 +110,7 @@ switch($action) {
 					'post_name' => $storeData['slug'],
 					'post_status' => 'publish',
 					'post_type' => 'page',
-					'post_content' => '[topspin_featured_item]&nbsp;[topspin_buy_buttons]',
+					'post_content' => '[topspin_store_nav_menu]&nbsp;[topspin_featured_item]&nbsp;[topspin_buy_buttons]',
 					'post_parent' => $storeData['parent_id']
 				);
 

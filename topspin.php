@@ -33,6 +33,9 @@ function topspin_page_settings_vieworders() {
 function topspin_page_settings_edit() {
 	include('page/settings_edit.php');
 }
+function topspin_page_settings_navmenu() {
+	include('page/settings_navmenu.php');
+}
 
 ### Add Menus
 function topspin_add_menus() {
@@ -43,6 +46,7 @@ function topspin_add_menus() {
 		add_submenu_page('topspin/page/settings_general','View Items','View Items',6,'topspin/page/settings_viewitems','topspin_page_settings_viewitems');
 		add_submenu_page('topspin/page/settings_general','View Orders','View Orders',6,'topspin/page/settings_vieworders','topspin_page_settings_vieworders');
 		add_submenu_page('topspin/page/settings_general','Store Setup','Add Store',6,'topspin/page/settings_edit','topspin_page_settings_edit');
+		add_submenu_page('topspin/page/settings_general','Nav Menu','Nav Menu',6,'topspin/page/settings_navmenu','topspin_page_settings_navmenu');
 }
 
 ### Global CSS/JS
