@@ -155,7 +155,7 @@ function topspin_shortcode_store_nav_menu($atts) {
         );
         $a = shortcode_atts($defaults,$atts);
         $storeID = $a['id'];
-        $storesList = $store->getStore();
+        $storesList = $store->stores_get_nested_list();
 
         ob_start();
         ##      Template File
