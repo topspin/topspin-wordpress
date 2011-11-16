@@ -62,7 +62,7 @@ $storeData = array(
 	'featured_item' => array(),
 	'offer_types' => $store->getOfferTypes(),
 	'tags' => $store->getTagList(),
-	'navmenu_position' => ( count($store->getStore()) + 1 )
+	'navmenu_position' => ( count($store->stores_get_nested_list()) + 1 )
 );
 $storePost = array();
 

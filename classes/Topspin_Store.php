@@ -972,7 +972,7 @@ EOD;
 			'default_sorting_by' => $post['default_sorting_by'],
 			'items_order' => $post['items_order'],
 			'internal_name' => $post['internal_name'],
-			'navemenu_position' => $post['navmenu_position']
+			'navmenu_position' => $post['navmenu_position']
 		);
 		$this->wpdb->update($this->wpdb->prefix.'topspin_stores',$data,array('store_id'=>$store_id),array('%d','%d','%d','%s','%s','%s','%s','%d'),array('%d'));
 		## Add Featured Items
@@ -1048,6 +1048,7 @@ EOD;
 		##
 		##	RETURN
 		##		True
+		echo "In deleteStore function...<br/>";
 		if(!$force_delete) { $this->wpdb->update($this->wpdb->prefix.'topspin_stores',array('status'=>'trash'),array('store_id'=>$store_id),array('%s'),array('%d')); }
 		else {
 			//Delete the store and all it's settings
