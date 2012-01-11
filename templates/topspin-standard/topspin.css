@@ -20,6 +20,35 @@ body div#colorbox, body div#cboxOverlay, body div#cboxWrapper { z-index:4000; }
 	text-decoration:none;
 }
 
+/* TOPSPIN STORE NAV MENU */
+
+div.topspin-store-navmenu {
+        padding: 0 0 2em;
+}
+
+.topspin-store-navmenu ul.topspin-store-navmenu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+}
+
+.topspin-store-navmenu li.topspin-store-navmenu {
+        display: inline;
+}
+
+.topspin-store-navmenu a.topspin-store-navmenu {
+        padding: 0.25em 1em;
+}
+
+.topspin-store-navmenu a.topspin-store-navmenu#selected {
+        border: solid 1px black;
+}
+
+.topspin-store-navmenu a.topspin-store-navmenu:link {
+        font-weight: bold;
+        text-decoration: none;
+}
+
 /* TOPSPIN FEATURED ITEMS */
 .topspin-featured-item {
 	margin-bottom:30px;

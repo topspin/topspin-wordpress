@@ -1,10 +1,12 @@
 <?php
 /*
- *	Last Modified:		September 19, 2011
+ *	Last Modified:		October 16, 2011
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *      2011-09-10 (eThan)
+ 		- Added shortcode function for nav menu.
  *	2011-09-19
  		- Fixed shortcode content positioning - [@bryanlanders - https://github.com/topspin/topspin-wordpress/issues/19]
  *	2011-08-01
@@ -25,6 +27,8 @@
 add_shortcode('topspin_store_item','topspin_shortcode_store_item');
 add_shortcode('topspin_buy_buttons','topspin_shortcode_buy_buttons');
 add_shortcode('topspin_featured_item','topspin_shortcode_featured_item');
+add_shortcode('topspin_store_nav_menu','topspin_shortcode_store_nav_menu');
+
 
 ### [topspin_store_item]
 ###		@id		The item ID
@@ -139,6 +143,34 @@ function topspin_shortcode_featured_item($atts) {
 		ob_end_clean();
 		return $html;
 	}
+}
+
+###     [topspin_store_nav_menu]
+###             @id             Default: the current store's ID
+function topspin_shortcode_store_nav_menu($atts) {
+        global $store;
+        global $post;
+        $defaults = array(
+                'id' => (isset($atts['id'])) ? $atts['id'] : $store->getStoreId($post->ID)
+        );
+        $a = shortcode_atts($defaults,$atts);
+        $storeID = $a['id'];
+        $storesList = $store->stores_get_nested_list();
+
+        ob_start();
+        ##      Template File
+        $templateMode = $store->getSetting('topspin_template_mode');
+        $templatefile = 'templates/topspin-'.$templateMode.'/nav-menu.php';
+        ##      3.1
+        if(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-'.$templateMode.'/nav-menu.php')) { $templatefile = TOPSPIN_CURRENT_THEME_PATH.'/topspin-'.$templateMode.'/nav-menu.php'; }
+        elseif(file_exists(TOPSPIN_CURRENT_THEMEPARENT_PATH.'/topspin-'.$templateMode.'/nav-menu.php')) { $templatefile = TOPSPIN_CURRENT_THEMEPARENT_PATH.'/topspin-templates/nav-menu.php'; }
+        ##      3.0.0
+        if(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-templates/nav-menu.php')) { $templatefile = TOPSPIN_CURRENT_THEME_PATH.'/topspin-templates/nav-menu.php'; }
+        elseif(file_exists(TOPSPIN_CURRENT_THEMEPARENT_PATH.'/topspin-templates/nav-menu.php')) { $templatefile = TOPSPIN_CURRENT_THEMEPARENT_PATH.'/topspin-templates/nav-menu.php'; }
+        include($templatefile);
+        $html = ob_get_contents();
+        ob_end_clean();
+        echo $html;
 }
 
 ?>

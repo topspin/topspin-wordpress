@@ -6,6 +6,8 @@
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *      2011-09-29
+		- Updated code to set the nav menu toggle to inactive for new a new store.  (eThan)
  *	2011-08-01
  		- Updated saving to delete all currently created store if the artist ID is switched.
  *	2011-04-11
@@ -59,6 +61,7 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
 					$artistsList = $store->getArtistsList();
 					$store->setSetting('topspin_artist_id',$artistsList[0]['id']);
 					update_option('topspin_artist_id',$artistsList[0]['id']);
+					$store->setSetting('topspin_navmenu','off');  // by default deactivate nav menu.
 				}
 				$success = 'Settings saved.';
 				break;
