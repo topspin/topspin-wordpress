@@ -42,35 +42,47 @@
 		<?php
 		for($col=1;$col<=$storedata['grid_columns'];$col++) : $key = ($row*$storedata['grid_columns'])-($storedata['grid_columns']-($col-1)); ?>
 		<td width="<?php echo floor(100/$storedata['grid_columns']);?>%">
-		<?php if(isset($storeitems[$key])) : ?>
-			<a class="topspin-view-item" href="#!/<?php echo $storeitems[$key]['id']; ?>"><img src="<?php echo $storeitems[$key]['default_image'];?>" /></a>
-			<div id="topspin-view-more-<?php echo $storeitems[$key]['id']; ?>" class="topspin-view-more-canvas">
-				<div class="topspin-view-more-image">
-					<div class="topspin-view-more-image-default">
-						<div class="topspin-view-more-image-default-cell">
-							<a href="#!/<?php echo $storeitems[$key]['id']; ?>"><img src="<?php echo $storeitems[$key]['default_image_large'];?>" /></a>
+        	<?php ## BEGIN SWITCH OFFER TYPE
+			$item = $storeitems[$key];
+            switch($item['offer_type']) {
+				case 'buy_button':
+					if(isset($storeitems[$key])) : ?>
+					<a class="topspin-view-item" href="#!/<?php echo $storeitems[$key]['id']; ?>"><img src="<?php echo $storeitems[$key]['default_image'];?>" /></a>
+					<div id="topspin-view-more-<?php echo $storeitems[$key]['id']; ?>" class="topspin-view-more-canvas">
+						<div class="topspin-view-more-image">
+							<div class="topspin-view-more-image-default">
+								<div class="topspin-view-more-image-default-cell">
+									<a href="#!/<?php echo $storeitems[$key]['id']; ?>"><img src="<?php echo $storeitems[$key]['default_image_large'];?>" /></a>
+								</div>
+							</div>
 						</div>
+						<h2 class="topspin-view-more-title"><?php echo $storeitems[$key]['name'];?></h2>
+						<div class="topspin-view-more-desc"><?php echo $storeitems[$key]['description'];?></div>
+				    	<?php $totalImages = count($storeitems[$key]['images']);
+				    	if($totalImages>1) : ?>
+				    	<ul class="topspin-view-more-image-pager">
+				    		<?php foreach($storeitems[$key]['images'] as $image) : ?>
+				    		<li class="topspin-view-more-image-pager-item">
+				    			<div class="topspin-view-more-image-pager-item-cell"><a href="#"><img src="<?php echo $image['large_url']; ?>" /></a></div>
+				    		</li>
+				    		<?php endforeach; ?>
+				    	</ul>
+				    	<?php endif; ?>
+						<div class="topspin-view-more-buy">
+							<a class="topspin-buy" href="<?php echo $storeitems[$key]['offer_url'];?>">Buy</a>
+							<div class="topspin-view-more-price">Price: <?php echo $storeitems[$key]['symbol'];?><?php echo $storeitems[$key]['price'];?></div>
+						</div>
+						<div class="topspin-clear"></div>
 					</div>
-				</div>
-				<h2 class="topspin-view-more-title"><?php echo $storeitems[$key]['name'];?></h2>
-				<div class="topspin-view-more-desc"><?php echo $storeitems[$key]['description'];?></div>
-		    	<?php $totalImages = count($storeitems[$key]['images']);
-		    	if($totalImages>1) : ?>
-		    	<ul class="topspin-view-more-image-pager">
-		    		<?php foreach($storeitems[$key]['images'] as $image) : ?>
-		    		<li class="topspin-view-more-image-pager-item">
-		    			<div class="topspin-view-more-image-pager-item-cell"><a href="#"><img src="<?php echo $image['large_url']; ?>" /></a></div>
-		    		</li>
-		    		<?php endforeach; ?>
-		    	</ul>
-		    	<?php endif; ?>
-				<div class="topspin-view-more-buy">
-					<a class="topspin-buy" href="<?php echo $storeitems[$key]['offer_url'];?>">Buy</a>
-					<div class="topspin-view-more-price">Price: <?php echo $storeitems[$key]['symbol'];?><?php echo $storeitems[$key]['price'];?></div>
-				</div>
-				<div class="topspin-clear"></div>
-			</div>
-		<?php endif; ?>
+					<?php endif;
+					break;
+				case 'email_for_media':
+				case 'bundle_widget':
+				case 'single_track_player_widget': ?>
+                	<div class="topspin-item-embed"><?php echo $item['embed_code'];?></div>
+					<?php break;
+			} ## END SWITCH OFFER TYPE
+			?>
 		</td>
 		<?php endfor; ?>
 	</tr>

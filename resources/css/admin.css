@@ -8,7 +8,7 @@ table.form-table .description .hide {
 table.topspin-stores-list {
 }
 table.topspin-stores-list th.id-column {
-	width:50px;
+	width:75px;
 }
 table.topspin-stores-list th.thumb-column {
 	width:80px;
@@ -36,13 +36,21 @@ table.topspin-stores-list th.manage-column {
 
 ul.group-sortable {
 }
-ul.group-sortable li.menu-item {
-	width:200px;
-	cursor:move;
-	border:1px solid #ccc;
-	padding:5px;
-	background-color:rgb(238, 238, 238);
-}
+	ul.group-sortable li.menu-item {
+		width:200px;
+	}
+		ul.group-sortable li.menu-item label {
+			display:block;
+			width:200px;
+			background-color:rgb(238, 238, 238);
+			cursor:move;
+			border:1px solid #ccc;
+			padding:5px;
+			margin-bottom:5px;
+		}
+	ul.group-sortable li.menu-item ul.group-sortable {
+		margin-left:30px;
+	}
 ul.item-sortable,
 ul.item-listing {
 }

@@ -3,11 +3,14 @@
 /*
  *	Class:				Topspin Store
  *
- *	Last Modified:		September 23, 2011
+ *	Last Modified:		January 24, 2012
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2012-01-04
+ 		- Updated getArtistsList() to order by name ASC
+ 		- Updated rebuildArtists() to fetch/cache multiple pages (previously only caching the first 25 returned by the API)
  *	2011-09-23
  		- Updated product_get_most_popular_list() LIMIT format string
  		- Updated getStoreItems() to check count of offer types and tags before appending to query.
@@ -163,17 +166,7 @@ class Topspin_Store {
 		##		False on failure
 		$post_args = (is_array($post_args)) ? $post_args : array();
 		## Build URL Query String if Not Post
-		if(!$post) {
-			if($post_args) {
-				$url .= '?';
-				$count = 0;
-				foreach($post_args as $key=>$value) {
-					if($count) { $url .= '&'; }
-					$url .= $key.'='.$value;
-					$count++;
-				}
-			}
-		}
+		if(!$post && count($post_args)) { $url = sprintf('%s?%s',$url,http_build_query($post_args)); }
 		// Use curl if installed on the system
 		if(function_exists('curl_init')) {
 			$ch = curl_init();
@@ -238,14 +231,31 @@ class Topspin_Store {
 		if($res) { return $res; }
 	}
 	
-	public function getArtists() {
+	public function getArtistsTotalPages() {
+		##	Retrieves the artists from the Artist Search API
+		##	https://docs.topspin.net/tiki-index.php?page=Artist+Search+API
+		##
+		##	RETURN
+		##		The number of total pages of Artists
+		$url = 'http://app.topspin.net/api/v1/artist';
+		$data = json_decode($this->process($url,null,false));
+		if(isset($data->total_pages)) { return $data->total_pages; }
+	}
+	
+	public function getArtists($page=1) {
 		##	Retrieves the list of artists from the Artist Search API
 		##	https://docs.topspin.net/tiki-index.php?page=Artist+Search+API
+		##
+		##	PARAMETERS
+		##		@page (int)				Requested page number
 		##
 		##	RETURN
 		##		A standard object containing the artist data
 		$url = 'http://app.topspin.net/api/v1/artist';
-		$data = json_decode($this->process($url,null,false));
+		$post_args = array(
+			'page' => $page
+		);
+		$data = json_decode($this->process($url,$post_args,false));
 		$artists = array();
 		if(isset($data->artists) && count($data->artists)) {
 			foreach($data->artists as $item) {
@@ -565,30 +575,35 @@ EOD;
 		##	Rebuild and syncs the artsits table with Topspin
 		$sql = 'TRUNCATE TABLE '.$this->wpdb->prefix.'topspin_artists';
 		$this->wpdb->query($this->wpdb->prepare($sql));
-		$artists = $this->getArtists();
-		if($artists && count($artists)) {
-			foreach($artists as $artist) {
-				$data = array(
-					'id' => $artist->id,
-					'name' => $artist->name,
-					'avatar_image' => $artist->avatar_image,
-					'url' => $artist->url,
-					'description' => $artist->description,
-					'website' => $artist->website
-				);
-				$this->wpdb->insert($this->wpdb->prefix.'topspin_artists',$data,array('%d','%s','%s','%s','%s','%s'));
-				//Remove all old tags for this artist
-				$this->wpdb->query($this->wpdb->prepare('DELETE FROM '.$this->wpdb->prefix.'topspin_tags WHERE `artist_id` = %d OR `artist_id` = %s',array(0,$artist->id)));
-				//Adds all new tags for this artist
-				foreach($artist->spin_tags as $tag) {
-					$tagData =	array(
-						'artist_id' => $artist->id,
-						'name' => $tag
-					);
-					$this->wpdb->insert($this->wpdb->prefix.'topspin_tags',$tagData,array('%d','%s'));
+		$totalPages = $this->getArtistsTotalPages();
+		if($totalPages) {
+			for($i=1;$i<=$totalPages;$i++) {
+				$artists = $this->getArtists($i);
+				if($artists && count($artists)) {
+					foreach($artists as $artist) {
+						$data = array(
+							'id' => $artist->id,
+							'name' => $artist->name,
+							'avatar_image' => $artist->avatar_image,
+							'url' => $artist->url,
+							'description' => $artist->description,
+							'website' => $artist->website
+						);
+						$this->wpdb->insert($this->wpdb->prefix.'topspin_artists',$data,array('%d','%s','%s','%s','%s','%s'));
+						//Remove all old tags for this artist
+						$this->wpdb->query($this->wpdb->prepare('DELETE FROM '.$this->wpdb->prefix.'topspin_tags WHERE `artist_id` = %d OR `artist_id` = %s',array(0,$artist->id)));
+						//Adds all new tags for this artist
+						foreach($artist->spin_tags as $tag) {
+							$tagData =	array(
+								'artist_id' => $artist->id,
+								'name' => $tag
+							);
+							$this->wpdb->insert($this->wpdb->prefix.'topspin_tags',$tagData,array('%d','%s'));
+						}
+					}
 				}
-			}
-		}
+			} //end for $totalPages
+		} //end if $totalPages
 	}
 	
 	#### SETTINGS METHODS
@@ -773,6 +788,10 @@ EOD;
 EOD;
 			}
 		}
+		$sql .= <<<EOD
+		ORDER BY
+			{$this->wpdb->prefix}posts.menu_order ASC
+EOD;
 		if(in_array($status,array('publish','trash','all'))) {
 			$stores = $this->wpdb->get_results($this->wpdb->prepare($sql,$prepareArgs));
 			if(count($stores)) {
@@ -1875,7 +1894,7 @@ EOD;
 			{$this->wpdb->prefix}topspin_artists.website
 		FROM {$this->wpdb->prefix}topspin_artists
 		ORDER BY
-			{$this->wpdb->prefix}topspin_artists.id ASC
+			{$this->wpdb->prefix}topspin_artists.name ASC
 EOD;
 		return $this->wpdb->get_results($this->wpdb->prepare($sql),ARRAY_A);
 	}

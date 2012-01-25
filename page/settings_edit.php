@@ -2,11 +2,13 @@
 
 /*
  *
- *	Last Modified:			September 22, 2011
+ *	Last Modified:			January 24, 2011
  *
  *	--------------------------------------
  *	Change Log
  *	--------------------------------------
+ *	2012-01-24
+ 		- Added nav menu shortcode to edit/update handler
  *	2011-09-23
  		- Removed unnecessary campaign variable declaration
  *	2011-09-07
@@ -106,7 +108,7 @@ switch($action) {
 					'post_name' => $storeData['slug'],
 					'post_status' => 'publish',
 					'post_type' => 'page',
-					'post_content' => '[topspin_featured_item]&nbsp;[topspin_buy_buttons]',
+					'post_content' => '[topspin_store_nav_menu]&nbsp;[topspin_featured_item]&nbsp;[topspin_buy_buttons]',
 					'post_parent' => $storeData['parent_id']
 				);
 
@@ -265,8 +267,10 @@ switch($action) {
 								<?php
 								foreach($storeData['offer_types'] as $type) : ?>
 								<li id="type-<?php echo $type['type'];?>" class="menu-item">
-									<input type="checkbox" name="offer_types[]" value="<?php echo $type['type'];?>" <?php echo ($type['status'])?'checked="checked"':'';?> />
-									&nbsp;&nbsp;&nbsp;<span class="item-title"><?php echo $type['name'];?></span>
+									<label>
+										<input type="checkbox" name="offer_types[]" value="<?php echo $type['type'];?>" <?php echo ($type['status'])?'checked="checked"':'';?> />
+										&nbsp;&nbsp;&nbsp;<span class="item-title"><?php echo $type['name'];?></span>
+									</label>
 								</li>
 								<?php endforeach; ?>
 							</ul>
@@ -288,8 +292,10 @@ switch($action) {
 								<?php
 								foreach($storeData['tags'] as $tag) : ?>
 								<li id="tag-<?php echo $tag['name'];?>" class="menu-item">
-									<input type="checkbox" name="tags[]" value="<?php echo $tag['name'];?>" <?php echo ($tag['status'])?'checked="checked"':'';?> />
-									&nbsp;&nbsp;&nbsp;<span class="item-title"><?php echo ucfirst($tag['name']);?></span>
+									<label>
+										<input type="checkbox" name="tags[]" value="<?php echo $tag['name'];?>" <?php echo ($tag['status'])?'checked="checked"':'';?> />
+										&nbsp;&nbsp;&nbsp;<span class="item-title"><?php echo ucfirst($tag['name']);?></span>
+									</label>
 								</li>
 								<?php endforeach; ?>
 							</ul>

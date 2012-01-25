@@ -3,7 +3,7 @@ Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
 Tested up to: 3.2.1
-Stable tag: 3.3.2.2
+Stable tag: 3.3.3
 Requires at least: 3.0.2
 
 Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages.
@@ -133,6 +133,7 @@ Additional template tags are now available, as of v3.2:
 * topspin_get_item($item_id) - retrieves all the information of the item
 * topspin_get_store_items($store_id) - retrieves all the items of the store
 * topspin_get_most_popular_items($limit) - retrieves the most popular items
+* topspin_get_nav_menu($echo) - retrieves the nav menu (set $echo to false to return the html, instead of printing it out on the screen, default: true)
 
 = Additional Customization Details = 
 1. It is very important that you copy the Template files to your site's active theme directory.  If you edit them in the Plugin's `/templates/` directory, any changes you make will be overwritten when you upgrade the plugin! 
@@ -203,6 +204,7 @@ Shortcodes can be used on any page or post to output a Store's content or a Stor
 `[topspin_buy_buttons id=23]` will display the output of the Store Page with an ID of 23.
 `[topspin_featured_item id=9]` will display just the Featured Item from the Store Page with an ID of 9.
 `[topspin_store_item id=58170]` will display the offer using the Featured Item Template with an ID of 58170.
+`[topspin_store_nav_menu]` will display the store navigation menu.
 
 (no other shortcode attributes are available at this time)
 
@@ -264,6 +266,15 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 8. Front-End -> View of the Topspin Checkout Flow overlay
 
 == Changelog ==
+
+= 3.3.3 =
+* Fixed caching issue where only the first 25 returned artists are cached
+* Updated artist dropdown selector to be ordered by name
+* Fixed Simplified item listing template to display streaming and embedded widgets
+* Added new nav menu shortcode/settings panel
+
+= 3.3.2.3 =
+* Fixed WP-Cron issue
 
 = 3.3.2.1 =
 * Fixed plugins rerun upgrades script.

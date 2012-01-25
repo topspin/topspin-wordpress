@@ -30,7 +30,7 @@ EOD;
 }
 
 // Checks and adds a new field to the topspin_tags table (artist_id)
-if(!topspin_table_column_exists('topspin_tags','artist_id','INT')) {
+if(!topspin_table_column_exists('topspin_tags','artist_id')) {
 	topspin_table_column_add('topspin_tags','artist_id','INT');
 }
 

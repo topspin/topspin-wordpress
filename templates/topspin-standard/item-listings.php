@@ -71,7 +71,8 @@
 				case 'single_track_player_widget': ?>
                 	<div class="topspin-item-embed"><?php echo $item['embed_code'];?></div>
 					<?php break;
-			} ## END SWITCH OFFER TYPE ?>
+			} ## END SWITCH OFFER TYPE
+			?>
         	</div>
 	    </li>
 	<?php endforeach; ?>

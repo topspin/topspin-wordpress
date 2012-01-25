@@ -277,3 +277,45 @@ div.topspin-view-more-canvas div.topspin-view-more-buy div.topspin-view-more-pri
 	font-size:18px;
 	margin-bottom:20px;
 }
+
+
+/* TOPSPIN STORE NAV MENU */
+
+div.topspin-store-navmenu {
+}
+	div.topspin-store-navmenu ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+		height:24px;
+		line-height:24px;
+		background-color:#ff0000;
+	}
+		div.topspin-store-navmenu ul li {
+			display:inline-block;
+			margin-right:10px;
+			background-color:#ff0000;
+		}
+			div.topspin-store-navmenu ul li a {
+				display:block;
+				width:100%;
+				color:#fff;
+				padding:0px 5px;
+			}
+			div.topspin-store-navmenu ul li ul {
+				display:none;
+				position:absolute;
+			}
+			div.topspin-store-navmenu ul li:hover ul {
+				display:block;
+			}
+			div.topspin-store-navmenu ul li:hover ul {
+				display:block;
+			}
+				div.topspin-store-navmenu ul li:hover ul li ul {
+					display:none;
+					position:absolute;
+				}
+				div.topspin-store-navmenu ul li:hover ul li:hover ul {
+					display:block;
+				}

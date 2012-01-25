@@ -70,4 +70,15 @@ function topspin_get_most_popular_items($limit=null) {
 	return $store->product_get_most_popular_list($limit);
 }
 
+function topspin_get_nav_menu($echo=true) {
+	/*
+	 *	Retrieves the nav menu
+	 *
+	 *	PARAMETERS
+	 *		@echo (bool)		Echo the menu out or just return the HTML
+	 */
+	if($echo) { echo topspin_shortcode_store_nav_menu(0); }
+	else { return topspin_shortcode_store_nav_menu(0); }
+}
+
 ?>
