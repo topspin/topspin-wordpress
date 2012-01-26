@@ -3,27 +3,19 @@
 /*
  *	3.1.1 UPGRADE NOTICE
  *	--------------------
- *	
- 	- Adds 'poster_image_source' Column into 'topspin_items' table
+ *
+ 	2012-01-26
+	 	- Update script to use builtin functions (2012-01-26)
+	2011
+ 		- Adds 'poster_image_source' Column into 'topspin_items' table
  */
 
 global $wpdb;
 global $store;
 
-##	Adds 'poster_image_source' Column into 'topspin_items' table
-$sqlCheckPosterImageSourceField = <<<EOD
-SELECT COLUMN_NAME
-FROM information_schema.COLUMNS
-WHERE
-	TABLE_SCHEMA = '{$wpdb->dbname}'
-	AND TABLE_NAME = '{$wpdb->prefix}topspin_items'
-	AND COLUMN_NAME = 'poster_image_source'
-EOD;
-if(!$wpdb->get_var($sqlCheckPosterImageSourceField)) {
-	$sqlUpgradeTable = <<<EOD
-ALTER TABLE `{$wpdb->prefix}topspin_items` ADD `poster_image_source` TEXT NOT NULL AFTER `poster_image` ;
-EOD;
-	$wpdb->query($sqlUpgradeTable);
+// Add "poster_image_source" column into "topspin_items" table
+if(!topspin_table_column_exists('topspin_items','poster_image')) {
+	topspin_table_column_add('topspin_items','poster_image');
 }
 
 ?>

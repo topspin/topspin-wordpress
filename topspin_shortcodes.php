@@ -72,7 +72,7 @@ function topspin_shortcode_buy_buttons($atts) {
 	$a = shortcode_atts($defaults,$atts);
 	$storeID = $a['id'];
 	$storedata = $store->getStore($storeID);
-	$storedata['grid_item_width'] = floor(100/$storedata['grid_columns']);
+	$storedata['grid_item_width'] = ($storedata['grid_columns']) ? floor(100/$storedata['grid_columns']) : 100;
 	## Set Page
 	$page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 	## Get Items

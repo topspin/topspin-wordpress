@@ -47,7 +47,7 @@ function topspin_table_column_add($table,$column,$type='text',$options=null) {
 	 *	PARAMETERS:
 	 *		@table (string)
 	 *		@column (string)
-	 *		@type (string)				enumeration: INT, BIGINT, VARCHAR(255), TEXT, LONGTEXT (default: TEXT)
+	 *		@type (string)				enumeration: INT, BIGINT, VARCHAR(255), TEXT, LONGTEXT, TIMESTAMP (default: TEXT)
 	 *		@options (array)			Additional key options
 	 *			@first (bool)			Add to the beginning of table?
 	 *			@autoIncrement (bool)	Add auto increment?

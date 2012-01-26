@@ -3,11 +3,12 @@
 /*
  *	3.3 UPGRADE NOTICE
  *	--------------------
- *	
- 	- Add new field to the topspin_store table (internal_name)
- 	- Add new field to the topspin_items table (campaign_id)
- 	- Create the topspin_orders table
- 	- Create the topspin_orders_items table
+ *
+ 	2011
+	 	- Add new field to the topspin_store table (internal_name)
+	 	- Add new field to the topspin_items table (campaign_id)
+	 	- Create the topspin_orders table
+	 	- Create the topspin_orders_items table
  */
 
 global $wpdb;
