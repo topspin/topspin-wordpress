@@ -2,8 +2,8 @@
 Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
-Tested up to: 3.2.1
-Stable tag: 3.3.3.1
+Tested up to: 3.3.1
+Stable tag: 3.3.3.2
 Requires at least: 3.0.2
 
 Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages.
@@ -269,6 +269,8 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 
 = 3.3.3.2 =
 * Fixed JS handler to work with auto-filled anchor tags - @ezmiller
+* Fixed Topspin_Store::getItem() multiple tag bug - @jackdaw4 
+
 = 3.3.3.1 =
 * Cleaned and updated several upgrade scripts
 * Fixed several SQL import warnings
