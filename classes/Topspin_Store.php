@@ -3,11 +3,13 @@
 /*
  *	Class:				Topspin Store
  *
- *	Last Modified:		January 24, 2012
+ *	Last Modified:		February 6, 2012
  *
  *	----------------------------------
  *	Change Log
  *	----------------------------------
+ *	2012-02-06
+ 		- Fixed getItems() breaking when items with multiple tags are joined - [@jackdaw4 - https://github.com/topspin/topspin-wordpress/issues/31]
  *	2012-01-04
  		- Updated getArtistsList() to order by name ASC
  		- Updated rebuildArtists() to fetch/cache multiple pages (previously only caching the first 25 returned by the API)
@@ -474,12 +476,16 @@ EOD;
 				$items = $this->getItems($i);
 				if($items && count($items)) {
 					foreach($items as $item) {
-						$parts = parse_url($item->offer_url);
-						$query = array();
-						parse_str($parts['query'],$query);
+						$campaign_id = '';
+						if(isset($item->offer_url)) {
+							$parts = parse_url($item->offer_url);
+							$query = array();
+							parse_str($parts['query'],$query);
+							$campaign_id = $query['cId'];
+						}
 						$data = array(
 							'id' => $item->id,
-							'campaign_id' => $query['cId'],
+							'campaign_id' => $campaign_id,
 							'artist_id' => $item->artist_id,
 							'reporting_name' => $item->reporting_name,
 							'embed_code' => $item->embed_code,
@@ -1697,6 +1703,7 @@ EOD;
 			{$this->wpdb->prefix}topspin_offer_types ON {$this->wpdb->prefix}topspin_items.offer_type = {$this->wpdb->prefix}topspin_offer_types.type
 		WHERE
 			{$this->wpdb->prefix}topspin_items.id = '{$item_id}'
+		GROUP BY {$this->wpdb->prefix}topspin_items.id
 EOD;
 		$item = $this->wpdb->get_row($sql,ARRAY_A);
 		##	Add Images

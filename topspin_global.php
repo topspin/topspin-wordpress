@@ -12,7 +12,7 @@
  */
 
 ### Pathing Constants
-define('TOPSPIN_VERSION','3.3.3.1');
+define('TOPSPIN_VERSION','3.3.3.2');
 define('TOPSPIN_PLUGIN_PATH',dirname(__FILE__));
 define('TOPSPIN_PLUGIN_URL',WP_PLUGIN_URL.'/'.basename(TOPSPIN_PLUGIN_PATH));
 define('TOPSPIN_CURRENT_THEME_PATH',get_theme_root().'/'.get_stylesheet());

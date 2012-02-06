@@ -40,6 +40,6 @@
 	    <div class="topspin-view-more-buy">
 	    	<a class="topspin-buy" href="<?php echo $featureditem['offer_url'];?>">Buy</a>
 	        <div class="topspin-view-more-price">Price: <?php echo $featureditem['symbol'];?><?php echo $featureditem['price'];?></div>
-			</div>
+		</div>
 	</div>
 </div>

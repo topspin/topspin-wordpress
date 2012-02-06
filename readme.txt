@@ -267,6 +267,8 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 
 == Changelog ==
 
+= 3.3.3.2 =
+* Fixed JS handler to work with auto-filled anchor tags - @ezmiller
 = 3.3.3.1 =
 * Cleaned and updated several upgrade scripts
 * Fixed several SQL import warnings

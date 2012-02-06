@@ -1,3 +1,13 @@
+/*
+ *	Last Modified:		February 6, 2011
+ *
+ *	----------------------------------
+ *	Change Log
+ *	----------------------------------
+ *	2012-02-06
+ 		- Updated topspin item links to work with or without wp site url [@ezmiller - https://github.com/topspin/topspin-wordpress/issues/32]
+ */
+
 jQuery(function($) {
 
 	var viewProduct = function(productID) {
@@ -9,16 +19,20 @@ jQuery(function($) {
 			});
 		}
 	};
+	
+	var getPid = function(href) {
+		return href.replace(/(^[\w\d\.\/\:_-]*)?(\/)?#!\//,'');
+	};
 
 	if(window.location.hash) {
 		if(window.location.hash.indexOf('#!/')!=-1) {
-			var productID = (window.location.hash) ? window.location.hash.replace('#!/','') : 0;
-			if(productID) { viewProduct(productID); }
+			var pid = getPid(window.location.hash);
+			if(pid) { viewProduct(pid); }
 		}
 	}
 
 	$('a.topspin-view-item').live('click',function(e) {
-		var pid = $(this).attr('href').replace('#!/','');
+		var pid = getPid($(this).attr('href'));
 		setTimeout(function() { viewProduct(pid); },10);
 	});
 	
