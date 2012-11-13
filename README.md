@@ -1,16 +1,8 @@
-=== Official Topspin Wordpress Plugin ===
-Contributors: theuprising
-Donate link: http://theuprisingcreative.com/
-Tags: Topspin,store,merchandise,shop,music
-Tested up to: 3.3.1
-Stable tag: 3.3.3.3
-Requires at least: 3.0.2
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+# Overview
 
 Quickly, easily integrate Topspin Offers into customized, dynamically generated Store Pages; recoded and optimized for better Wordpress integration. 
 
-== Description ==
+# Description
 
 This plugin allows novice and pro Topspin users alike to quickly and easily create integrated, customized, sortable and dynamically generated stores from their Topspin Offers in a few minutes.
 
@@ -30,19 +22,19 @@ The possibilities are endless.
 
 Plugin developed for [Topspin Media](http://topspinmedia.com/) by [The Uprising Creative](http://theuprisingcreative.com)
 
-= Requirements =
+### Requirements
 
 * Topspin Artist Account ([Sign up for a new account!](http://topspinmedia.com))
 * PHP 5.0 or higher
 * MySQL 5.0 or higher
 
-= Live Examples =
+## Live Examples
 
 * [Beastie Boys](http://shop.beastieboys.com)
 * [Circa Survive](http://circasurvive.com/shop/) 
 * [Black Rebel Motorcycle Club](http://blackrebelmotorcycleclub.shopfirebrand.com)
 
-= Features =
+## Features
 
 * Automatic Store Page creation based on Offer Types and Tags
 * Display of Offers in some or all Offer Types and/or Tag groups
@@ -60,7 +52,7 @@ Plugin developed for [Topspin Media](http://topspinmedia.com/) by [The Uprising 
 * Additional Image added to display inside the More Info Lightbox (see notes)
 * Ability to link directly to and share an Individual Item's More Info Lightbox using new individual item Google-indexable hash-based permalinks (see notes)
 
-= New Features for v4.0 =
+### New Features for v4.0
 
 * Completely rebuilt from the ground up for better performance and Wordpress integration 
 * Individual products, offers and stores are created as Wordpress posts in a custom post type, allowing for better integration, deep linking, SEO indexing, and performance 
@@ -73,15 +65,15 @@ Plugin developed for [Topspin Media](http://topspinmedia.com/) by [The Uprising 
 * Ability to manually sync artists and offers 
 * Ability to create a navigation menu using a drag-and-drop interface
 
-== Installation ==
+#Installation
 
 This plugin requires a Topspin Artist account to function.  If you don't have an account, you can get one here: [http://topspinmedia.com](http://topspinmedia.com)
 
-= Before Installation =
+## Before Installation
 
 It is highly recommended that you upgrade your WordPress installation to the latest version to take advantage on any new and upcoming features.
 
-= Initial Installation =
+## Initial Installation
 
 1. Use Wordpress's automatic install functionality, or upload the `official-topspin-wordpress-plugin` folder to your `/wp-content/plugins/` directory
 2. Activate the plugin through the *Plugins* menu in WordPress. This will install your database tables and create a new top-level menu called *Topspin*.
@@ -90,9 +82,7 @@ It is highly recommended that you upgrade your WordPress installation to the lat
 5. Go to the *Topspin -> Settings* menu and add in your Topspin API User and API Key (you can get these from your Account settings at [http://app.topspin.net](http://app.topspin.net)) and select the Artist Account you wish to work with from the drop-down (if you have more than one account associated with your API User/Key)
 6. Make sure the Offers you want to use have the *Offer API* checkbox selected.  If they don't, they won't be output by Topspin's API and won't show up as available Offers in the plugin.
 
-== Upgrade Notice ==
-
-= Upgrading from v3.0 or later =
+## Upgrading from v3.0 or later
 
 These upgrade instructions are specifically for users of the new plugin from v3.0 or newer, NOT users who are still on the old v2 Plugin. If you are using the v2 Plugin currently, please see the v2 Upgrade Instructions below.
 
@@ -101,7 +91,7 @@ These upgrade instructions are specifically for users of the new plugin from v3.
 3. Check your pages to make sure they all look right
 4. You're done!
 
-= Upgrading from an v2.0 or earlier =
+## Upgrading from an v2.0 or earlier
 
 This plugin is a complete re-write.  Upgrading form a previous version will not save your existing Store settings and will disable some of the Theme settings used in the old plugin.  This is because this new version is designed to work with any Theme and Wordpress setup like any standard plugin instead of taking over parts of the core WordPress functionality.  
 
@@ -118,11 +108,86 @@ In order to upgrade from a previous version you will need to follow the steps be
 
 Once installed, the easiest way to upgrade to future versions is to use the automatic upgrade feature built into WordPress.  You will be automatically notified of any updates to the plugin and given the option to install them with a single click.
 
-== Usage ==
+## Other Notes for v2.0
 
-Please check out [GitHub page](https://github.com/theuprising/topspin-wordpress) for full usage documentation.
+This plugin will not automatically upgrade the v2.0 Topspin Wordpress Plugins - it's completely re-written and must be installed individually / new. Please check out the **Upgrade Instructions**. 
 
-== Customization ==
+Please be aware that you will lose the *Landing Page* it allowed you to create, along with some of the control over the theme from the admin panel.  You will still be able to change the header image by deleting the file in the *Media Library* called `topspin-store` and uploading a new file named `topspin-header`.  *However, we recommend migrating your site to an entirely new theme if at all possible to avoid future problems.*
+
+## Other Notes for v4.0
+
+The new plugin has been completely rewritten, so some of the controls will change.  For example, Stores and Offers are now located in the top-level navigation in the Wordpress Admin instead of as a sub-item in the Topspin menu.*
+
+# Usage
+
+## Adding Store Pages
+
+Once installed, use the *Stores -> Add Store* menu to add a new Store Page.  Select from the available options, sort as desired, save the page, and your new Store Page will be automatically generated.
+
+### Store Settings
+
+Field Name | Description
+:---------- | :-----------
+Store Name | Output name/title of the store
+Artist | The artist for the store
+Items Per Page | used to create a paginated Store Page, display as many Offers as you want per page
+Show All Items | Check this box to show all items in 1 page (ignores Items Per Page)
+Item Description Length | Character length for item descriptions in the grid view
+Sale Tag | Specify a Spin Tag to be designated as a Sale tag
+Grid Columns | Specify the number of columns to display in the grid template
+Sorting | Specify if Offers should be sorted Alphabetically or Chronologically
+Sort By | Specify if Offers should be sorted by Offer Type, Tags, or Manually
+
+### Featured Items
+
+You can select optional featured items to display at the top of the store page just before the grid is shown.
+
+### Preview / Manual Sorting
+
+This is a live preview of the grid/order of the current settings. If the Sort By is set to Manual, you can show/hide and manually reorder each Offers with the drag-and-drop interface.
+
+
+## Managing Existing Stores
+
+You can edit and view existing Store Pages by using the *Stores -> All Stores* menu. This page also lists the shortcodes for each store and each store's featured content.  
+
+## Managing Existing Offers
+
+You can view the offers that are loaded up into the cached database by using the *Offers -> All Offers* menu.  This page lists all of the items that are loaded into the database using the Topspin API, along with the new individual item shortcodes.  If you don't see an item listed here, you can either use the Cache Sync tools on the *Topspin -> Cache* menu, or if that doesn't work, check your offer in the Topspin system - chances are it doesn't have the Offers API check-box checked or need to be re-published.
+
+## Template Shortcodes
+
+Shortcodes can be used on any page or post to output a Store's content or a Store's Featured Item.  Shortcodes for Store Pages use the Store Page's ID and can be found - along with the ID - in the *Topspin -> View Stores* menu. Shortcodes for Individual Items use the Item's ID and can be found - along with the Item ID - on the *Topspin -> View Items* menu.
+
+`[topspin_buy_buttons]`
+
+> Displays the output of a given Store Page
+
+Attribute | Data Type | Description
+:-------- | :-------- | :----------
+id | int | A Store post ID
+
+`[topspin_featured_items]`
+
+> Displays the featured items of a given Store Page
+
+Attribute | Data Type | Description
+:-------- | :-------- | :----------
+id | int | A Store post ID
+
+`[topspin_store_item]`
+
+> Displays a given offer
+
+Attribute | Data Type | Description
+:-------- | :-------- | :----------
+id | int | An Offer post ID
+
+`[topspin_store_nav_menu]`
+
+> Displays the store navigation menu.
+
+# Customization
 
 All markup output by this plugin is XHTML-compliant and heavily classed to allow for easily styling with CSS. The plugin comes with two different 'templates' called `Standard` and `Simplified`.
 
@@ -135,20 +200,23 @@ You select which `template` you wish to use on the *Topspin->Settings* page.
 If you wish to edit the style's CSS or Template, simply follow these directions:
 
 1. Copy the template's sub-directory from the Plugin's `/templates/` directory to your Site's active theme folder (`/topspin-simplified/` for the Simplified Template and `/topspin-standard/` for the Standard Template)
-2. Edit the new CSS or PHP Template file(s) in your Site's active theme folder as needed.
+2. Edit the new CSS or PHP Template file(s) in your Site's active theme folder as needed. 
 
-= CSS Customization Details =
+## CSS Customization Details
+
 These new CSS style sheets in your active theme's directory are considered "override" style sheets and only need to contain rules for elements, ids and classes that you wish to modify.  The remaining rules from the default CSS style sheets will automatically be used if no overriding rules are included.
 
-= Template Customization Details =
+## Template Customization Details
+
 If you are a pro user and are comfortable with creating and editing WordPress themes, the plugins template can be easily customized to suit your needs. Below is a list of important PHP variables used in these templates: 
 
-= Additional Customization Details =
+## Additional Customization Details
+
 1. It is very important that you copy the Template files to your site's active theme directory.  If you edit them in the Plugin's `/templates/` directory, any changes you make will be overwritten when you upgrade the plugin! 
 2. Backwards Compatability: For users upgrading from a version pre-v3.1, the Plugin will still recognize your customized `topspin.css`, `topspin-ie7.css`, `featured-item.php` and `item-listings.php` files located in your site's active theme folder if you select the Standard Template, even if they aren't in the /topspin-standard/ sub-folder.)
 3. The ability to use the new - as of v3.2 - additional images and permalink features requires an upgrade from the pre-v3.2 templates to the new Standard or Simplified templates.  If you are using the default templates, these changes will automatically be made on upgrade.  If you are using customized templates, you'll need to either a) update your template manually or b) copy over the new default template and re-style as needed.
 
-== Frequently Asked Questions ==
+# Frequently Asked Questions
 
 **I'm using the v2.0 Plugin.  Can I just delete it and install this new version?**
 
@@ -183,33 +251,34 @@ If you are a pro user and are comfortable with creating and editing WordPress th
 
 > Unfortunately it's not. This is due to a limitation in the Topspin API regarding information being passed via the API for child accounts. If you enter your API information into the plugin and none of your products show up, and if your account details were setup or given to you by someone else, there's a good chance you're on a child account. If this happens, check with your Topspin account administrator and see if you are indeed using a child account. If you are, you'll need to get the parent account API details in order for the plugin to work.
 
-== Other Notes ==
+# Other Notes
 
-= Additional Suggestions =
+## Additional Suggestions
 
 It is highly suggested that anyone wishing to use this plugin *a) has a solid understanding of how to create Offers in Topspin* and *b) has adequately tested their Store Pages and the checkout flow prior to going live with any Store Pages created by this plugin.*
 
 If you are unsure how to create Offers in Topspin, please visit Topspin's Knowledgebase, [https://docs.topspin.net/](https://docs.topspin.net/)
 
-= All Topspin Offers must have the Offers API checkbox marked. =
+## All Topspin Offers must have the Offers API checkbox marked.
 
 Offers without this marked will not show up in the plugin.
 
-= It is highly suggested that all Offer images are setup to be the same size for any particular Store Page if using the Standard Template. =
+## It is highly suggested that all Offer images are setup to be the same size for any particular Store Page if using the Standard Template.
 
 This is to ensure that the Buy Buttons for each product line up correctly in the Standard Template. In an effort to create the most versatile default template, we haven't forced the Offers into tables in the Standard Template or forced image resizing with Javascript but feel free to do so yourself.  In future updates we may be including phpthumb and the ability to normalize the size of the Offer images on the fly. 
 
-= Performance & Optimization =
+## Performance & Optimization
 
 We also suggest the use of the following additional plugins to maximize performance and functionality of this plugin, and your site as a whole: 
 
 * [WP Super Cache](http://wordpress.org/extend/plugins/wp-super-cache/) or [W3 Total Cache](http://wordpress.org/extend/plugins/w3-total-cache/) - Very fast caching engines for WordPress that produces static html files. Can decrease load times on your site by up to 10x. 
 * [Ultimate Google Analytics](http://wordpress.org/extend/plugins/ultimate-google-analytics/) - Quickly and easily add Google Analytics Tracking to all of your site's content
 
-= A Word About Bugs =
+## A Word About Bugs
+
 As a plugin that's in active development, bugs are going to pop up from time to time as we don't have the ability to fully test on every potential server and/or browser configuration possible.  If you find a bug, please let us know over on [GitHub](https://github.com/topspin/topspin-wordpress/issues) and we'll do our best to get to it ASAP.  Or better yet, fix it yourself and get $150 from Topspin!
 
-= Roadmap =
+# Roadmap
 
 This plugin is in open development.  Over the weeks and months we hope to roll out regular updates with new features and optimizations, starting with: 
 
@@ -227,7 +296,7 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 * Optimized output for non-Buy Button Offers
 * Plugin Site for further documentation, discussion, feature requests, etc
 
-== Screenshots ==
+# Screenshots
 
 1. Plugin Admin -> Settings Page
 2. Plugin Admin -> Offers Listings
@@ -238,9 +307,9 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 7. Front-End -> View of a Store Page's "More Details" Colorbox overlay
 8. Front-End -> View of the Topspin Checkout Flow overlay
 
-== Changelog ==
+# Changelog
 
-= 4.0.0 =
+## 4.0.0
 
 * Complete rewrite from the ground-up for performance increases and better Wordpress integration
 * Sync multiple artists
@@ -256,47 +325,47 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 * Individual offer page templates 
 * A wide array of various bug fixes
 
-= 3.3.3.3 =
+## 3.3.3.3
 
 * Fixed lightbox handler with auto-filled anchor tags - @ezmiller
 
-= 3.3.3.2 =
+## 3.3.3.2
 
 * Fixed JS handler to work with auto-filled anchor tags - @ezmiller
 * Fixed Topspin_Store::getItem() multiple tag bug - @jackdaw4 
 
-= 3.3.3.1 =
+## 3.3.3.1
 
 * Cleaned and updated several upgrade scripts
 * Fixed several SQL import warnings
 
-= 3.3.3 =
+## 3.3.3
 
 * Fixed caching issue where only the first 25 returned artists are cached
 * Updated artist dropdown selector to be ordered by name
 * Fixed Simplified item listing template to display streaming and embedded widgets
 * Added new nav menu shortcode/settings panel
 
-= 3.3.2.3 =
+## 3.3.2.3
 
 * Fixed WP-Cron issue
 
-= 3.3.2.1 =
+## 3.3.2.1
 
 * Fixed plugins rerun upgrades script.
 
-= 3.3.2 =
+## 3.3.2
 
 * Fixed/updated several initial SQL files.
 * Updated Fix Upgrade function to rerun all initial SQL before re-running all upgrade scripts.
 
-= 3.3.1 =
+## 3.3.1
 
 * Fixed plugin upgrade bug.
 * Fixed some PHP warnings.
 * Fixed format string for product_get_most_popular_list().
 
-= 3.3 =
+## 3.3
 
 * Fixed some PHP warnings.
 * Added caching from the Orders API.
@@ -309,23 +378,23 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 * Added new topspin template tags/functions: topspin_get_store_items(), and topspin_get_most_popular_items().
 * Moved JS to footer for faster page load performance. @blauwers
 
-= 3.2.3 =
+## 3.2.3
 
 * Fixed the Product Sorting and Sort By bug to now work with the Preview.
 * Fixed some PHP warnings.
 
-= 3.2.2 =
+## 3.2.2
 
 * Added the ability to set parent pages and template files for each store.
 
-= 3.2.1 =
+## 3.2.1
 
 * Updated [topspin_featured_item] shortcode bug (returning empty item if no featured item is set).
 * Updated the installation script to add unique key for the currency table.
 * Updated the default standard/simplified featured item template css to work with fluid layouts.
 * Fixed the colorbox issue where it loads on all URL hashes.
 
-= 3.2 =
+## 3.2
 
 * Added the ability to add multiple featured items per Store Page
 * Added notice that switching Artist ID in the settings will clear the content on all current stores
@@ -343,34 +412,34 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 * Added the ability of the large image inside the More Info Lightbox to be clicked for a larger view inside the Lightbox
 * Other miscellaneous bug fixes, php warning fixes, and typo corrections
 
-= 3.1.3.6 =
+## 3.1.3.6
 
 * Changed the default image of each item to retrieve the large version instead of the medium
 * Updated the standard template css item list to clear on the last item
 
-= 3.1.3.5  =
+## 3.1.3.5 
 
 * Removed <?= php shortcode for those php installations where shortcodes are turned off (via blauwers)
 * Created a fallback method for when the curl imodule is not installed (via blauwers)
 
-= 3.1.3 =
+## 3.1.3
 
 * Updated default simplified and standard template's default css
 * Fixed duplicated item bug on manual sorting mode
 
-= 3.1.2 =
+## 3.1.2
 
 * Fixed the PHP fatal error calling an undefined method: Topspin_Store::setError() when adding/editing a store
 * Updated the version parsing string in the plugin upgrade functions (bug for PHP versions lower than 5.2)
 * Added the ability to force re-run of all upgrade scripts (for users who are experiencing problems when upgrading their plugins)
 
-= 3.1.1 =
+## 3.1.1
 
 * Fixed the plugin upgrading check function
 * Added caching for the poster_image_source from the API to the database (new field in the items table)
 * Updated the default item images to pull the size according to the poster_image_source (updated template files)
 
-= 3.1 =
+## 3.1
 
 * Added automatic selection of the Artist ID based on the API User and API Key 
 * Added ability for users with multiple Artist IDs related to their API User / Key combo to select which artist to use 
@@ -383,23 +452,23 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 * Fixed upgrading schema to make sure all necessary upgrades run regardless of which version you are upgrading to/from
 * Fixed issue where the permalinks weren't working correctly if Wordpress's Home and Site URLs were different
 
-= 3.0.4.1 =
+## 3.0.4.1
 
 * Updated template's default css
 * Updated "API Username" field name to "API User" and moved before "API Key"
 
-= 3.0.4 =
+## 3.0.4
 
 * Fixed additional foreach() warnings in Topspin_Store.php
 * Fixed documentation reference to v2 header image title 
 * Fixed documentation typos / formatting errors
 * Replaced Rebuild function with a safer INSERT INTO MySQL operation in case of rebuild error which may have been causing database tables to be truncated and not rebuilt in rare cases.
 
-= 3.0.3 =
+## 3.0.3
 
 * Fixed upgrading issue
 
-= 3.0.2 =
+## 3.0.2
 
 * Added documentation for upgrading from v2.0 (Thanks to John Jacobus / TRICIL)
 * Added FAQ and cleaned up documentation
@@ -412,20 +481,20 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 * Fixed wp-cron issue related to expiration of Topspin CDN for Offer images
 * Simplified Cache Rebuild on Settings page
 
-= 3.0.1  =
+## 3.0.1 
 
 * Added default CSS styling for the Topspin Cart
 * Added screenshots
 * Cleaned-up documentation
 
-= 3.0 =
+## 3.0
 
 * Completely rewritten from the ground-up (based on the v3.0beta plugin originally started by New Black)
 
-= 2.0 =
+## 2.0
 
 * Second version (by StageBloc)
 
-= 1.0 =
+## 1.0
 
 * First version

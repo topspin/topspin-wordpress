@@ -1,0 +1,104 @@
+.topspin-loader {
+	display: none;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 9999;
+	background-color: rgba(0, 0, 0, 0.75);
+}
+	.topspin-loader .topspin-loader-container {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		margin-top: -50px;
+		margin-left: -100px;
+		width: 300px;
+		height: 150px;
+		background-color: #fff;
+		padding: 15px;
+		border-radius: 15px;
+		-moz-border-radius: 15px;
+		-ms-border-radius: 15px;
+		-o-border-radius: 15px;
+		-webkit-border-radius: 15px;
+	}
+		.topspin-loader .topspin-loader-container .topspin-loader-img {
+			background-image: url(../images/topspin-logo.png);
+			width: 200px;
+			height: 45px;
+			margin: 15px auto 30px auto;
+		}
+		.topspin-loader .topspin-loader-container .topspin-loader-text {
+			text-align: center;
+			font-size: 16px;
+			font-style: italic;
+		}
+
+.topspin-artists-list {
+}
+	.topspin-artists-list .topspin-artist-item {
+		float:left;
+		width:150px;
+		text-align:center;
+		margin-right:10px;
+		margin-bottom:10px;
+	}
+		.topspin-artists-list .topspin-artist-item .topspin-artist-item-thumb {
+			height:150px;
+		}
+		.topspin-artists-list .topspin-artist-item .topspin-artist-item-footer {
+			height:36px;
+			line-height:18px;
+		}
+
+
+.wp-list-table #post-thumbnail {
+	width:125px;
+}
+
+.wp-list-table #price {
+	width:125px;
+}
+
+
+.topspin-metabox-row {
+	margin-bottom:15px;
+}
+	.topspin-metabox-row label {
+		float:left;
+		display:block;
+		width:200px;
+	}
+
+.topspin-preview-item {
+	float:left;
+	width:150px;
+	height:150px;
+	text-align:center;
+	margin:10px;
+}
+
+.group-sortable {
+}
+	.group-sortable .menu-item {
+		width: 200px;
+	}
+		.group-sortable .menu-item input {
+			float:left;
+			margin-left:5px;
+			margin-top:10px;
+		}
+		.group-sortable .menu-item label {
+			display: block;
+			width: 200px;
+			background-color: rgb(238, 238, 238);
+			cursor: move;
+			border: 1px solid #ccc;
+			padding: 5px 0px 0px 25px;
+			margin-bottom: 5px;
+		}
+	.group-sortable .menu-item .group-sortable {
+		margin-left: 15px;
+	}

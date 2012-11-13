@@ -1,88 +1,37 @@
 <?php
 /*
-Plugin Name: Topspin Store Plugin
+Plugin Name: Topspin Store Plugin 4.0
 Plugin URI: http://wordpress.org/extend/plugins/official-topspin-wordpress-plugin/
 Description: Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages using the Topspin API
 Author: The Uprising Creative for Topspin Media
 Author URI: http://theuprisingcreative.com
-Version: 3.3.3.3
+Version: 4.0.0
 */
 
-### This File
-define('TOPSPIN_PLUGIN_FILE',__FILE__);
+define('TOPSPIN_PLUGIN_FILE', __FILE__);
+define('TOPSPIN_PLUGIN_PATH', plugin_dir_path(TOPSPIN_PLUGIN_FILE));	// with trailing slash
+define('TOPSPIN_PLUGIN_URL', plugins_url(null, TOPSPIN_PLUGIN_FILE));	// no trailing slash
+define('TOPSPIN_VERSION', '4.0.0');
 
-### Require Global Configs
-require('topspin_global.php');
+// Controllers
+require_once(sprintf('%s/controllers/WP_Topspin_Hooks_Controller.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/controllers/WP_Topspin_Hooks_Custom_Controller.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/controllers/WP_Topspin_CMS_Controller.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/controllers/WP_Topspin_Upgrade_Controller.php', TOPSPIN_PLUGIN_PATH));
 
-### Settings Page Functions
-function topspin_page_settings_general() {
-	include('page/settings_general.php');
-}
-function topspin_page_settings_viewstores() {
-	include('page/settings_viewstores.php');
-}
-function topspin_page_settings_viewmostpopular() {
-	include('page/settings_viewmostpopular.php');
-}
-function topspin_page_settings_viewitems() {
-	include('page/settings_viewitems.php');
-}
-function topspin_page_settings_vieworders() {
-	include('page/settings_vieworders.php');
-}
-function topspin_page_settings_edit() {
-	include('page/settings_edit.php');
-}
-function topspin_page_settings_navmenu() {
-	include('page/settings_navmenu.php');
-}
+require_once(sprintf('%s/controllers/WP_Topspin_AJAX.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/controllers/WP_Topspin_Cache.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/controllers/WP_Topspin_Cron.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/controllers/WP_Topspin_Notices.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/controllers/WP_Topspin_Shortcodes.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/controllers/WP_Topspin_Template.php', TOPSPIN_PLUGIN_PATH));
 
-### Add Menus
-function topspin_add_menus() {
-	add_menu_page('Topspin','Topspin',6,'topspin/page/settings_general','topspin_page_settings_general');
-		add_submenu_page('topspin/page/settings_general','Settings','Settings',6,'topspin/page/settings_general','topspin_page_settings_general');
-		add_submenu_page('topspin/page/settings_general','View Stores','View Stores',6,'topspin/page/settings_viewstores','topspin_page_settings_viewstores');
-		add_submenu_page('topspin/page/settings_general','View Most Popular','View Most Popular',6,'topspin/page/settings_viewmostpopular','topspin_page_settings_viewmostpopular');
-		add_submenu_page('topspin/page/settings_general','View Items','View Items',6,'topspin/page/settings_viewitems','topspin_page_settings_viewitems');
-		add_submenu_page('topspin/page/settings_general','View Orders','View Orders',6,'topspin/page/settings_vieworders','topspin_page_settings_vieworders');
-		add_submenu_page('topspin/page/settings_general','Store Setup','Add Store',6,'topspin/page/settings_edit','topspin_page_settings_edit');
-		add_submenu_page('topspin/page/settings_general','Nav Menu','Nav Menu',6,'topspin/page/settings_navmenu','topspin_page_settings_navmenu');
-}
-
-### Global CSS/JS
-wp_enqueue_script('jquery');
-wp_enqueue_script('jquery-ui-core');
-wp_enqueue_script('jquery-ui-sortable');
-
-### Administrative Hooks
-if(is_admin()) {
-	### Add Menus
-	add_action('admin_menu','topspin_add_menus');
-	### CSS/JS
-	wp_enqueue_style('topspin-admin',TOPSPIN_PLUGIN_URL.'/resources/css/admin.css');
-}
-### Frontend Hooks
-else {
-	global $store;
-	$templateMode = $store->getSetting('topspin_template_mode');
-	### CSS/JS
-	wp_enqueue_style('topspin-default',TOPSPIN_PLUGIN_URL.'/templates/topspin-'.$templateMode.'/topspin.css');
-	###	3.1
-	if(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-'.$templateMode.'/topspin.css')) { wp_enqueue_style('topspin-theme',TOPSPIN_CURRENT_THEME_URL.'/topspin-'.$templateMode.'/topspin.css'); }
-	###	3.0.0
-	elseif(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin.css')) { wp_enqueue_style('topspin-theme',TOPSPIN_CURRENT_THEME_URL.'/topspin.css'); }
-	### IE7 CSS
-	if(strpos($_SERVER['HTTP_USER_AGENT'],'MSIE 7.0')) {
-		wp_enqueue_style('topspin-default-ie7',TOPSPIN_PLUGIN_URL.'/templates/topspin-'.$templateMode.'/topspin-ie7.css');
-		###	3.1
-		if(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-'.$templateMode.'/topspin-ie7.css')) { wp_enqueue_style('topspin-theme',TOPSPIN_CURRENT_THEME_URL.'/topspin-'.$templateMode.'/topspin-ie7.css'); }
-		###	3.0.0
-		elseif(file_exists(TOPSPIN_CURRENT_THEME_PATH.'/topspin-ie7.css')) { wp_enqueue_style('topspin-theme',TOPSPIN_CURRENT_THEME_URL.'/topspin-ie7.css'); }
-	}
-	wp_enqueue_style('jquery.colorbox',TOPSPIN_PLUGIN_URL.'/resources/js/colorbox/colorbox.css');
-	wp_enqueue_script('jquery.colorbox',TOPSPIN_PLUGIN_URL.'/resources/js/colorbox/jquery.colorbox-min.js',array('jquery'),'1.3.17.2',true);
-	wp_enqueue_script('topspin-core','http://cdn.topspin.net/javascripts/topspin_core.js?aId='.TOPSPIN_ARTIST_ID,null,'3.3',true);
-	wp_enqueue_script('topspin-ready',TOPSPIN_PLUGIN_URL.'/resources/js/topspin.ready.js',array('jquery'),'3.3',true);
-}
+// Classes
+require_once(sprintf('%s/classes/topspin.api.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/classes/topspinArtist.api.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/classes/topspinStore.api.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/classes/ts_query.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/classes/wp.mediaHandler.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/classes/wp.topspin.php', TOPSPIN_PLUGIN_PATH));
 
 ?>
