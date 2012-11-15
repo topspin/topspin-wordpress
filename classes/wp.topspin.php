@@ -266,22 +266,38 @@ EOD;
 		return $sortedStores;
 	}
 
+	/**
+	 * Retrieves the given store's artist ID
+	 *
+	 * @param int $post_ID			The store post ID
+	 * @return int
+	 */
 	public static function getStoreArtistId($post_ID=null) {
+		$artist_id = false;
 		if(!$post_ID) {
 			global $post;
 			if($post) { $post_ID = $post->ID; }
 		}
 		if($post_ID) {
-			return get_post_meta($post_ID, 'topspin_store_artist_id', 1);
+			$artist_id = get_post_meta($post_ID, 'topspin_store_artist_id', 1);
 		}
+		return apply_filters('topspin_store_artist_id', $artist_id);
 	}
 
+	/**
+	 * Retrieves the sale tag for the given store
+	 *
+	 * If a store post ID isn't passed, it will default to the current store
+	 *
+	 * @param int $post_ID			The store post ID
+	 * @return string
+	 */
 	public static function getStoreSaleTag($post_ID=null) {
 		if(!$post_ID) {
 			global $post;
-			$post_ID = $post->ID;
+			if($post) { $post_ID = $post->ID; }
 		}
-		return get_post_meta($post_ID, 'topspin_store_sale_tag', 1);
+		if($post_ID) { return get_post_meta($post_ID, 'topspin_store_sale_tag', 1); }
 	}
 
 	/**

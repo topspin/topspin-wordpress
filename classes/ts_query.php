@@ -75,7 +75,7 @@ function ts_item_class() {
 	array_push($classes, 'topspin-item-id-' . $tsOffer->ID);
 
 	// Retrieve store meta data
-	if($post->ID) {
+	if($post && $post->ID) {
 		switch($post->post_type) {
 			case TOPSPIN_CUSTOM_POST_TYPE_STORE:
 				$storeMeta = WP_Topspin::getStoreMeta($post->ID);
@@ -455,9 +455,9 @@ class TS_Query {
 	 * Queries the given store for offers
 	 * 
 	 * #Arguments
-	 * * post_ID int The store post ID
-	 * * offer_ID int The offer ID
-	 * * artist_id int
+	 * * post_ID int				The store post ID
+	 * * offer_ID int				The offer post ID
+	 * * artist_id int				The Topspin artist ID
 	 * * items_per_page int
 	 * * show_all_items bool
 	 * * desc_length int
@@ -804,12 +804,16 @@ EOD;
 					$limit = sprintf('LIMIT %d, %d', $limitOffset, $limitCount);
 				}
 			}
+			
+			// Group if there's an available select statement
+			$groupBy = (strlen($sqlFirstSelectStatement)) ? $groupBy = 'GROUP BY up1.ID' : '';
 
 			$request = <<<EOD
 {$sqlFirstSelectStatement}
 {$unionSelectManualOrder}
 {$unionSelectTags}
 {$unionSelectOfferTypes}
+{$groupBy}
 {$limit}
 EOD;
 		}
