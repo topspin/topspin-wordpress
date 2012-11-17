@@ -247,7 +247,7 @@ class WP_Topspin_Hooks_Controller {
 							'offer_ID' => $offer_ID
 						);
 						$tsQuery = new TS_Query($args);
-						$var = array(
+						$vars = array(
 							'args' => $args,
 							'tsQuery' => $tsQuery
 						);
