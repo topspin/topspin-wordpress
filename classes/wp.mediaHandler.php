@@ -22,20 +22,23 @@ if(!class_exists('WP_MediaHandler')) {
 		 */
 		public static function saveURL($src, $post_ID) {
 			$uploadedFile = self::cacheURL($src);
-			$wp_filetype = wp_check_filetype($uploadedFile['filename'], null);
-			$attachment = array(
-				'post_mime_type' => $wp_filetype['type'],
-				'post_title' => $uploadedFile['title'],
-				'post_content' => '',
-				'post_status' => 'inherit'
-			);
-			// Create and generate the attachment metadata
-			if($post_ID) {
-				$attach_id = wp_insert_attachment($attachment, $uploadedFile['path'], $post_ID);
-				if(!function_exists('wp_generate_attachment_metadata')) { require_once(sprintf('%swp-admin/includes/image.php', ABSPATH)); }
-				$attach_data = wp_generate_attachment_metadata($attach_id, $uploadedFile['path']);
-				wp_update_attachment_metadata($attach_id, $attach_data);
-				return $attach_id;
+			// If the file was cached successfully
+			if($uploadedFile) {
+				$wp_filetype = wp_check_filetype($uploadedFile['filename'], null);
+				$attachment = array(
+					'post_mime_type' => $wp_filetype['type'],
+					'post_title' => $uploadedFile['title'],
+					'post_content' => '',
+					'post_status' => 'inherit'
+				);
+				// Create and generate the attachment metadata
+				if($post_ID) {
+					$attach_id = wp_insert_attachment($attachment, $uploadedFile['path'], $post_ID);
+					if(!function_exists('wp_generate_attachment_metadata')) { require_once(sprintf('%swp-admin/includes/image.php', ABSPATH)); }
+					$attach_data = wp_generate_attachment_metadata($attach_id, $uploadedFile['path']);
+					wp_update_attachment_metadata($attach_id, $attach_data);
+					return $attach_id;
+				}
 			}
 			return false;
 		}
@@ -46,16 +49,15 @@ if(!class_exists('WP_MediaHandler')) {
 		 * @access public
 		 * @static
 		 * @param string $src
-		 * @return array An array containing the path, filename, and title of the new image
+		 * @return array|bool An array containing the path, filename, and title of the new image
 		 */
 		public static function cacheURL($src) {
 			if(strlen($src)) {
-				$headers = get_headers($src, 1);
-				if($headers && preg_match('/200 OK/', $headers[0])) {
+				$valid = self::checkRemoteUrl($src);
+				if($valid) {
 					$wpUploadDir = wp_upload_dir();
 					$cachePath = $wpUploadDir['path'];
 					$srcLocation = $src;
-					if(isset($headers['Location'])) { $srcLocation = $headers['Location']; }
 					//If stripped extension is the same as src basename, than there is no extension, so add one!
 					$urlParts = parse_url($srcLocation);
 					$pathInfo = pathinfo($urlParts['path']);
@@ -82,6 +84,26 @@ if(!class_exists('WP_MediaHandler')) {
 			}
 			return false;
 		}
+		
+		/**
+		 * Checks the remote source URL if it returns a valid resource/response
+		 *
+		 * @access public
+		 * @static
+		 * @param string $src
+		 * @return bool
+		 */
+		public static function checkRemoteUrl($url) {
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_NOBODY, true);
+			curl_setopt($ch, CURLOPT_FAILONERROR, true);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$res = curl_exec($ch);
+			if($res !== false) { return true; }
+			else { return false; }
+		}
+
 	}
 }
 

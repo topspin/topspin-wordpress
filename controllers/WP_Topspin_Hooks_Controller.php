@@ -4,7 +4,7 @@
 add_action('admin_bar_menu',				array('WP_Topspin_Hooks_Controller', 'adminBarMenu'), 100);
 add_action('add_meta_boxes',				array('WP_Topspin_Hooks_Controller', 'addMetaBoxes'));
 add_action('admin_enqueue_scripts',			array('WP_Topspin_Hooks_Controller', 'adminEnqueueScripts'));
-add_action('admin_init',					array('WP_Topspin_HookS_Controller', 'adminInit'));
+add_action('admin_init',					array('WP_Topspin_Hooks_Controller', 'adminInit'));
 add_action('admin_menu',					array('WP_Topspin_Hooks_Controller', 'adminMenu'));
 add_action('after_setup_theme',				array('WP_Topspin_Hooks_Controller', 'afterSetupTheme'));
 add_action('init',							array('WP_Topspin_Hooks_Controller', 'init'));

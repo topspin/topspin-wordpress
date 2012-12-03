@@ -75,7 +75,7 @@ class WP_Topspin_Cache {
 				if($artistPostId) {
 					// Update the artist post meta
 					WP_Topspin::updateArtistMeta($artistPostId, $artist);
-					if($artist->avatar_image) {
+					if($artist->avatar_image && strlen($artist->avatar_image)) {
 						if(has_post_thumbnail($artistPostId)) {
 							$artistAttachmentId = get_post_thumbnail_id($artistPostId);
 							$artistAttachmentFile = get_attached_file($artistAttachmentId);
@@ -84,11 +84,11 @@ class WP_Topspin_Cache {
 							// Save the new file
 							$artistAvatarFile = WP_MediaHandler::cacheURL($artist->avatar_image);
 							// Update attachment file
-							update_attached_file($artistAttachmentId,$artistAvatarFile['path']);
+							update_attached_file($artistAttachmentId, $artistAvatarFile['path']);
 						}
 						else {
-							$artistAttachmentId = WP_MediaHandler::saveURL($artist->avatar_image,$artistPostId);
-							if($artistAttachmentId) { set_post_thumbnail($artistPostId,$artistAttachmentId); }
+							$artistAttachmentId = WP_MediaHandler::saveURL($artist->avatar_image, $artistPostId);
+							if($artistAttachmentId) { set_post_thumbnail($artistPostId, $artistAttachmentId); }
 						}
 					}
 					// Add to the global cached array
@@ -227,16 +227,13 @@ class WP_Topspin_Cache {
 	 */
 	public static function syncOffersSingle($offer_id) {
 		global $topspin_store_api;
-
 		// Retrieve the cached offer meta data
 		$offerMeta = WP_Topspin::getOfferMeta($offer_id);
-
 		// Retrieve the new offer meta data
 		$newOffer = $topspin_store_api->getOffer($offerMeta->id);
-
 		// Cache this offer
 		$offerPostId = self::cacheOffer($newOffer);
-
+		// Returns true
 		return true;
 
 	}
@@ -250,10 +247,8 @@ class WP_Topspin_Cache {
 	public static function cacheOffer($offer) {
 		// Retrieve the post ID for the offer
 		$offerPostId = WP_Topspin::getOfferPostId($offer);
-
 		// Create a new post array for update/create
 		$offerPost = WP_Topspin::createOffer($offer);
-
 		// Create if not exists
 		if(!$offerPostId) {
 			$offerPostId = wp_insert_post($offerPost);
@@ -263,38 +258,37 @@ class WP_Topspin_Cache {
 			$offerPost['ID'] = $offerPostId;
 			$offerPostId = wp_update_post($offerPost);
 		}
-
 		if($offerPostId) {
 			// Update the offer post meta
 			WP_Topspin::updateOfferMeta($offerPostId, $offer);
 		}
-
 		// If an image exists, cache it!
-		if(isset($offer->poster_image) && $offer->poster_image) {
+		if(isset($offer->poster_image) && strlen($offer->poster_image)) {
 			// If the post has a thumbnail, update it!
 			if(has_post_thumbnail($offerPostId)) {
 				$thumbPostId = get_post_thumbnail_id($offerPostId);
 				$thumbAttachment = get_attached_file($thumbPostId);
-
-				// Delete the old file
-				if(file_exists($thumbAttachment)) { unlink($thumbAttachment); }
 				// Save the new file
 				$thumbFile = WP_MediaHandler::cacheURL($offer->poster_image);
-				// Update attachment file (load image.php if needed)
-				if(!function_exists('wp_generate_attachment_metadata')) { require_once(sprintf('%swp-admin/includes/image.php', ABSPATH)); }
-				$attachData = wp_generate_attachment_metadata($thumbPostId, $thumbFile['path']);
-				wp_update_attachment_metadata($thumbPostId, $attachData);
+				// If the file was successfully cached
+				if($thumbFile && isset($thumbFile['path'])) {
+					// Delete the old file
+					if(file_exists($thumbAttachment)) { unlink($thumbAttachment); }
+					// Update attachment file
+					update_attached_file($thumbPostId, $thumbFile['path']);
+				}
+				else { error_log('failed'); }
 			}
+			// Else, no featured image is yet attached
 			else {
 				// Set the offer thumbnail
 				$thumbPostId = WP_MediaHandler::saveURL($offer->poster_image, $offerPostId);
 				if($thumbPostId) { set_post_thumbnail($offerPostId, $thumbPostId); }
 			}
 		}
-		
 		return ($offerPostId) ? $offerPostId : false;
 	}
-	
+
 	/**
 	 * Purges the database of stray artist posts that are not found in the global cached array
 	 *
