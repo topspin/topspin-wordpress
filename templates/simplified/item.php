@@ -7,7 +7,11 @@
 			<?php if(ts_is_on_sale()) : ?><div class="topspin-item-onsale">ON SALE!</div><?php endif; ?>
 			<div class="topspin-item-price"><?php ts_the_price(); ?></div>
 			<div class="topspin-item-purchase">
-				<a class="topspin-item-purchase-anchor" href="<?php ts_the_purchaselink(); ?>">PURCHASE</a>
+				<?php if(ts_is_sold_out()) : ?>
+					<div class="topspin-item-soldout">SOLD OUT!</div>
+				<?php else : ?>
+					<a class="topspin-item-purchase-anchor" href="<?php ts_the_purchaselink(); ?>">PURCHASE</a>
+				<?php endif; ?>
 			</div>
 		</div>
 	</div>

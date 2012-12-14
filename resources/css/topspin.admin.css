@@ -62,6 +62,14 @@
 	width:125px;
 }
 
+.wp-list-table #in_stock {
+	width: 75px;
+}
+
+.wp-list-table .in_stock .sold-out {
+	color: #ff0000;
+}
+
 
 .topspin-metabox-row {
 	margin-bottom:15px;

@@ -90,6 +90,13 @@
 					<span class="description">Set a custom post type for store pages. (Default: topspin-store)</span>
 				</td>
 			</tr>
+			<tr id="topspin-general-custom-post-type-settings-products" valign="top">
+				<th scope="row">Products:</th>
+				<td>
+					<input type="text" name="topspin_post_type_product" value="<?php echo TOPSPIN_CUSTOM_POST_TYPE_PRODUCT; ?>" />
+					<span class="description">Set a custom post type for products. (Default: topspin-product)</span>
+				</td>
+			</tr>
 		</table>
 	</div>
 

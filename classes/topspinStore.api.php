@@ -12,7 +12,7 @@ class Topspin_Store_API extends Topspin_API {
 	 * Calls the API for offers
 	 *
 	 * @access public
-	 * @params array $params (default: array())
+	 * @param array $params (default: array())
 	 * @return object|bool
 	 */
 	public function getList($params=array()) {
@@ -24,7 +24,7 @@ class Topspin_Store_API extends Topspin_API {
 	 * Calls the API for a specific offer
 	 *
 	 * @access public
-	 * @params int $offer_id
+	 * @param int $offer_id
 	 * @return object|bool
 	 */
 	public function getOffer($offer_id) {

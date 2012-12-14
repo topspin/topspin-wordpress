@@ -2,7 +2,32 @@
 
 Quickly, easily integrate Topspin Offers into customized, dynamically generated Store Pages; recoded and optimized for better Wordpress integration. 
 
-# Description
+[Description](#description)
+
+[Installation](#installation)
+
+[Usage](#usage)
+
+[Customization](#customization)
+
+[Frequently Asked Questions](#faq)
+
+[Other Notes](#other-notes)
+
+[Roadmap](#roadmap)
+
+[Screenshots](#screenshots)
+
+[Changelog](#changelog)
+
+# [Description](id:description)
+
+Developed by [The Uprising Creative](http://theuprisingcreative.com)
+ 
+This plugin is open-source and we offer limited support.  If you do have an issue or question, please [open a GitHub issue](https://github.com/topspin/topspin-wordpress/issues) and we'll work to help you out when time allows.
+ 
+*PLEASE NOTE: This plugin is meant to be customized! It will work "out of the box" with just about any theme, but it may not match your site or be as "pretty" as you'd like.  Additionally, if your theme uses featured images in the header of posts, you may have to make adjustments to ensure the display of the products is to your liking.*
+ 
 
 This plugin allows novice and pro Topspin users alike to quickly and easily create integrated, customized, sortable and dynamically generated stores from their Topspin Offers in a few minutes.
 
@@ -19,8 +44,6 @@ In addition to automatically creating Store Pages, Shortcodes are also generated
 The possibilities are endless. 
 
 (This new version of the Official Topspin Wordpress Plugin is a complete rebuild from the ground up, simplified and optimized to make launching an integrated Topspin Wordpress store in minutes. *This plugin is in active development and more features will be added regularly.  If you have a feature request or find a bug, please report it! Please see the Roadmap for more information.*)
-
-Plugin developed for [Topspin Media](http://topspinmedia.com/) by [The Uprising Creative](http://theuprisingcreative.com)
 
 ### Requirements
 
@@ -65,7 +88,7 @@ Plugin developed for [Topspin Media](http://topspinmedia.com/) by [The Uprising 
 * Ability to manually sync artists and offers 
 * Ability to create a navigation menu using a drag-and-drop interface
 
-#Installation
+# [Installation](id:installation)
 
 This plugin requires a Topspin Artist account to function.  If you don't have an account, you can get one here: [http://topspinmedia.com](http://topspinmedia.com)
 
@@ -90,6 +113,11 @@ These upgrade instructions are specifically for users of the new plugin from v3.
 2. Automatically upgrade from within Wordpress OR download the new plugin and overwrite the `official-topspin-wordpress-plugin` folder in your `/wp-content/plugins/` directory
 3. Check your pages to make sure they all look right
 4. You're done!
+
+*PLEASE NOTE: The plugin now uses the built-in Wordpress Custom Post Type system.  This allows for more flexibility, better SEO, better deep linking, better caching, etc but it may change the relationships your site has with the store pages and products.  Be sure to make a backup and if possible, test on a dev environment first!*
+
+*ADDITIONAL NOTE: This plugin is meant to be customized! It will work "out of the box" with just about any theme, but it may not match your site or be as "pretty" as you'd like.  Additionally, if your theme uses featured images in the header of posts, you may have to make adjustments to ensure the display of the products is to your liking.*
+
 
 ## Upgrading from an v2.0 or earlier
 
@@ -118,7 +146,7 @@ Please be aware that you will lose the *Landing Page* it allowed you to create, 
 
 The new plugin has been completely rewritten, so some of the controls will change.  For example, Stores and Offers are now located in the top-level navigation in the Wordpress Admin instead of as a sub-item in the Topspin menu.*
 
-# Usage
+# [Usage](id:usage)
 
 ## Adding Store Pages
 
@@ -187,9 +215,11 @@ id | int | An Offer post ID
 
 > Displays the store navigation menu.
 
-# Customization
+# [Customization](id:customization)
 
 All markup output by this plugin is XHTML-compliant and heavily classed to allow for easily styling with CSS. The plugin comes with two different 'templates' called `Standard` and `Simplified`.
+
+*PLEASE NOTE: This plugin is meant to be customized! It will work "out of the box" with just about any theme, but it may not match your site or be as "pretty" as you'd like.  Additionally, if your theme uses featured images in the header of posts, you may have to make adjustments to ensure the display of the products is to your liking.*
 
 The `Simplified Template` is designed to give the best out-of-the box store layout if you prefer to do little or no customization.  It uses HTML Tables to construct the Store Grid and therefore is less flexible for developers who wish to heavily customize the store's output. 
 
@@ -216,7 +246,7 @@ If you are a pro user and are comfortable with creating and editing WordPress th
 2. Backwards Compatability: For users upgrading from a version pre-v3.1, the Plugin will still recognize your customized `topspin.css`, `topspin-ie7.css`, `featured-item.php` and `item-listings.php` files located in your site's active theme folder if you select the Standard Template, even if they aren't in the /topspin-standard/ sub-folder.)
 3. The ability to use the new - as of v3.2 - additional images and permalink features requires an upgrade from the pre-v3.2 templates to the new Standard or Simplified templates.  If you are using the default templates, these changes will automatically be made on upgrade.  If you are using customized templates, you'll need to either a) update your template manually or b) copy over the new default template and re-style as needed.
 
-# Frequently Asked Questions
+# [Frequently Asked Questions](id:faq)
 
 **I'm using the v2.0 Plugin.  Can I just delete it and install this new version?**
 
@@ -251,7 +281,7 @@ If you are a pro user and are comfortable with creating and editing WordPress th
 
 > Unfortunately it's not. This is due to a limitation in the Topspin API regarding information being passed via the API for child accounts. If you enter your API information into the plugin and none of your products show up, and if your account details were setup or given to you by someone else, there's a good chance you're on a child account. If this happens, check with your Topspin account administrator and see if you are indeed using a child account. If you are, you'll need to get the parent account API details in order for the plugin to work.
 
-# Other Notes
+# [Other Notes](id:other-notes)
 
 ## Additional Suggestions
 
@@ -278,11 +308,14 @@ We also suggest the use of the following additional plugins to maximize performa
 
 As a plugin that's in active development, bugs are going to pop up from time to time as we don't have the ability to fully test on every potential server and/or browser configuration possible.  If you find a bug, please let us know over on [GitHub](https://github.com/topspin/topspin-wordpress/issues) and we'll do our best to get to it ASAP.  Or better yet, fix it yourself and get $150 from Topspin!
 
-# Roadmap
+# [Roadmap](id:roadmap)
 
 This plugin is in open development.  Over the weeks and months we hope to roll out regular updates with new features and optimizations, starting with: 
 
-* Code clean-up / debugging
+* Updated, Responsive, "Pretty" Front-End Templates
+* Increased Inventory Management Functionality - notifications, color coding, etc
+* Refined Inventory UI/UX
+* Additional Code clean-up / debugging
 * Automatic cropping and scaling of thumbnails
 * Sidebar widget
 * Further customizable page layouts for more dynamic and varied offer page creation without editing Theme or template files
@@ -296,7 +329,7 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 * Optimized output for non-Buy Button Offers
 * Plugin Site for further documentation, discussion, feature requests, etc
 
-# Screenshots
+# [Screenshots](id:screenshots)
 
 1. Plugin Admin -> Settings Page
 2. Plugin Admin -> Offers Listings
@@ -307,7 +340,7 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 7. Front-End -> View of a Store Page's "More Details" Colorbox overlay
 8. Front-End -> View of the Topspin Checkout Flow overlay
 
-# Changelog
+# [Changelog](id:changelog)
 
 ## 4.0.0
 

@@ -5,6 +5,8 @@ add_action('topspin_flush_permalinks',						array('WP_Topspin_Hooks_Custom_Contr
 add_action('topspin_post_action',							array('WP_Topspin_Hooks_Custom_Controller', 'postAction'));
 add_action('topspin_register_post_types',					array('WP_Topspin_Hooks_Custom_Controller', 'registerPostTypes'));
 add_action('topspin_cron_prefetching',						array('WP_Topspin_Hooks_Custom_Controller', 'prefetchApi'));
+add_action('topspin_finish_sync_offers',					array('WP_Topspin_Hooks_Custom_Controller', 'finishSyncOffers'));
+add_action('topspin_finish_sync_products',					array('WP_Topspin_Hooks_Custom_Controller', 'finishSyncProducts'));
 
 /**
  * Handles WordPress custom hooks
@@ -48,12 +50,17 @@ class WP_Topspin_Hooks_Custom_Controller {
 					WP_Topspin_Cache::syncOffers(TOPSPIN_API_PREFETCHING);
 					do_action('topspin_notices_synced');
 					break;
+				case 'sync_products':
+					WP_Topspin_Cache::syncProducts(true);
+					do_action('topspin_notices_synced');
+					break;
 				case 'reset_cron':
 					WP_Topspin_Cron::resetSchedules();
 					do_action('topspin_notices_schedules_reset');
 					break;
 				case 'purge_prefetch':
 					WP_Topspin_Cache::purgePrefetch();
+					do_action('topspin_notices_prefetch_purged_all');
 					break;
 			}
 		}
@@ -75,13 +82,15 @@ class WP_Topspin_Hooks_Custom_Controller {
 		// Custom post type CMS columns
 		add_filter('manage_edit-' . TOPSPIN_CUSTOM_POST_TYPE_OFFER . '_columns', array('WP_Topspin_Hooks_Controller', 'offerCustomColumns'));
 		add_filter('manage_edit-' . TOPSPIN_CUSTOM_POST_TYPE_ARTIST . '_columns', array('WP_Topspin_Hooks_Controller', 'artistCustomColumns'));
+		add_filter('manage_edit-' . TOPSPIN_CUSTOM_POST_TYPE_PRODUCT . '_columns', array('WP_Topspin_Hooks_Controller', 'productCustomColumns'));
 
 		// Custom post type CMS column outputs
 		add_action('manage_' . TOPSPIN_CUSTOM_POST_TYPE_OFFER . '_posts_custom_column', array('WP_Topspin_Hooks_Controller', 'offerCustomColumnOutput'), 10, 2);
 		add_action('manage_' . TOPSPIN_CUSTOM_POST_TYPE_ARTIST . '_posts_custom_column', array('WP_Topspin_Hooks_Controller', 'artistCustomColumnOutput'), 10, 2);
-	
+		add_action('manage_' . TOPSPIN_CUSTOM_POST_TYPE_PRODUCT . '_posts_custom_column', array('WP_Topspin_Hooks_Controller', 'productCustomColumnOutput'), 10, 2);
+
 		// Add theme support
-		add_theme_support('post-thumbnails', array(TOPSPIN_CUSTOM_POST_TYPE_ARTIST, TOPSPIN_CUSTOM_POST_TYPE_OFFER));
+		add_theme_support('post-thumbnails');
 	}
 
 	/**
@@ -128,6 +137,42 @@ class WP_Topspin_Hooks_Custom_Controller {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Updates the last cached offers time and turn off sync notification
+	 *
+	 * @access public
+	 * @static
+	 * @return void
+	 */
+	public static function finishSyncOffers() {
+		// Update last cached time
+		update_option('topspin_last_cache_offers', time());
+		update_option('topspin_is_syncing_offers', false);
+		
+		// Sync products
+		global $topspin_cached_ids;
+		if(count($topspin_cached_ids)) {
+			foreach($topspin_cached_ids as $offer_id) {
+				WP_Topspin_Cache::cacheProduct($offer_id);
+			}
+			// Do action
+			do_action('topspin_finish_sync_products');
+		}
+	}
+	
+	/**
+	 * Updates the last cached products time and turn off sync notification
+	 *
+	 * @access public
+	 * @static
+	 * @return void
+	 */
+	public static function finishSyncProducts() {
+		// Update last cached time
+		update_option('topspin_last_cache_products', time());
+		update_option('topspin_is_syncing_products', false);
 	}
 
 }

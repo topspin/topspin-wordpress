@@ -67,7 +67,7 @@ class WP_Topspin {
 	 * @return bool
 	 */
 	public static function hasPostTypes() {
-		return (post_type_exists(TOPSPIN_CUSTOM_POST_TYPE_ARTIST) && post_type_exists(TOPSPIN_CUSTOM_POST_TYPE_STORE) && post_type_exists(TOPSPIN_CUSTOM_POST_TYPE_OFFER)) ? true : false;
+		return (post_type_exists(TOPSPIN_CUSTOM_POST_TYPE_ARTIST) && post_type_exists(TOPSPIN_CUSTOM_POST_TYPE_STORE) && post_type_exists(TOPSPIN_CUSTOM_POST_TYPE_OFFER) && post_type_exists(TOPSPIN_CUSTOM_POST_TYPE_PRODUCT)) ? true : false;
 	}
 
 	/**
@@ -158,7 +158,7 @@ EOD;
 EOD;
 		$wpdb->query($wpdb->prepare($sql3,array(TOPSPIN_CUSTOM_POST_TYPE_STORE)));
 	}
-	
+
 	public static function MenuItemAdmin($store) {
 		ob_start();
 		include(sprintf('%sviews/pages/menus/item.php', TOPSPIN_PLUGIN_PATH));
@@ -166,11 +166,19 @@ EOD;
 		ob_end_clean();
 		return $html;
 	}
-	
+
+	/**
+	 * Outputs a menu item template
+	 *
+	 * @access public
+	 * @static
+	 * @param object $item
+	 * @return void
+	 */
 	public static function MenuItem($item) {
 		if(get_post_meta($item->ID, 'topspin_menu_display', 1)==1) { ?>
 		<li class="topspin-store-navmenu">
-			<a class="topspin-store-navmenu" href="<?php echo get_permalink($item->ID); ?>"><?php echo $item->post_title; ?></a>
+			<a class="topspin-store-navmenu" href="<?php echo get_permalink($item->ID); ?>" data-post-id="<?php echo $item->ID; ?>"><?php echo $item->post_title; ?></a>
 			<?php
 			$args = array(
 				'post_parent' => $item->ID
@@ -623,6 +631,26 @@ EOD;
 	}
 
 	/**
+	 * Retrieves an array of WordPress post IDs of all offers
+	 *
+	 * @access public
+	 * @static
+	 * @return array
+	 */
+	public static function getOfferPostIds() {
+		global $wpdb;
+		$sql = <<<EOD
+SELECT
+	p.ID
+FROM {$wpdb->posts} p
+WHERE
+	p.post_type = %s
+EOD;
+		$esql = $wpdb->prepare($sql, array(TOPSPIN_CUSTOM_POST_TYPE_OFFER));
+		return $wpdb->get_col($esql);
+	}
+
+	/**
 	 * Retrieves the WordPress post ID for the given offer
 	 * 
 	 * @access public
@@ -679,6 +707,8 @@ EOD;
 	 */
 	public static function updateOfferMeta($post_ID, $offer) {
 		foreach($offer as $key=>$value) { update_post_meta($post_ID, sprintf('topspin_offer_%s', $key), $value); }
+		// Set the campaign ID
+		update_post_meta($post_ID, 'topspin_offer_campaign_id', Topspin_API::getCampaignId($offer));
 	}
 	
 	/**
@@ -754,7 +784,36 @@ EOD;
 			}
 		}
 	}
-	
+
+	/**
+	 * Deletes all associated product posts for the given offer post
+	 *
+	 * @param int $offerPostId
+	 * @return bool
+	 */
+	public static function deleteOfferProducts($offerPostId) {
+		global $wpdb;
+		$sql = <<<EOD
+DELETE FROM {$wpdb->postmeta}
+WHERE
+	{$wpdb->postmeta}.post_id = %d
+	AND {$wpdb->postmeta}.meta_key = 'topspin_offer_product_post_id'
+EOD;
+		$esql = sprintf($sql, $offerPostId);
+		return $wpdb->query($esql);
+	}
+
+	/**
+	 * Adds the product post ID to a offer post ID
+	 *
+	 * @param int $offerPostId
+	 * @param int $productPostId
+	 * @return void
+	 */
+	public static function attachOfferProduct($offerPostId, $productPostId) {
+		add_post_meta($offerPostId, 'topspin_offer_product_post_id', $productPostId);
+	}
+
 	/**
 	 * Deletes multiple offer post and their meta data
 	 *
@@ -826,6 +885,104 @@ EOD;
 		fwrite($fp, $data);
 		fclose($fp);
 		return true;
+	}
+	
+	/* !----- PRODUCTS ----- */
+
+	/**
+	 * Retrieves the WordPress post ID for the given product
+	 * 
+	 * @access public
+	 * @static
+	 * @global object $wpdb
+	 * @param object $artist
+	 * @return int|bool The post ID if found, or false if not found
+	 */
+	public static function getProductPostId($sku) {
+		global $wpdb;
+		$sql = <<<EOD
+SELECT
+	{$wpdb->postmeta}.post_id
+FROM {$wpdb->postmeta}
+WHERE
+	{$wpdb->postmeta}.meta_key = %s
+	AND {$wpdb->postmeta}.meta_value = %s
+EOD;
+		$post_ID = $wpdb->get_var($wpdb->prepare($sql, array('topspin_product_id', $sku->id)));
+		return ($post_ID) ? $post_ID : false;
+	}
+
+	/**
+	 * Create a post array for a product
+	 * 
+	 * @access public
+	 * @param object $sku			A sku object returned by the Order API
+	 * @return array				A WordPress post array
+	 */
+	public static function createProduct($sku) {
+		$productPost = array(
+			'post_title' => $sku->product_name,
+			'post_content' => '',
+			'post_type' => TOPSPIN_CUSTOM_POST_TYPE_PRODUCT,
+			'post_status' => 'publish'
+		);
+		return $productPost;
+	}
+
+	/**
+	 * Updates the meta data for the product on WordPress
+	 * 
+	 * @access public
+	 * @static
+	 * @param int $post_ID
+	 * @param object $sku			A sku object returned by the Order API
+	 * @return void
+	 */
+	public static function updateProductMeta($post_ID, $sku) {
+		foreach($sku as $key=>$value) { update_post_meta($post_ID, sprintf('topspin_product_%s', $key), $value); }
+	}
+	
+	/**
+	 * Retrieves the Topspin Porudct meta data
+	 * 
+	 * If the post ID is not set, it will default to the current post in the Loop
+	 *
+	 * @access public
+	 * @global object $post
+	 * @global object $wpdb
+	 * @param mixed $post_ID (default: null)
+	 * @return object
+	 */
+	public function getProductMeta($post_ID=null) {
+		global $wpdb;
+		if(!$post_ID) {
+			global $post;
+			$post_ID = $post->ID;
+		}
+		$sql = <<<EOD
+	SELECT
+		{$wpdb->postmeta}.meta_key,
+		{$wpdb->postmeta}.meta_value
+	FROM {$wpdb->postmeta}
+	WHERE
+		{$wpdb->postmeta}.meta_key LIKE 'topspin_product_%%'
+		AND {$wpdb->postmeta}.post_id = %d
+EOD;
+		$meta = array();
+		$data = $wpdb->get_results($wpdb->prepare($sql,array($post_ID)), OBJECT_K);
+		if($data) {
+			foreach($data as $record) {
+				$key = str_replace('topspin_product_', '', $record->meta_key);
+				switch($key) {
+					case 'attributes':
+					case 'weight':
+						$record->meta_value = maybe_unserialize($record->meta_value);
+						break;
+				}
+				$meta[$key] = $record->meta_value;
+			}
+		}
+		return (count($meta)) ? (object) $meta : false;
 	}
 
 }

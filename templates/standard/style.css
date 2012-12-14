@@ -3,11 +3,13 @@ div#ts_ol_pflow {
 }
 
 .topspin-grid {
-	list-style-type: none;
 }
-	.topspin-item {
+	.topspin-grid .topspin-item {
+		list-style-type: none;
 		float: left;
 		margin-bottom: 30px;
+		margin-left: 0px;
+		margin-right: 0px;
 	}
 		.topspin-item-column-first {
 			clear: left;
@@ -55,12 +57,21 @@ div#ts_ol_pflow {
 					padding-left:10px;
 					padding-right:10px;
 				}
+			.topspin-item-soldout {
+				background-color: #dfdfdf;
+					padding-left:10px;
+					padding-right:10px;
+			}
 	/* !----- Single ----- */
 	.topspin-item-single {
+		float: none;
 	}
+		.topspin-item-single .topspin-item-embed {
+			text-align: center;
+		}
 		.topspin-item-single .topspin-item-left {
-			float:left;
-			margin-right:30px;
+			float: left;
+			margin-right: 30px;
 		}
 			.topspin-item-single .topspin-item-thumb {
 			}
@@ -78,32 +89,39 @@ div#ts_ol_pflow {
 					border-color: #cdcdcd;
 				}
 		.topspin-item-single .topspin-item-body {
-			float:left;
-			width:250px;
+			float: left;
+			width: 250px;
 		}
 			.topspin-item-single .topspin-item-desc {
-				margin-bottom:30px;
+				margin-bottom: 30px;
 			}
 			.topspin-item-single .topspin-item-footer {
-				line-height:40px;
-				height:40px;
+				line-height: 40px;
+				height: 40px;
 			}
 				.topspin-item-single .topspin-item-price {
-					float:left;
+					float: left;
 				}
 				.topspin-item-single .topspin-item-purchase {
-					float:right;
+					float: right;
 				}
 	/* !----- Featured ----- */
 	.topspin-item-featured {
+		float: none;
+		clear: both;
+		overflow: auto;
+		padding-bottom: 2px;
 		margin-bottom: 30px;
 	}
+		.topspin-item-featured .topspin-item-embed {
+			text-align: center;
+		}
 		.topspin-item-featured .topspin-item-thumb {
 			float: left;
-			margin-right: 30px;
+			width: 250px;
 		}
 		.topspin-item-featured .topspin-item-body {
-			float: left;
+			margin-left: 280px;
 			width: 250px;
 		}
 			.topspin-item-featured .topspin-item-desc {
@@ -119,6 +137,10 @@ div#ts_ol_pflow {
 				.topspin-item-featured .topspin-item-purchase {
 					float: right;
 				}
+	/* !----- Lightbox ----- */
+	.fancybox-inner .topspin-item-featured {
+		margin-bottom: 0px;
+	}
 	/* !----- Grid Columns ----- */
 	.topspin-item-grid-columns-1 {
 		width: 100%;

@@ -23,6 +23,32 @@ function ts_get_offer($offer_ID) {
 	}
 }
 
+/**
+ * Load a template part into a template
+ *
+ * Note: Behaves like get_template_part()
+ *
+ * @return void
+ */
+function ts_get_template_part($args) {
+	$args = func_get_args();
+	$ext = '.php';
+	$file = '';
+	foreach($args as $key=>$slug) {
+		if($key==0) { $file = $slug; }
+		else { $file = sprintf('%s-%s', $file, $slug); }
+	}
+	// Retrieve the template path
+	$path = WP_Topspin_Template::getTemplatePath();
+	// Parse the defualt file name and the custom file name
+	$loadFile = sprintf('%s%s', 'item', $ext);
+	$file = sprintf('%s%s', $file, $ext);
+	// Check if the file exists
+	if(WP_Topspin_Template::fileExists($path, $file)) { $loadFile = $file; }
+	// Include the file
+	include(WP_Topspin_Template::getFile($loadFile));
+}
+
 /* !----- Template Tags ----- */
 /**
  * Retrieves the number of columns of the current store
@@ -71,9 +97,7 @@ function ts_item_class() {
 	global $post, $tsOffer;
 	// Set the default class
 	$classes = array('topspin-item');
-
 	array_push($classes, 'topspin-item-id-' . $tsOffer->ID);
-
 	// Retrieve store meta data
 	if($post && $post->ID) {
 		switch($post->post_type) {
@@ -121,6 +145,38 @@ function ts_is_on_sale() {
 }
 
 /**
+ * Checks to see if the current offer is sold out
+ *
+ * @param object|int $offer (default: null)
+ * @return bool
+ */
+function ts_is_sold_out($offer=null) {
+	if(!$offer) {
+		global $tsOffer;
+		$offer = $tsOffer;
+	}
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { return (isset($offer->meta->in_stock) && $offer->meta->in_stock) ? false : true; }
+	return true;
+}
+
+/**
+ * Retrieves the offer type
+ *
+ * @param object|int $offer (default: null)
+ * @return string
+ */
+function ts_get_the_offer_type($offer=null) {
+	if(!$offer) {
+		global $tsOffer;
+		$offer = $tsOffer;
+	}
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { return $offer->offer_type; }
+	else { return ''; }
+}
+
+/**
  * Checks to see if the current offer in the TS Loop has a thumbnail
  * 
  * @access public
@@ -155,7 +211,7 @@ function ts_the_thumbnail($size='full') {
 	 * @access public
 	 * @param object|int $offer (default: null)
 	 * @param string $size (default: full)
-	 * @return void
+	 * @return string
 	 */
 	function ts_get_the_thumbnail($offer,$size='full') {
 		if(!$offer) {
@@ -198,10 +254,15 @@ function ts_the_order_number() {
  * Echoes the current offer's ID
  * 
  * @access public
+ * @global object $tsOffer The current offer
  * @return int|bool
  */
-function ts_the_ID() {
-	echo ts_get_the_ID();
+function ts_the_ID($offer=null) {
+	if(!$offer) {
+		global $tsOffer;
+		$offer = $tsOffer;
+	}
+	echo ts_get_the_ID($offer);
 }
 
 	/**
@@ -209,11 +270,16 @@ function ts_the_ID() {
 	 * 
 	 * @access public
 	 * @global object $tsOffer The current offer
+	 * @param object|int $offer (default: null)
 	 * @return int The WordPress post ID
 	 */
-	function ts_get_the_ID() {
-		global $tsOffer;
-		if($tsOffer) { return $tsOffer->ID; }
+	function ts_get_the_ID($offer=null) {
+		if(!$offer) {
+			global $tsOffer;
+			$offer = $tsOffer;
+		}
+		else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+		if($offer) { return $offer->ID; }
 	}
 
 /**
@@ -345,11 +411,12 @@ function ts_the_price($offer=null) {
 }
 
 	/**
-	 * Returns the price of the offer.
+	 * Returns the price of the offer
 	 * 
 	 * @access public
+	 * @global object $tsOffer The current offer
 	 * @param object|int $offer (default: null)
-	 * @return void
+	 * @return string
 	 */
 	function ts_get_the_price($offer=null) {
 		$currency = '$';
@@ -432,6 +499,39 @@ function ts_gallery_images() {
 	global $tsOffer;
 	return $tsOffer->meta->campaign->product->images;
 }
+
+/**
+ * Echoes the embed code for the offer
+ * 
+ * @access public
+ * @global object $tsOffer The current offer
+ * @param object|int $offer (default: null)
+ * @return void
+ */
+function ts_the_embed_code($offer=null) {
+	if(!$offer) {
+		global $tsOffer;
+		$offer = $tsOffer;
+	}
+	return ts_get_the_embed_code($offer);
+}
+
+	/**
+	 * Returns the embed code of the offer
+	 * 
+	 * @access public
+	 * @global object $tsOffer The current offer
+	 * @param object|int $offer (default: null)
+	 * @return string
+	 */
+	function ts_get_the_embed_code($offer=null) {
+		if(!$offer) {
+			global $tsOffer;
+			$offer = $tsOffer;
+		}
+		else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+		if($offer) { echo $offer->meta->embed_code; }
+	}
 
 /* !----- TS_Query ----- */
 
@@ -804,16 +904,15 @@ EOD;
 					$limit = sprintf('LIMIT %d, %d', $limitOffset, $limitCount);
 				}
 			}
-			
+
 			// Group if there's an available select statement
-			$groupBy = (strlen($sqlFirstSelectStatement)) ? $groupBy = 'GROUP BY up1.ID' : '';
+			//$groupBy = (strlen($sqlFirstSelectStatement)) ? 'GROUP BY up1.ID' : '';
 
 			$request = <<<EOD
 {$sqlFirstSelectStatement}
 {$unionSelectManualOrder}
 {$unionSelectTags}
 {$unionSelectOfferTypes}
-{$groupBy}
 {$limit}
 EOD;
 		}
@@ -825,6 +924,7 @@ EOD;
 			$offers = $wpdb->get_results($request);
 			$offer_count = $wpdb->get_var('SELECT FOUND_ROWS()');
 		}
+		
 		// Set the query properties
 		$this->query = $args;
 		$this->current_offer = -1;

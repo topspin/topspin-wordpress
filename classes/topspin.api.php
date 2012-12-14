@@ -10,10 +10,10 @@ class Topspin_API {
 
 	private $_credentials = false;
 	private $_endpoint = 'http://app.topspin.net';
-	
+
 	// cUrl stored properties
 	private $_lastRequest = false;
-	
+
 	/**
 	 * Initializes the Topspin API
 	 *
@@ -28,7 +28,7 @@ class Topspin_API {
 			'password' => $password
 		);
 	}
-	
+
 	/**
 	 * Parses the API action and the endpoint URL
 	 * 
@@ -103,7 +103,7 @@ class Topspin_API {
 	}
 
 	/* !----- Static Methods ----- */
-	
+
 	/**
 	 * Retrieves a list of all offer types avaiable in the Topspin API
 	 * 
@@ -119,7 +119,7 @@ class Topspin_API {
 			'single_track_player_widget' => 'Single Track Player Widget'
 		);
 	}
-	
+
 	/**
 	 * Retrieves a list of currency symbols
 	 * 
@@ -137,7 +137,7 @@ class Topspin_API {
 			'CAD' => '$'
 		);
 	}
-	
+
 	/**
 	 * Retrieves the currency symbol
 	 * 
@@ -149,6 +149,39 @@ class Topspin_API {
 	public static function getCurrentSymbol($currency) {
 		$currencies = self::getCurrencies();
 		return (isset($currencies[$currency])) ? $currencies[$currency] : '';
+	}
+
+	/**
+	 * Extract the campaign ID from the offer's mobile URL
+	 *
+	 * @access public
+	 * @static
+	 * @param object $offer
+	 * @return string
+	 */
+	public static function getCampaignId($offer) {
+		$url = (isset($offer->mobile_url)) ? $offer->mobile_url : false;
+		return self::getCampaignIdByMobileUrl($url);
+	}
+
+	/**
+	 * Extract the campaign ID from the offer's a mobile URL
+	 *
+	 * @access public
+	 * @static
+	 * @param object $offer
+	 * @return string
+	 */
+	public static function getCampaignIdByMobileUrl($url) {
+		if($url) {
+			$data = parse_url($url);
+			if(isset($data['query'])) {
+				$params = array();
+				parse_str($data['query'], $params);
+				if(isset($params['campaign_id'])) { return $params['campaign_id']; }
+			}
+		}
+		return false;
 	}
 
 }

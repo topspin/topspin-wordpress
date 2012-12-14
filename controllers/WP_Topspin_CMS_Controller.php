@@ -228,6 +228,38 @@ class WP_Topspin_CMS_Controller {
 			'supports' => array('title', 'page-attributes')
 		);
 		register_post_type(TOPSPIN_CUSTOM_POST_TYPE_STORE, $args);
+		// Register Products
+		$productLabels = array(
+			'name' => 'Products',
+			'singular_name' => 'Product',
+			'add_new' => 'Add Product',
+			'add_new_item' => 'Add New Product',
+			'edit_item' => 'Edit Product',
+			'new_item' => 'New Product',
+			'all_items' => 'All Products',
+			'view_item' => 'View Product',
+			'search_items' => 'Search Products',
+			'not_found' =>  'No products found',
+			'not_found_in_trash' => 'No products found in Trash', 
+			'parent_item_colon' => '',
+			'menu_name' => 'Product'
+		);
+		$productArgs = array(
+			'labels' => $productLabels,
+			'public' => false,
+			'public_queryable' => false,
+			'show_ui' => true,
+			'show_in_menu' => true,
+			'show_in_admin_bar' => false,
+			'query_var' => false,
+			'rewrite' => false,
+			'capability_type' => 'post',
+			'has_archive' => false,
+			'hierarchical' => false,
+			'menu_position' => null,
+			'supports' => array('title', 'thumbnail')
+		);
+		register_post_type(TOPSPIN_CUSTOM_POST_TYPE_PRODUCT, $productArgs);
 		// Do action
 		do_action('topspin_register_post_types');
 	}

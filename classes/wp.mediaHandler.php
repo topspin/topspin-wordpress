@@ -72,7 +72,7 @@ if(!class_exists('WP_MediaHandler')) {
 					$postTitle = preg_replace('/\.[^.]+$/','', $srcBasename);
 					if(wp_mkdir_p($cachePath)) {
 						$destPath = sprintf('%s/%s', $cachePath, $fullFilename);
-						copy($srcLocation, $destPath); //copies original
+						self::copy($srcLocation, $destPath); // copies the remote file
 						$file = array(
 							'path' => $destPath,
 							'filename' => $fullFilename,
@@ -102,6 +102,23 @@ if(!class_exists('WP_MediaHandler')) {
 			$res = curl_exec($ch);
 			if($res !== false) { return true; }
 			else { return false; }
+		}
+		
+		/**
+		 * Copes a source location to the destination path
+		 *
+		 * @param string $srcLocation
+		 * @param string $destPath
+		 */
+		public static function copy($srcLocation, $destPath) {
+			// copy($srcLocation, $destPath); // copies source location (deprecated)
+			// cUrl method
+			$fp = fopen($destPath, 'w');
+			$ch = curl_init($srcLocation);
+			curl_setopt($ch, CURLOPT_FILE, $fp);
+			$data = curl_exec($ch);
+			curl_close($ch);
+			fclose($fp);
 		}
 
 	}

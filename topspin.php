@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Topspin Store Plugin 4.0 (Beta)
+Plugin Name: Topspin Store Plugin 4.0
 Plugin URI: http://wordpress.org/extend/plugins/official-topspin-wordpress-plugin/
 Description: Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages using the Topspin API
 Author: The Uprising Creative for Topspin Media
@@ -29,6 +29,7 @@ require_once(sprintf('%s/controllers/WP_Topspin_Template.php', TOPSPIN_PLUGIN_PA
 // Classes
 require_once(sprintf('%s/classes/topspin.api.php', TOPSPIN_PLUGIN_PATH));
 require_once(sprintf('%s/classes/topspinArtist.api.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/classes/topspinOrder.api.php', TOPSPIN_PLUGIN_PATH));
 require_once(sprintf('%s/classes/topspinStore.api.php', TOPSPIN_PLUGIN_PATH));
 require_once(sprintf('%s/classes/ts_query.php', TOPSPIN_PLUGIN_PATH));
 require_once(sprintf('%s/classes/wp.mediaHandler.php', TOPSPIN_PLUGIN_PATH));

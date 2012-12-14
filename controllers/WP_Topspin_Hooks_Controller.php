@@ -47,7 +47,7 @@ class WP_Topspin_Hooks_Controller {
 		// Sync
 		add_meta_box('topspin-offer-sync', 'Sync', array('WP_Topspin_CMS_Controller', 'topspin_metabox_offer_sync'), TOPSPIN_CUSTOM_POST_TYPE_OFFER, 'side', 'default');
 	}
-	
+
 	/**
 	 * Modifies the WordPress admin bar
 	 * 
@@ -65,6 +65,7 @@ class WP_Topspin_Hooks_Controller {
 			'href' => admin_url('admin.php?page=topspin/page/general')
 		));
 	}
+
 	/**
 	 * Enqueues CSS and JS for admins
 	 *
@@ -80,6 +81,7 @@ class WP_Topspin_Hooks_Controller {
 		wp_enqueue_script('topspin-admin');
 		wp_enqueue_style('topspin-admin');
 	}
+
 	/**
 	 * Initializes in the admin section
 	 *
@@ -104,6 +106,7 @@ class WP_Topspin_Hooks_Controller {
 		// Load constants
 		define('TOPSPIN_MENU_ACTIVATED', get_option('topspin_menu_activated'));
 	}
+
 	/**
 	 * Initializes admin menus
 	 *
@@ -123,6 +126,7 @@ class WP_Topspin_Hooks_Controller {
 			add_submenu_page('topspin/page/general', 'Nav Menus', 'Nav Menus', 'edit_posts', 'topspin/page/menus', array('WP_Topspin_CMS_Controller', 'page_menus'));
 		}
 	}
+
 	/**
 	 * Adds additional image sizes
 	 *
@@ -136,6 +140,7 @@ class WP_Topspin_Hooks_Controller {
 		add_image_size('topspin-default-grid-thumb', 205, 205, 1);
 		add_image_size('topspin-default-single-thumb', 250, 250, 1);	
 	}
+
 	/**
 	 * Initializes the plugin
 	 *
@@ -143,19 +148,24 @@ class WP_Topspin_Hooks_Controller {
 	 *
 	 * @access public
 	 * @static
+	 * global array $topspin_artist_ids
+	 * @global object $topspin_artist_api
+	 * @global object $topspin_store_api
+	 * @global object $topspin_order_api
 	 * @return void
 	 */
 	public static function init() {
+		// Set globals
+		global $topspin_artist_ids, $topspin_artist_api, $topspin_store_api, $topspin_order_api;
 		// Load constants
-		define('TOPSPIN_CUSTOM_POST_TYPE_ARTIST', apply_filters('topspin_custom_post_type_artist', ($artistPostType=get_option('topspin_post_type_artist')) ? $artistPostType : 'topspin-artist'));			// internal post type
-		define('TOPSPIN_CUSTOM_POST_TYPE_STORE', apply_filters('topspin_custom_post_type_store', ($storePostType=get_option('topspin_post_type_store')) ? $storePostType : 'topspin-store'));				// public post type
-		define('TOPSPIN_CUSTOM_POST_TYPE_OFFER', apply_filters('topspin_custom_post_type_offer', ($offerPostType=get_option('topspin_post_type_offer')) ? $offerPostType : 'topspin-offer'));				// public post type
+		define('TOPSPIN_CUSTOM_POST_TYPE_ARTIST', apply_filters('topspin_custom_post_type_artist', ($artistPostType=get_option('topspin_post_type_artist')) ? $artistPostType : 'topspin-artist'));					// internal post type
+		define('TOPSPIN_CUSTOM_POST_TYPE_STORE', apply_filters('topspin_custom_post_type_store', ($storePostType=get_option('topspin_post_type_store')) ? $storePostType : 'topspin-store'));						// public post type
+		define('TOPSPIN_CUSTOM_POST_TYPE_OFFER', apply_filters('topspin_custom_post_type_offer', ($offerPostType=get_option('topspin_post_type_offer')) ? $offerPostType : 'topspin-offer'));						// public post type
+		define('TOPSPIN_CUSTOM_POST_TYPE_PRODUCT', apply_filters('topspin_custom_post_type_product', ($productPostType=get_option('topspin_post_type_product')) ? $productPostType : 'topspin-product'));				// internal post type
 		// Register the custom post types
 		WP_Topspin_CMS_Controller::topspin_register_post_type();
 		// Register the custom taxonomies
 		WP_Topspin_CMS_Controller::topspin_register_taxonomies();
-		// Set globals
-		global $topspin_artist_ids;
 		// If the artist Ids is not yet set, retrieve it from the database
 		if(!$topspin_artist_ids) { $topspin_artist_ids = get_option('topspin_artist_ids'); }
 		// Load constants
@@ -166,9 +176,9 @@ class WP_Topspin_Hooks_Controller {
 		define('TOPSPIN_NEW_ITEMS_TIMEOUT', get_option('topspin_new_items_timeout'));
 		define('TOPSPIN_API_PREFETCHING', get_option('topspin_api_prefetching'));
 		// Instantiate some classes
-		global $topspin_artist_api, $topspin_store_api;
 		$topspin_artist_api = new Topspin_Artist_API(TOPSPIN_API_USERNAME, TOPSPIN_API_KEY);
 		$topspin_store_api = new Topspin_Store_API(TOPSPIN_API_USERNAME, TOPSPIN_API_KEY);
+		$topspin_order_api = new Topspin_Order_API(TOPSPIN_API_USERNAME, TOPSPIN_API_KEY);
 		// Load other constants
 		define('TOPSPIN_API_VERIFIED', $topspin_store_api->verifyCredentials());
 		define('TOPSPIN_POST_TYPE_DEFINED', WP_Topspin::hasPostTypes());
@@ -179,6 +189,7 @@ class WP_Topspin_Hooks_Controller {
 		// Topspin is finished initializing
 		do_action('topspin_init');
 	}
+
 	/**
 	 * Initial parse query hook
 	 *
@@ -187,14 +198,18 @@ class WP_Topspin_Hooks_Controller {
 	 * @return void
 	 */
 	public static function parse_query($query) {
-		// If it's the store archive (store front page)
-		if(is_post_type_archive(TOPSPIN_CUSTOM_POST_TYPE_STORE)) {
-			// If a default store page ID is set, alter the query
-			if(TOPSPIN_DEFAULT_STORE_PAGE_ID>0) {
-				$query->set('p', TOPSPIN_DEFAULT_STORE_PAGE_ID);
+		// If not in admin section
+		if(!is_admin()) {
+			// If it's the store archive (store front page)
+			if(is_post_type_archive(TOPSPIN_CUSTOM_POST_TYPE_STORE)) {
+				// If a default store page ID is set, alter the query
+				if(TOPSPIN_DEFAULT_STORE_PAGE_ID>0) {
+					$query->set('p', TOPSPIN_DEFAULT_STORE_PAGE_ID);
+				}
 			}
 		}
 	}
+
 	/**
 	 * Hook callback for when a post gets saved
 	 *
@@ -218,6 +233,7 @@ class WP_Topspin_Hooks_Controller {
 			}
 		}
 	}
+
 	/**
 	 * Overrides the_content() with the TopSpin default template
 	 * 
@@ -287,7 +303,7 @@ class WP_Topspin_Hooks_Controller {
 		}
 		return $content;
 	}
-	
+
 	/**
 	 * Enqueues scripts and styles in the frontend
 	 *
@@ -307,6 +323,7 @@ class WP_Topspin_Hooks_Controller {
 		wp_enqueue_style('fancybox');
 		wp_enqueue_style('topspin-template');
 	}
+
 	/**
 	 * Callback on the HTML head
 	 *
@@ -330,7 +347,7 @@ class WP_Topspin_Hooks_Controller {
 	public static function offerCustomColumnOutput($column, $post_ID) {
 		switch($column) {
 			case 'id':
-				ts_the_ID();
+				ts_the_ID($post_ID);
 				break;
 			case 'post-thumbnail':
 				if(ts_has_thumbnail()) { echo ts_get_the_thumbnail($post_ID,'wp-list-table-thumb'); }
@@ -338,9 +355,13 @@ class WP_Topspin_Hooks_Controller {
 			case 'price':
 				ts_the_price($post_ID);
 				break;
+			case 'in_stock':
+				$soldOut = ts_is_sold_out($post_ID);
+				$spanClass = ($soldOut) ? 'sold-out' : 'available';
+				echo '<span class="' . $spanClass . '">' . (($soldOut) ? 'NO' : 'YES') . '</span>';
 		}
 	}
-	
+
 	/**
 	 * Handles custom column output for each post
 	 *
@@ -354,11 +375,41 @@ class WP_Topspin_Hooks_Controller {
 		switch($column) {
 			case 'id':
 				the_ID();
+				break;
 			case 'post-thumbnail':
 				if(has_post_thumbnail($post_ID)) { the_post_thumbnail('wp-list-table-thumb'); }
 				break;
 			case 'price':
 				ts_the_price($post_ID);
+				break;
+		}
+	}
+
+	/**
+	 * Handles custom column output for each post
+	 *
+	 * @access public
+	 * @static
+	 * @param string $column
+	 * @param int $post_ID
+	 * @return void
+	 */
+	public static function productCustomColumnOutput($column, $post_ID) {
+		$productMeta = WP_Topspin::getProductMeta($post_ID);
+		switch($column) {
+			case 'id':
+				the_ID();
+				break;
+			case 'attributes':
+				if(isset($productMeta->attributes) && count($productMeta->attributes)) {
+					foreach($productMeta->attributes as $key=>$value) {
+						echo sprintf('<strong>%s:</strong> %s<br/>', $key, $value);
+					}
+				}
+				break;
+			case 'inventory':
+				echo sprintf('<strong>%s:</strong> %s<br/>', 'Available', ($productMeta->available) ? 'Yes' : 'No');
+				echo sprintf('<strong>%s:</strong> %s<br/>', 'In Stock', $productMeta->in_stock_quantity);
 				break;
 		}
 	}
@@ -378,11 +429,12 @@ class WP_Topspin_Hooks_Controller {
 			'post-thumbnail' => 'Thumbnail',
 			'title' => $columns['title'],
 			'price' => 'Price',
+			'in_stock' => 'In Stock',
 			'date' => $columns['date']
 		);
 		return $cols;
 	}
-	
+
 	/**
 	 * Modifies the artists custom columns
 	 *
@@ -397,6 +449,26 @@ class WP_Topspin_Hooks_Controller {
 			'id' => 'ID',
 			'post-thumbnail' => 'Thumbnail',
 			'title' => $columns['title'],
+			'date' => $columns['date']
+		);
+		return $cols;
+	}
+
+	/**
+	 * Modifies the artists custom columns
+	 *
+	 * @access public
+	 * @static
+	 * @param array $columns
+	 * @return array
+	 */
+	function productCustomColumns($columns) {
+		$cols = array(
+			'cb' => $columns['cb'],
+			'id' => 'ID',
+			'title' => $columns['title'],
+			'attributes' => 'Attributes',
+			'inventory' => 'Inventory',
 			'date' => $columns['date']
 		);
 		return $cols;

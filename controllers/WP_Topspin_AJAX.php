@@ -4,6 +4,7 @@ add_action('wp_ajax_topspin_store_preview_update',			array('WP_Topspin_AJAX', 'p
 add_action('wp_ajax_topspin_view_more',						array('WP_Topspin_AJAX', 'viewMore'));
 add_action('wp_ajax_nopriv_topspin_view_more',				array('WP_Topspin_AJAX', 'viewMore'));
 add_action('wp_ajax_topspin_resync_offer',					array('WP_Topspin_AJAX', 'resyncOffer'));
+add_action('wp_ajax_topspin_resync_offer_inventory',		array('WP_Topspin_AJAX', 'resyncOfferInventory'));
 
 /**
  * Handles WP-AJAX callbacks
@@ -103,19 +104,39 @@ class WP_Topspin_AJAX {
 		$ret = array(
 			'status' => 'error'
 		);
-
 		if($_SERVER['REQUEST_METHOD']=='POST' && current_user_can('edit_posts')) {
 			$offer_id = esc_attr($_POST['offer_id']);
-			
 			$success = WP_Topspin_Cache::syncOffersSingle($offer_id);
-			
 			if($success) {
 				$ret = array(
 					'status' => 'success'
 				);
 			}
 		}
-
+		echo json_encode($ret);
+		die();
+	}
+	
+	/**
+	 * Re-syncs the given offer's product and inventory data
+	 *
+	 * @access public
+	 * @static
+	 * @return string A JSON-encoded string
+	 */
+	public static function resyncOfferInventory() {
+		$ret = array(
+			'status' => 'error'
+		);
+		if($_SERVER['REQUEST_METHOD']=='POST' && current_user_can('edit_posts')) {
+			$offer_id = esc_attr($_POST['offer_id']);
+			$success = WP_Topspin_Cache::syncProductsSingle($offer_id);
+			if($success) {
+				$ret = array(
+					'status' => 'success'
+				);
+			}
+		}
 		echo json_encode($ret);
 		die();
 	}

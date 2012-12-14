@@ -188,13 +188,15 @@ var topspin_admin = {
 			topspin_admin.offer.registerEvents();
 		},
 		registerEvents : function() {
-			// Bind Resync button
-			jQuery('.topspin-resync-offer').live('click', topspin_admin.offer.events.onClickResyncOffer);
+			// Bind Re-sync Offer button
+			jQuery(document).on('click', '.topspin-resync-offer', topspin_admin.offer.events.onClickResyncOffer);
+			// Bind Re-sync Inventory button
+			jQuery(document).on('click', '.topspin-resync-offer-products', topspin_admin.offer.events.onClickResyncOfferInventory);
 		},
 		/* !----- Offer > Events ----- */
 		events : {
 			/**
-			 * OnClick callback for Re-sync offer button
+			 * OnClick callback for Re-sync Offer button
 			 *
 			 * @param Event e
 			 * @return void
@@ -203,13 +205,25 @@ var topspin_admin = {
 				e.preventDefault();
 				var offer_id = jQuery(this).data('offer-id');
 				topspin_admin.offer.resync(offer_id);
+			},
+			/**
+			 * OnClick callback for Re-sync Inventory button
+			 *
+			 * @param Event e
+			 * @return void
+			 */
+			onClickResyncOfferInventory : function(e) {
+				e.preventDefault();
+				var offer_id = jQuery(this).data('offer-id');
+				topspin_admin.offer.resyncInventory(offer_id);
 			}
 		},
 		/**
-		 * Resyncs the offer
+		 * Re-syncs the offer
 		 *
 		 * @global string ajaxurl
 		 * @param int offer_id
+		 * @return void
 		 */	
 		resync : function(offer_id) {
 			var data = {
@@ -221,7 +235,29 @@ var topspin_admin = {
 				var json = jQuery.parseJSON(ret);
 				if(json.status=='success') { window.location.reload(); }
 				else {
-					alert('Error trying to resync offer');
+					alert('Error trying to re-sync offer.');
+					topspin_admin.loader.hide();
+				}
+			});
+		},
+		/**
+		 * Re-syncs the offer's product and inventory data
+		 *
+		 * @global string ajaxurl
+		 * @param int offer_id
+		 * @return void
+		 */
+		resyncInventory : function(offer_id) {
+			var data = {
+				action : 'topspin_resync_offer_inventory',
+				offer_id : offer_id
+			};
+			topspin_admin.loader.show();
+			jQuery.post(ajaxurl, data, function(ret) {
+				var json = jQuery.parseJSON(ret);
+				if(json.status=='success') { window.location.reload(); }
+				else {
+					alert('Error trying to re-sync offer\'s inventory.');
 					topspin_admin.loader.hide();
 				}
 			});

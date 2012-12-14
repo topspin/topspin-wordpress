@@ -2,8 +2,8 @@
 Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
-Tested up to: 3.3.1
-Stable tag: 3.3.3.3
+Tested up to: 3.5
+Stable tag: 4.0.0
 Requires at least: 3.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -13,6 +13,12 @@ Quickly, easily integrate Topspin Offers into customized, dynamically generated 
 == Description ==
 
 This plugin allows novice and pro Topspin users alike to quickly and easily create integrated, customized, sortable and dynamically generated stores from their Topspin Offers in a few minutes.
+
+Developed by [The Uprising Creative](http://theuprisingcreative.com)
+ 
+This plugin is open-source and we offer limited support.  If you do have an issue or question, please [open a GitHub issue](https://github.com/topspin/topspin-wordpress/issues) and we'll work to help you out when time allows.
+
+*PLEASE NOTE: This plugin is meant to be customized! It will work "out of the box" with just about any theme, but it may not match your site or be as "pretty" as you'd like.  Additionally, if your theme uses featured images in the header of posts, you may have to make adjustments to ensure the display of the products is to your liking.*
 
 The plugin allows for the creation of any number of individual Store Pages and configurations of Topspin Offers based on Offer Types and Tags. Store Pages can be restricted to specific Offer Type(s) and/or Tag(s) and can then be sorted by Offer Type(s), Tag(s), or Manually using a new drag-and-drop admin interface. 
 
@@ -101,6 +107,10 @@ These upgrade instructions are specifically for users of the new plugin from v3.
 3. Check your pages to make sure they all look right
 4. You're done!
 
+*PLEASE NOTE: The plugin now uses the built-in Wordpress Custom Post Type system.  This allows for more flexibility, better SEO, better deep linking, better caching, etc but it may change the relationships your site has with the store pages and products.  Be sure to make a backup and if possible, test on a dev environment first!*
+
+*ADDITIONAL NOTE: This plugin is meant to be customized! It will work "out of the box" with just about any theme, but it may not match your site or be as "pretty" as you'd like.  Additionally, if your theme uses featured images in the header of posts, you may have to make adjustments to ensure the display of the products is to your liking.*
+
 = Upgrading from an v2.0 or earlier =
 
 This plugin is a complete re-write.  Upgrading form a previous version will not save your existing Store settings and will disable some of the Theme settings used in the old plugin.  This is because this new version is designed to work with any Theme and Wordpress setup like any standard plugin instead of taking over parts of the core WordPress functionality.  
@@ -126,6 +136,8 @@ Please check out [GitHub page](https://github.com/theuprising/topspin-wordpress)
 
 All markup output by this plugin is XHTML-compliant and heavily classed to allow for easily styling with CSS. The plugin comes with two different 'templates' called `Standard` and `Simplified`.
 
+*PLEASE NOTE: This plugin is meant to be customized! It will work "out of the box" with just about any theme, but it may not match your site or be as "pretty" as you'd like.  Additionally, if your theme uses featured images in the header of posts, you may have to make adjustments to ensure the display of the products is to your liking.*
+
 The `Simplified Template` is designed to give the best out-of-the box store layout if you prefer to do little or no customization.  It uses HTML Tables to construct the Store Grid and therefore is less flexible for developers who wish to heavily customize the store's output. 
 
 The `Standard Template` is designed as a skeleton framework with the Developer in mind, allowing for the most flexibility for template customizations. It uses floating HTML Divs to construct the Store Grid rather than Tables, making it easier to manipulate.
@@ -145,7 +157,7 @@ If you are a pro user and are comfortable with creating and editing WordPress th
 
 = Additional Customization Details =
 1. It is very important that you copy the Template files to your site's active theme directory.  If you edit them in the Plugin's `/templates/` directory, any changes you make will be overwritten when you upgrade the plugin! 
-2. Backwards Compatability: For users upgrading from a version pre-v3.1, the Plugin will still recognize your customized `topspin.css`, `topspin-ie7.css`, `featured-item.php` and `item-listings.php` files located in your site's active theme folder if you select the Standard Template, even if they aren't in the /topspin-standard/ sub-folder.)
+2. Backwards Compatibility: For users upgrading from a version pre-v3.1, the Plugin will still recognize your customized `topspin.css`, `topspin-ie7.css`, `featured-item.php` and `item-listings.php` files located in your site's active theme folder if you select the Standard Template, even if they aren't in the /topspin-standard/ sub-folder.)
 3. The ability to use the new - as of v3.2 - additional images and permalink features requires an upgrade from the pre-v3.2 templates to the new Standard or Simplified templates.  If you are using the default templates, these changes will automatically be made on upgrade.  If you are using customized templates, you'll need to either a) update your template manually or b) copy over the new default template and re-style as needed.
 
 == Frequently Asked Questions ==
@@ -173,7 +185,6 @@ If you are a pro user and are comfortable with creating and editing WordPress th
 **I want to add functionality to the plugin.  Is that OK?**
 
 > More than OK!  This plugin is completely open-source and to top it off, Topspin pays $150 for each new commit to the plugin!  So head on over to the [GitHub repository](https://github.com/topspin/topspin-wordpress/), grab a fork, and get coding!
-
 
 **I upgraded from a pre-v3.2 version of the plugin so that I can use multiple images and permalinks, but neither are working.  What do I need to do to enable them?** 
 
@@ -213,7 +224,10 @@ As a plugin that's in active development, bugs are going to pop up from time to 
 
 This plugin is in open development.  Over the weeks and months we hope to roll out regular updates with new features and optimizations, starting with: 
 
-* Code clean-up / debugging
+* Updated, Responsive, "Pretty" Front-End Templates
+* Increased Inventory Management Functionality - notifications, color coding, etc
+* Refined Inventory UI/UX
+* Additional Code clean-up / debugging
 * Automatic cropping and scaling of thumbnails
 * Sidebar widget
 * Further customizable page layouts for more dynamic and varied offer page creation without editing Theme or template files
@@ -245,6 +259,8 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 * Complete rewrite from the ground-up for performance increases and better Wordpress integration
 * Sync multiple artists
 * Stores, and Offers are now pulled in as WordPress custom post types
+* Products are now pulled into Wordpress
+* Inventory for products is now displayed in the CMS
 * New item tags (site level)
 * On Sale item tags (store level)
 * API prefetching (advanced settings)

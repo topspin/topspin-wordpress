@@ -18,11 +18,15 @@ class WP_Topspin_Cache {
 	 * @access public
 	 * @static
 	 * @param string $scope
+	 * @param bool $humanTimeDiff		If true, will return the human_time_diff() instead of the actual time
 	 * @return string
 	 */
-	public static function lastCached($scope) {
+	public static function lastCached($scope, $humanTimeDiff=true) {
 		$time = get_option(sprintf('topspin_last_cache_%s', $scope));
-		return ($time) ? human_time_diff($time) : 'Never';
+		// If returning the human time diff
+		if($humanTimeDiff) { return ($time) ? human_time_diff($time) : 'Never'; }
+		// Else, return the timestamp
+		else { return $time; }
 	}
 
 	/**
@@ -77,14 +81,18 @@ class WP_Topspin_Cache {
 					WP_Topspin::updateArtistMeta($artistPostId, $artist);
 					if($artist->avatar_image && strlen($artist->avatar_image)) {
 						if(has_post_thumbnail($artistPostId)) {
-							$artistAttachmentId = get_post_thumbnail_id($artistPostId);
-							$artistAttachmentFile = get_attached_file($artistAttachmentId);
-							// Delete the old file
-							if(file_exists($artistAttachmentFile)) { unlink($artistAttachmentFile); }
 							// Save the new file
 							$artistAvatarFile = WP_MediaHandler::cacheURL($artist->avatar_image);
-							// Update attachment file
-							update_attached_file($artistAttachmentId, $artistAvatarFile['path']);
+							// If the file is cached successfully
+							if($artistAvatarFile) {
+								$artistAttachmentId = get_post_thumbnail_id($artistPostId);
+								$artistAttachmentFile = get_attached_file($artistAttachmentId);
+								// Delete the old file
+								if(file_exists($artistAttachmentFile)) { unlink($artistAttachmentFile); }
+								// Update attachment file
+								update_attached_file($artistAttachmentId, $artistAvatarFile['path']);
+							}
+							else { error_log('Topspin Error: Failed caching artist avatar.'); }
 						}
 						else {
 							$artistAttachmentId = WP_MediaHandler::saveURL($artist->avatar_image, $artistPostId);
@@ -150,10 +158,8 @@ class WP_Topspin_Cache {
 				// Purge stray offers that are not in the global cached array
 				self::purgeStrayOffers();
 				self::purgeStrayTerms();
-
-				// Update last cached time
-				update_option('topspin_last_cache_offers', time());
-				update_option('topspin_is_syncing_offers', false);
+				// Do action
+				do_action('topspin_finish_sync_offers');
 			}
 		}
 	}
@@ -189,7 +195,7 @@ class WP_Topspin_Cache {
 			self::syncOffersPage($params);
 		}
 	}
-	
+
 	/**
 	 * Syncs a Topspin API offer results into WordPress
 	 *
@@ -207,6 +213,7 @@ class WP_Topspin_Cache {
 				$offerPostId = self::cacheOffer($offer);
 				// Add to the global cached array
 				array_push($topspin_cached_ids, $offerPostId);
+				// Set the tags for the offer
 				if(isset($offer->tags) && $offer->tags) {
 					foreach($offer->tags as $tag) {
 						if(!in_array($tag, $topspin_cached_terms)) { array_push($topspin_cached_terms, $tag); }
@@ -235,14 +242,54 @@ class WP_Topspin_Cache {
 		$offerPostId = self::cacheOffer($newOffer);
 		// Returns true
 		return true;
-
 	}
-	
+
+	/**
+	 * Retrieves all offers in the database and pulls in all it's product data
+	 *
+	 * @param bool $force							Force sync?
+	 * @return void
+	 */
+	public static function syncProducts($force=false) {
+		$currentTime = time();
+		$lastCached = self::lastCached('products', false);
+		$elapsedTime = $currentTime - $lastCached;
+		$cacheDelay = 60;
+		// If never cached or elapsed time is grater than an hour
+		if($force || (TOPSPIN_API_VERIFIED && TOPSPIN_POST_TYPE_DEFINED && TOPSPIN_HAS_ARTISTS && TOPSPIN_HAS_SYNCED_ARTISTS && ($elapsedTime>=$cacheDelay))) {
+			// Set syncing flag to true
+			update_option('topspin_is_syncing_products', true);
+			$offerPostIds = WP_Topspin::getOfferPostIds();
+			$totalOffers = count($offerPostIds);
+			if($totalOffers) {
+				// Loop through each offer post ID and cache the product
+				foreach($offerPostIds as $key=>$offer_id) {
+					self::cacheProduct($offer_id);
+				}
+			}
+			// Do action
+			do_action('topspin_finish_sync_products');
+		}
+	}
+
+	/**
+	 * Syncs an individual offer post ID product and inventory data
+	 *
+	 * @param int $offer_id						The WordPress post ID for the offer
+	 * @return bool 
+	 */
+	public static function syncProductsSingle($offer_id) {
+		// Cache this offer's product and inventory data
+		$success = self::cacheProduct($offer_id);
+		// Returns true
+		return ($success) ? true : false;
+	}
+
 	/**
 	 * Caches the offer into WordPress
 	 *
 	 * @param object $offer			The offer data returned from the Topspin API
-	 * @return ibt|bool				The new offer ID if successful
+	 * @return int|bool				The new offer ID if successful
 	 */
 	public static function cacheOffer($offer) {
 		// Retrieve the post ID for the offer
@@ -266,18 +313,18 @@ class WP_Topspin_Cache {
 		if(isset($offer->poster_image) && strlen($offer->poster_image)) {
 			// If the post has a thumbnail, update it!
 			if(has_post_thumbnail($offerPostId)) {
-				$thumbPostId = get_post_thumbnail_id($offerPostId);
-				$thumbAttachment = get_attached_file($thumbPostId);
 				// Save the new file
 				$thumbFile = WP_MediaHandler::cacheURL($offer->poster_image);
 				// If the file was successfully cached
-				if($thumbFile && isset($thumbFile['path'])) {
+				if($thumbFile) {
+					$thumbPostId = get_post_thumbnail_id($offerPostId);
+					$thumbAttachment = get_attached_file($thumbPostId);
 					// Delete the old file
 					if(file_exists($thumbAttachment)) { unlink($thumbAttachment); }
 					// Update attachment file
 					update_attached_file($thumbPostId, $thumbFile['path']);
 				}
-				else { error_log('failed'); }
+				else { error_log('Topspin Error: Failed caching offer image.'); }
 			}
 			// Else, no featured image is yet attached
 			else {
@@ -287,6 +334,64 @@ class WP_Topspin_Cache {
 			}
 		}
 		return ($offerPostId) ? $offerPostId : false;
+	}
+
+	/**
+	 * Caches the offer's product and inventory into WordPress via the Order API
+	 *
+	 * @global object $topspin_order_api
+	 * @param int $offerPostId
+	 * @param object $offer
+	 * @return void
+	 */
+	public static function cacheProduct($offerPostId) {
+		global $topspin_order_api;
+		// Set default in stock
+		$inStock = false;
+		$offer = WP_Topspin::getOfferMeta($offerPostId);
+		if($offer) {
+			// Digital items are always in stock
+			if($offer->product_type == 'digital_package') { $inStock = true; }
+			// Else, request the product
+			else if(isset($offer->mobile_url)) {
+				$params = array(
+					'campaign_id' => Topspin_API::getCampaignIdByMobileUrl($offer->mobile_url)
+				);
+				$res = $topspin_order_api->getSkus($params);
+				if($res && $res->status=='ok') {
+					if(count($res->response->skus)) {
+						// Purge attached products
+						WP_Topspin::deleteOfferProducts($offerPostId);
+						foreach($res->response->skus as $sku) {
+							// Flag in stock to true if any of the sku is available
+							if($sku->available) { $inStock = true; }
+							// Retrieve the post ID for the product
+							$productPostId = WP_Topspin::getProductPostId($sku);
+							// Create a new post array for update/create
+							$productPost = WP_Topspin::createProduct($sku);
+							// Create if not exists
+							if(!$productPostId) {
+								$productPostId = wp_insert_post($productPost);
+							}
+							// Update if exists
+							else {
+								$productPost['ID'] = $productPostId;
+								$productPostId = wp_update_post($productPost);
+							}
+							if($productPostId) {
+								// Update the product post meta
+								WP_Topspin::updateProductMeta($productPostId, $sku);
+								// Attach this product post ID to the offer
+								WP_Topspin::attachOfferProduct($offerPostId, $productPostId);
+							}
+						}
+					}
+				}
+			}
+			update_post_meta($offerPostId, 'topspin_offer_in_stock', $inStock);
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -301,7 +406,7 @@ class WP_Topspin_Cache {
 		$delete_IDs = WP_Topspin::getStrayArtists();
 		if($delete_IDs) { WP_Topspin::deleteArtistIds($delete_IDs); }
 	}
-	
+
 	/**
 	 * Purges the database of stray offer posts that are not found in the global cached array
 	 *
@@ -314,7 +419,7 @@ class WP_Topspin_Cache {
 		$delete_IDs = WP_Topspin::getStrayOffers();
 		if($delete_IDs) { WP_Topspin::deleteOfferIds($delete_IDs); }
 	}
-	
+
 	/**
 	 * Purges the database of stray terms that are not found in the global cached array
 	 *
@@ -333,7 +438,7 @@ class WP_Topspin_Cache {
 			}
 		}
 	}
-	
+
 	/**
 	 * Purges the cached prefetch files
 	 *

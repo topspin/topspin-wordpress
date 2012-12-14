@@ -3,10 +3,12 @@
 add_action('topspin_notices_changes_saved', array('WP_Topspin_Notices', 'doChangesSaved'));
 add_action('topspin_notices_synced', array('WP_Topspin_Notices', 'doSynced'));
 add_action('topspin_notices_schedules_reset', array('WP_Topspin_Notices', 'doSchedulesReset'));
+add_action('topspin_notices_prefetch_purged_all', array('WP_Topspin_Notices', 'doPrefetchPurgedAll'));
 add_action('admin_notices', array('WP_Topspin_Notices', 'checkVerification'));
 add_action('admin_notices', array('WP_Topspin_Notices', 'checkArtists'));
 add_action('admin_notices', array('WP_Topspin_Notices', 'checkSyncedArtists'));
 add_action('admin_notices', array('WP_Topspin_Notices', 'checkIsSyncingOffers'));
+add_action('admin_notices', array('WP_Topspin_Notices', 'checkIsSyncingProducts'));
 
 /**
  * Handles admin notices
@@ -39,6 +41,10 @@ EOD;
 		add_action('admin_notices', array('WP_Topspin_Notices', 'schedulesReset'));
 	}
 	
+	public static function doPrefetchPurgedAll() {
+		add_action('admin_notices', array('WP_Topspin_Notices', 'prefetchPurgedAll'));
+	}
+
 	/* !----- Admin Notices ----- */
 	/**
 	 * Displays the changes saved notice
@@ -66,6 +72,15 @@ EOD;
 	 */
 	public static function schedulesReset() {
 		self::output('Schedules reset successfully.', 'updated');
+	}
+	/**
+	 * Displays the prefetch purged all notice
+	 *
+	 * @access public
+	 * @static
+	 */
+	public static function prefetchPurgedAll() {
+		self::output('Prefetch cache purged successfully.', 'updated');
 	}
 	/**
 	 * Checks if the API crendentials are verified
@@ -109,6 +124,17 @@ EOD;
 	public static function checkIsSyncingOffers() {
 		if(get_option('topspin_is_syncing_offers')) {
 			self::output('Your offers are currently being updated via the API.', 'updated');
+		}
+	}
+	/**
+	 * Checks if products are currently syncing and displays the notice
+	 *
+	 * @access public
+	 * @static
+	 */
+	public static function checkIsSyncingProducts() {
+		if(get_option('topspin_is_syncing_products')) {
+			self::output('Your products are currently being updated via the API.', 'updated');
 		}
 	}
 	/**

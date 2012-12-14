@@ -56,9 +56,17 @@ div#ts_ol_pflow {
 						padding-left:10px;
 						padding-right:10px;
 					}
+			.topspin-item-soldout {
+				background-color: #dfdfdf;
+					padding-left:10px;
+					padding-right:10px;
+			}
 	/* !----- Single ----- */
 	.topspin-item-single {
 	}
+		.topspin-item-single .topspin-item-embed {
+			text-align: center;
+		}
 		.topspin-item-single .topspin-item-left {
 			float:left;
 			margin-right:30px;
@@ -99,6 +107,9 @@ div#ts_ol_pflow {
 	.topspin-item-featured {
 		margin-bottom: 30px;
 	}
+		.topspin-item-featured .topspin-item-embed {
+			text-align: center;
+		}
 		.topspin-item-featured .topspin-item-thumb {
 		}
 		.topspin-item-featured .topspin-item-body {
