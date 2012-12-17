@@ -49,7 +49,7 @@ class WP_Topspin_Upgrade_Controller {
 		set_time_limit(0);
 		// Hook into the finish sync offers action
 		add_action('topspin_finish_sync_offers', array('WP_Topspin_Upgrade_Controller', 'finishSyncOffers'));
-		$oldSettings = self::_getSettings();add_action('topspin_finish_sync_offers', array('WP_Topspin_Upgrade_Controller', 'finishSyncOffers'));
+		$oldSettings = self::_getSettings();
 		// Migrate general settings
 		update_option('topspin_api_username', $oldSettings['topspin_api_username']->value);
 		update_option('topspin_api_key', $oldSettings['topspin_api_key']->value);
