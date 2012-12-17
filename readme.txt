@@ -3,7 +3,7 @@ Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
 Tested up to: 3.5
-Stable tag: 4.0.0
+Stable tag: 4.0.1
 Requires at least: 3.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -253,6 +253,10 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 8. Front-End -> View of the Topspin Checkout Flow overlay
 
 == Changelog ==
+
+= 4.0.1 =
+* Legacy store bug fixes
+* Fixed some PHP warnings
 
 = 4.0.0 =
 

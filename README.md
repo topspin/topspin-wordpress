@@ -342,6 +342,10 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 
 # [Changelog](id:changelog)
 
+## 4.0.1
+* Legacy store bug fixes
+* Fixed some PHP warnings
+
 ## 4.0.0
 
 * Complete rewrite from the ground-up for performance increases and better Wordpress integration

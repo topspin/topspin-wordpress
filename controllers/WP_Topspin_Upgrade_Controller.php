@@ -47,7 +47,9 @@ class WP_Topspin_Upgrade_Controller {
 	 */
 	public static function doUpgrade() {
 		set_time_limit(0);
-		$oldSettings = self::_getSettings();
+		// Hook into the finish sync offers action
+		add_action('topspin_finish_sync_offers', array('WP_Topspin_Upgrade_Controller', 'finishSyncOffers'));
+		$oldSettings = self::_getSettings();add_action('topspin_finish_sync_offers', array('WP_Topspin_Upgrade_Controller', 'finishSyncOffers'));
 		// Migrate general settings
 		update_option('topspin_api_username', $oldSettings['topspin_api_username']->value);
 		update_option('topspin_api_key', $oldSettings['topspin_api_key']->value);
@@ -61,7 +63,15 @@ class WP_Topspin_Upgrade_Controller {
 		WP_Topspin_Cache::syncArtists(false);
 		// Run offers sync
 		WP_Topspin_Cache::syncOffers(false, true);
-		// Migrate stores
+	}
+	/**
+	 * Callback for when the offer is finished syncing
+	 *
+	 * @access public
+	 * @static
+	 * @return void
+	 */
+	public static function finishSyncOffers() {
 		self::migrateStores();
 	}
 	/**
@@ -113,7 +123,7 @@ class WP_Topspin_Upgrade_Controller {
 					WP_Topspin::updateStoreMeta($post_ID, $storeMeta);
 				}
 			}
-			update_option('topspin_version', '4.0.0');
+			update_option('topspin_version', TOPSPIN_VERSION);
 		}
 	}
 
@@ -134,7 +144,7 @@ SELECT
 	ts.value
 FROM {$wpdb->prefix}topspin_settings ts
 EOD;
-		return $wpdb->get_results($wpdb->prepare($sql), OBJECT_K);
+		return $wpdb->get_results($sql, OBJECT_K);
 	}
 	/**
 	 * Retrieves an old Topspin settings value (from _topspin_settings)
@@ -175,7 +185,7 @@ SELECT
 FROM {$wpdb->prefix}topspin_stores ts
 LEFT JOIN {$wpdb->posts} p ON ts.post_id = p.ID
 EOD;
-		return $wpdb->get_results($wpdb->prepare($sql));
+		return $wpdb->get_results($sql);
 	}
 	/**
 	 * Retrieves a list of checked offer types for a store
@@ -230,6 +240,7 @@ EOD;
 	 *
 	 * @access public
 	 * @static
+	 * @global object $wpdb
 	 * @param int $store_ID
 	 * @return int
 	 */
@@ -244,6 +255,31 @@ WHERE
 	AND pm.meta_value = %d
 EOD;
 		return $wpdb->get_var($wpdb->prepare($sql, array($store_ID)));
+	}
+	
+	/**
+	 * Retieves the new store post ID based on a given legacy (pre 4.0) store post ID
+	 *
+	 * @access public
+	 * @static
+	 * @global object $wpdb
+	 * @param int $legacy_post_ID
+	 * @return int|bool
+	 */
+	public static function _getStorePostIdByLegacyPostId($legacy_post_ID) {
+		global $wpdb;
+		$sql = <<<EOD
+SELECT
+	ts.store_id
+FROM {$wpdb->prefix}topspin_stores ts
+WHERE
+	ts.post_id = %d
+EOD;
+		$legacy_store_ID = $wpdb->get_var($wpdb->prepare($sql, array($legacy_post_ID)));
+		if($legacy_store_ID) {
+			$post_ID = self::_getStorePostId($legacy_store_ID);
+			return ($post_ID) ? $post_ID : false;
+		}
 	}
 
 }

@@ -1,9 +1,9 @@
 <?php
 
-add_shortcode('topspin_store_nav_menu',			array('WP_Topspin_Shortcodes', 'storeNavMenu'));
-add_shortcode('topspin_featured_item',			array('WP_Topspin_Shortcodes', 'featuredItem'));
+add_shortcode('topspin_store_nav_menu',				array('WP_Topspin_Shortcodes', 'storeNavMenu'));
+add_shortcode('topspin_featured_item',				array('WP_Topspin_Shortcodes', 'featuredItem'));
 add_shortcode('topspin_buy_buttons',				array('WP_Topspin_Shortcodes', 'buyButtons'));
-add_shortcode('topspin_store_item',				array('WP_Topspin_Shortcodes', 'storeItem'));
+add_shortcode('topspin_store_item',					array('WP_Topspin_Shortcodes', 'storeItem'));
 
 /**
  * Handles WordPress shortcodes
@@ -39,19 +39,32 @@ class WP_Topspin_Shortcodes {
 	 * @return string
 	 */
 	public static function buyButtons($atts) {
-		// Query for the store items
-		$args = array(
-			'post_ID' => $atts['id'],
-			'page' => 1
-		);
-		$tsQuery = new TS_Query($args);
-		$vars = array(
-			'args' => $args,
-			'tsQuery' => $tsQuery
-		);
-		$content = WP_Topspin_Template::getContents('index.php', $vars);
-		// Retrieve pagination
-		if($tsQuery->max_num_pages>1) { $content .= WP_Topspin_Template::getContents('pager.php', $vars); }
+		$content = '';
+		// If attribute isn't set, retrieve it based on the current post's ID
+		if(!$atts) {
+			global $post;
+			if($post) {
+				$new_store_ID = WP_Topspin_Upgrade_Controller::_getStorePostIdByLegacyPostId($post->ID);
+				if($new_store_ID) {
+					$atts['id'] = $new_store_ID;
+				}
+			}
+		}
+		if(isset($atts['id'])) {
+			// Query for the store items
+			$args = array(
+				'post_ID' => $atts['id'],
+				'page' => 1
+			);
+			$tsQuery = new TS_Query($args);
+			$vars = array(
+				'args' => $args,
+				'tsQuery' => $tsQuery
+			);
+			$content = WP_Topspin_Template::getContents('index.php', $vars);
+			// Retrieve pagination
+			if($tsQuery->max_num_pages>1) { $content .= WP_Topspin_Template::getContents('pager.php', $vars); }
+		}
 		return $content;
 	}
 
