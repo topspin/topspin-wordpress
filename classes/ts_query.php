@@ -71,7 +71,7 @@ function ts_grid_columns() {
  */
 function ts_item_index() {
 	global $tsQuery;
-	return $tsQuery->getCurrentIndex();
+	if($tsQuery && is_object($tsQuery)) { return $tsQuery->getCurrentIndex(); }
 }
 /**
  * Retrieve the current item's column in the store page

@@ -132,6 +132,10 @@ class WP_Topspin_CMS_Controller {
 	 * @return void
 	 */
 	public static function topspin_register_post_type() {
+		$showUI = (TOPSPIN_GROUP_PANELS) ? false : true;
+		$showInMenu = (TOPSPIN_GROUP_PANELS) ? false : true;
+		$showInAdminBar = (TOPSPIN_GROUP_PANELS) ? false : true;
+	
 		// Register Artists
 		$artistLabels = array(
 			'name' => 'Artists',
@@ -184,9 +188,9 @@ class WP_Topspin_CMS_Controller {
 			'labels' => $labels,
 			'public' => true,
 			'public_queryable' => true,
-			'show_ui' => true,
-			'show_in_menu' => true,
-			'show_in_admin_bar' => false,
+			'show_ui' => $showUI,
+			'show_in_menu' => $showInMenu,
+			'show_in_admin_bar' => $showInAdminBar,
 			'query_var' => true,
 			'rewrite' => true,
 			'capability_type' => 'post',
@@ -216,9 +220,9 @@ class WP_Topspin_CMS_Controller {
 			'labels' => $labels,
 			'public' => true,
 			'public_queryable' => true,
-			'show_ui' => true,
-			'show_in_menu' => true,
-			'show_in_admin_bar' => true,
+			'show_ui' => $showUI,
+			'show_in_menu' => $showInMenu,
+			'show_in_admin_bar' => $showInAdminBar,
 			'query_var' => true,
 			'rewrite' => '/',
 			'capability_type' => 'page',
@@ -248,9 +252,9 @@ class WP_Topspin_CMS_Controller {
 			'labels' => $productLabels,
 			'public' => false,
 			'public_queryable' => false,
-			'show_ui' => true,
-			'show_in_menu' => true,
-			'show_in_admin_bar' => false,
+			'show_ui' => $showUI,
+			'show_in_menu' => $showInMenu,
+			'show_in_admin_bar' => $showInAdminBar,
 			'query_var' => false,
 			'rewrite' => false,
 			'capability_type' => 'post',

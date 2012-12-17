@@ -49,7 +49,7 @@ class WP_Topspin_Hooks_Controller {
 	}
 
 	/**
-	 * Modifies the WordPress admin bar
+	 * Modifies the WordPress admin bar if it is not disabled
 	 * 
 	 * @global object $wp_admin_bar
 	 * @access public
@@ -57,13 +57,15 @@ class WP_Topspin_Hooks_Controller {
 	 * @return void
 	 */
 	public static function adminBarMenu() {
-		global $wp_admin_bar;
-		// Add menu parent
-		$wp_admin_bar->add_node(array(
-			'id' => 'topspin_node',
-			'title' => sprintf('<img src="%s/resources/images/logo-adminbar.png" alt="Topspin" />', TOPSPIN_PLUGIN_URL),
-			'href' => admin_url('admin.php?page=topspin/page/general')
-		));
+		if(!TOPSPIN_DISABLE_WPADMINBAR_SHORTCUT) {
+			global $wp_admin_bar;
+			// Add menu parent
+			$wp_admin_bar->add_node(array(
+				'id' => 'topspin_node',
+				'title' => sprintf('<img src="%s/resources/images/logo-adminbar.png" alt="Topspin" />', TOPSPIN_PLUGIN_URL),
+				'href' => admin_url('admin.php?page=topspin/page/general')
+			));
+		}
 	}
 
 	/**
@@ -96,6 +98,8 @@ class WP_Topspin_Hooks_Controller {
 		register_setting('topspin_general', 'topspin_default_store_page_id');
 		register_setting('topspin_general', 'topspin_template_mode');
 		register_setting('topspin_general', 'topspin_new_items_timeout');
+		register_setting('topspin_general', 'topspin_disable_wpadminbar_shortcut');
+		register_setting('topspin_general', 'topspin_group_panels');
 		register_setting('topspin_general', 'topspin_artist_ids');
 		register_setting('topspin_general', 'topspin_post_type_artist');
 		register_setting('topspin_general', 'topspin_post_type_offer');
@@ -124,6 +128,12 @@ class WP_Topspin_Hooks_Controller {
 			add_submenu_page('topspin/page/general', 'Cache', 'Cache', 'edit_posts', 'topspin/page/cache', array('WP_Topspin_CMS_Controller', 'page_cache'));
 			add_submenu_page('topspin/page/general', 'Cron', 'Cron', 'edit_posts', 'topspin/page/cron', array('WP_Topspin_CMS_Controller', 'page_cron'));
 			add_submenu_page('topspin/page/general', 'Nav Menus', 'Nav Menus', 'edit_posts', 'topspin/page/menus', array('WP_Topspin_CMS_Controller', 'page_menus'));
+			// If panels are set to be grouped, display them under the main Topspin panel
+			if(TOPSPIN_GROUP_PANELS) {
+				add_submenu_page('topspin/page/general', 'View Offers', 'View Offers', 'edit_posts', 'edit.php?post_type='.TOPSPIN_CUSTOM_POST_TYPE_OFFER);
+				add_submenu_page('topspin/page/general', 'View Stores', 'View Stores', 'edit_posts', 'edit.php?post_type='.TOPSPIN_CUSTOM_POST_TYPE_STORE);
+				add_submenu_page('topspin/page/general', 'View Products', 'View Products', 'edit_posts', 'edit.php?post_type='.TOPSPIN_CUSTOM_POST_TYPE_PRODUCT);
+			}
 		}
 	}
 
@@ -162,6 +172,7 @@ class WP_Topspin_Hooks_Controller {
 		define('TOPSPIN_CUSTOM_POST_TYPE_STORE', apply_filters('topspin_custom_post_type_store', ($storePostType=get_option('topspin_post_type_store')) ? $storePostType : 'topspin-store'));						// public post type
 		define('TOPSPIN_CUSTOM_POST_TYPE_OFFER', apply_filters('topspin_custom_post_type_offer', ($offerPostType=get_option('topspin_post_type_offer')) ? $offerPostType : 'topspin-offer'));						// public post type
 		define('TOPSPIN_CUSTOM_POST_TYPE_PRODUCT', apply_filters('topspin_custom_post_type_product', ($productPostType=get_option('topspin_post_type_product')) ? $productPostType : 'topspin-product'));				// internal post type
+		define('TOPSPIN_GROUP_PANELS', get_option('topspin_group_panels'));
 		// Register the custom post types
 		WP_Topspin_CMS_Controller::topspin_register_post_type();
 		// Register the custom taxonomies
@@ -173,6 +184,7 @@ class WP_Topspin_Hooks_Controller {
 		define('TOPSPIN_API_KEY', get_option('topspin_api_key'));
 		define('TOPSPIN_DEFAULT_STORE_PAGE_ID', get_option('topspin_default_store_page_id'));
 		define('TOPSPIN_TEMPLATE_MODE', get_option('topspin_template_mode'));
+		define('TOPSPIN_DISABLE_WPADMINBAR_SHORTCUT', get_option('topspin_disable_wpadminbar_shortcut'));
 		define('TOPSPIN_NEW_ITEMS_TIMEOUT', get_option('topspin_new_items_timeout'));
 		define('TOPSPIN_API_PREFETCHING', get_option('topspin_api_prefetching'));
 		// Instantiate some classes

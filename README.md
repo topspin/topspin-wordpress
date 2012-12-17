@@ -342,6 +342,11 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 
 # [Changelog](id:changelog)
 
+## 4.0.2
+* Added the ability to group panels
+* Added the ability to disable the WP admin bar shortcut
+* Fixed some PHP warnings
+
 ## 4.0.1
 * Legacy store bug fixes
 * Fixed some PHP warnings

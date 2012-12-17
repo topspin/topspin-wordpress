@@ -63,6 +63,18 @@
 					</select>
 				</td>
 			</tr>
+			<tr id="topspin-general-general-settings-disable-wpadmin-shortcut" valign="top">
+				<td scope="row">Disable Admin Bar Shortcut:</td>
+				<td>
+					<input type="checkbox" name="topspin_disable_wpadminbar_shortcut" <?php echo (TOPSPIN_DISABLE_WPADMINBAR_SHORTCUT) ? 'checked="checked"' : '' ; ?>> Check this box to disable the WordPress admin bar shortcut.</td>
+				</td>
+			</tr>
+			<tr id="topspin-general-general-settings-group-panels" valign="top">
+				<td scope="row">Group Panels:</td>
+				<td>
+					<input type="checkbox" name="topspin_group_panels" <?php echo (TOPSPIN_GROUP_PANELS) ? 'checked="checked"' : ''; ?>> Check this box to group the Offers, Stores, and Product panel under the main Topspin panel in the sidebar.</td>
+				</td>
+			</tr>
 		</table>
 	</div>
 
