@@ -342,6 +342,9 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 
 # [Changelog](id:changelog)
 
+## 4.0.3
+* Added the ability to change the default grid thumb size (for narrow or wider templates)
+
 ## 4.0.2
 * Added the ability to group panels
 * Added the ability to disable the WP admin bar shortcut

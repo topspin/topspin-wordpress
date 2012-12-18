@@ -75,6 +75,18 @@
 					<input type="checkbox" name="topspin_group_panels" <?php echo (TOPSPIN_GROUP_PANELS) ? 'checked="checked"' : ''; ?>> Check this box to group the Offers, Stores, and Product panel under the main Topspin panel in the sidebar.</td>
 				</td>
 			</tr>
+			<tr id="topspin-general-general-settings-default-grid-thumb-size" valign="top">
+				<td scope="row">Default Grid Thumb Size:</td>
+				<td>
+					<select id="topspin_default_grid_thumb_size" name="topspin_default_grid_thumb_size">
+						<option value="topspin-default-grid-thumb" <?php echo (TOPSPIN_DEFAULT_GRID_THUMB_SIZE=='topspin-default-grid-thumb') ? 'selected="selected"' : ''; ?>>Default (205x205)</option>
+						<option value="topspin-small-grid-thumb" <?php echo (TOPSPIN_DEFAULT_GRID_THUMB_SIZE=='topspin-small-grid-thumb') ? 'selected="selected"' : ''; ?>>Small (125x125)</option>
+						<option value="topspin-medium-grid-thumb" <?php echo (TOPSPIN_DEFAULT_GRID_THUMB_SIZE=='topspin-medium-grid-thumb') ? 'selected="selected"' : ''; ?>>Medium (225x225)</option>
+						<option value="topspin-large-grid-thumb" <?php echo (TOPSPIN_DEFAULT_GRID_THUMB_SIZE=='topspin-medium-grid-thumb') ? 'selected="selected"' : ''; ?>>Large (300x300)</option>
+					</select>
+					<span class="description">Specify the default grid thumb size for store grid templates. If you have a narrow content area for your stores, you may need to set this to "Small (125x125)".</span>
+				</td>
+			</tr>
 		</table>
 	</div>
 

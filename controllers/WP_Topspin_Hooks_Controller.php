@@ -100,6 +100,7 @@ class WP_Topspin_Hooks_Controller {
 		register_setting('topspin_general', 'topspin_new_items_timeout');
 		register_setting('topspin_general', 'topspin_disable_wpadminbar_shortcut');
 		register_setting('topspin_general', 'topspin_group_panels');
+		register_setting('topspin_general', 'topspin_default_grid_thumb_size');
 		register_setting('topspin_general', 'topspin_artist_ids');
 		register_setting('topspin_general', 'topspin_post_type_artist');
 		register_setting('topspin_general', 'topspin_post_type_offer');
@@ -148,7 +149,10 @@ class WP_Topspin_Hooks_Controller {
 		// Create the image sizes
 		add_image_size('wp-list-table-thumb', 100, 100, 1);
 		add_image_size('topspin-default-grid-thumb', 205, 205, 1);
-		add_image_size('topspin-default-single-thumb', 250, 250, 1);	
+		add_image_size('topspin-small-grid-thumb', 125, 152, 1);
+		add_image_size('topspin-medium-grid-thumb', 225, 225, 1);
+		add_image_size('topspin-large-grid-thumb', 300, 300, 1);
+		add_image_size('topspin-default-single-thumb', 250, 250, 1);
 	}
 
 	/**
@@ -186,6 +190,7 @@ class WP_Topspin_Hooks_Controller {
 		define('TOPSPIN_TEMPLATE_MODE', get_option('topspin_template_mode'));
 		define('TOPSPIN_DISABLE_WPADMINBAR_SHORTCUT', get_option('topspin_disable_wpadminbar_shortcut'));
 		define('TOPSPIN_NEW_ITEMS_TIMEOUT', get_option('topspin_new_items_timeout'));
+		define('TOPSPIN_DEFAULT_GRID_THUMB_SIZE', (($defaultGridThumbSize=get_option('topspin_default_grid_thumb_size')) ? $defaultGridThumbSize : 'topspin-default-grid-thumb'));
 		define('TOPSPIN_API_PREFETCHING', get_option('topspin_api_prefetching'));
 		// Instantiate some classes
 		$topspin_artist_api = new Topspin_Artist_API(TOPSPIN_API_USERNAME, TOPSPIN_API_KEY);
