@@ -61,18 +61,23 @@
 						<option value="standard" <?php echo (TOPSPIN_TEMPLATE_MODE=='standard') ? 'selected="selected"' : ''; ?>>Standard</option>
 						<option value="simplified" <?php echo (TOPSPIN_TEMPLATE_MODE=='simplified') ? 'selected="selected"' : ''; ?>>Simplified</option>
 					</select>
+					<div class="description">
+						
+					</div>
 				</td>
 			</tr>
 			<tr id="topspin-general-general-settings-disable-wpadmin-shortcut" valign="top">
 				<td scope="row">Disable Admin Bar Shortcut:</td>
 				<td>
-					<input type="checkbox" name="topspin_disable_wpadminbar_shortcut" <?php echo (TOPSPIN_DISABLE_WPADMINBAR_SHORTCUT) ? 'checked="checked"' : '' ; ?>> Check this box to disable the WordPress admin bar shortcut.</td>
+					<input type="checkbox" name="topspin_disable_wpadminbar_shortcut" <?php echo (TOPSPIN_DISABLE_WPADMINBAR_SHORTCUT) ? 'checked="checked"' : '' ; ?>>
+					<span class="description">Check this box to disable the WordPress admin bar shortcut.</span>
 				</td>
 			</tr>
 			<tr id="topspin-general-general-settings-group-panels" valign="top">
 				<td scope="row">Group Panels:</td>
 				<td>
-					<input type="checkbox" name="topspin_group_panels" <?php echo (TOPSPIN_GROUP_PANELS) ? 'checked="checked"' : ''; ?>> Check this box to group the Offers, Stores, and Product panel under the main Topspin panel in the sidebar.</td>
+					<input type="checkbox" name="topspin_group_panels" <?php echo (TOPSPIN_GROUP_PANELS) ? 'checked="checked"' : ''; ?>>
+					<span class="description">Check this box to group the Offers, Stores, and Product panel under the main Topspin panel in the sidebar.</span>
 				</td>
 			</tr>
 			<tr id="topspin-general-general-settings-default-grid-thumb-size" valign="top">
@@ -84,7 +89,7 @@
 						<option value="topspin-medium-grid-thumb" <?php echo (TOPSPIN_DEFAULT_GRID_THUMB_SIZE=='topspin-medium-grid-thumb') ? 'selected="selected"' : ''; ?>>Medium (225x225)</option>
 						<option value="topspin-large-grid-thumb" <?php echo (TOPSPIN_DEFAULT_GRID_THUMB_SIZE=='topspin-medium-grid-thumb') ? 'selected="selected"' : ''; ?>>Large (300x300)</option>
 					</select>
-					<span class="description">Specify the default grid thumb size for store grid templates. If you have a narrow content area for your stores, you may need to set this to "Small (125x125)".</span>
+					<div class="description">Specify the default grid thumb size for store grid templates. If you have a narrow content area for your stores, you may need to set this to "Small (125x125)".</div>
 				</td>
 			</tr>
 		</table>

@@ -119,36 +119,51 @@ function ts_item_class() {
 	echo implode(' ', $classes);
 }
 /**
- * Checks to see if the current offer is new
+ * Checks to see if the offer is new. If no offer is specified, it will default to the current offer in The Topspin Loop.
  * 
  * @access public
- * @return bool
+ * @param object|int $offer			(default: null)
+ * @return bool						True if the item is new.
  */
-function ts_is_new() {
-	global $tsOffer;
-	// Get the created date
-	$createdDate = get_post_time('U', false, $tsOffer->ID);
-	// Expiration date
-	$expirationDate = $createdDate+TOPSPIN_NEW_ITEMS_TIMEOUT;
-	return (time()<$expirationDate) ? true : false;
+function ts_is_new($offer=null) {
+	if(!$offer) {
+		global $tsOffer;
+		$offer = $tsOffer;
+	}
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) {
+		// Get the created date
+		$createdDate = get_post_time('U', false, $offer->ID);
+		// Expiration date
+		$expirationDate = $createdDate + TOPSPIN_NEW_ITEMS_TIMEOUT;
+		return (time() < $expirationDate) ? true : false;
+	}
+	return false;
 }
 
 /**
- * Checks to see if the current offer is on sale
+ * Checks to see if the offer is on sale. If no offer is specified, it will default to the current offer in The Topspin Loop.
  * 
  * @access public
- * @return bool
+ * @param object|int $offer			(default: null)
+ * @return bool						True if the item is on sale.
  */
-function ts_is_on_sale() {
-	global $tsOffer;
-	return WP_Topspin::isOnSale($tsOffer);
+function ts_is_on_sale($offer=null) {
+	if(!$offer) {
+		global $tsOffer;
+		$offer = $tsOffer;
+	}
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { return WP_Topspin::isOnSale($tsOffer); }
+	else { return false; }
 }
 
 /**
- * Checks to see if the current offer is sold out
+ * Checks to see if the offer is sold out. If no offer is specified, it will default to the current offer in The Topspin Loop.
  *
- * @param object|int $offer (default: null)
- * @return bool
+ * @access public
+ * @param object|int $offer			(default: null)
+ * @return bool						True if the item is sold out.
  */
 function ts_is_sold_out($offer=null) {
 	if(!$offer) {
@@ -161,10 +176,11 @@ function ts_is_sold_out($offer=null) {
 }
 
 /**
- * Retrieves the offer type
+ * Retrieves the offer type. If no offer is specified, it will default to the current offer in The Topspin Loop.
  *
- * @param object|int $offer (default: null)
- * @return string
+ * @access public
+ * @param object|int $offer			(default: null)
+ * @return string					The current offer type.
  */
 function ts_get_the_offer_type($offer=null) {
 	if(!$offer) {
@@ -173,73 +189,79 @@ function ts_get_the_offer_type($offer=null) {
 	}
 	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
 	if($offer) { return $offer->offer_type; }
-	else { return ''; }
+	return '';
 }
 
 /**
- * Checks to see if the current offer in the TS Loop has a thumbnail
+ * Checks to see if the offer has a thumbnail. If no offer is specified, it will default to the current offer in The Topspin Loop.
  * 
  * @access public
- * @global object $offer (default: null)
- * @return bool
+ * @param object|int $offer			(default: null)
+ * @return bool						True if the offer has a thumbnail.
  */
 function ts_has_thumbnail($offer=null) {
 	if(!$offer) {
 		global $tsOffer;
 		$offer = $tsOffer;
 	}
-	return ($offer && has_post_thumbnail($offer->ID)) ? true : false;
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { return has_post_thumbnail($offer->ID); }
+	return false;
 }
 
 /**
- * Echoes out the post thumbnail of the current offer
- * 
+ * Echoes the current offer's thumbnail. This tag must be used within The Topspin Loop.
+ *
  * @access public
- * @global object $tsOffer The current offer
- * @param string $size (default: full)
+ * @global object $tsOffer			The current offer
+ * @param string $size				(default: full)
  * @return void
  */
 function ts_the_thumbnail($size='full') {
 	global $tsOffer;
-	$thumb = ts_get_the_thumbnail($tsOffer,$size);
+	$thumb = ts_get_the_thumbnail($tsOffer, $size);
 	echo $thumb;
 }
 
 	/**
-	 * Returns the offer thumbnail image tag
+	 * Retrieves the offer's thumbnail image tag.
 	 * 
 	 * @access public
-	 * @param object|int $offer (default: null)
-	 * @param string $size (default: full)
-	 * @return string
+	 * @param object|int $offer		(default: null)
+	 * @param string $size			(default: full)
+	 * @return string				The offer's thumbnail image tag.
 	 */
-	function ts_get_the_thumbnail($offer,$size='full') {
+	function ts_get_the_thumbnail($offer, $size='full') {
 		if(!$offer) {
 			global $tsOffer;
 			$offer = $tsOffer;
 		}
 		else if(is_int($offer)) { $offer = ts_get_offer($offer); }
-		$attr = array(
-			'class' => 'topspin-item-thumbnail-image'
-		);
-		return get_the_post_thumbnail($offer->ID, $size, $attr);
+		if($offer) {
+			$attr = array(
+				'class' => 'topspin-item-thumbnail-image'
+			);
+			return get_the_post_thumbnail($offer->ID, $size, $attr);
+		}
+		return '';
 	}
-
 
 /**
  * Echoes the current offer's order number in the current store query
  *
+ * @access public
  * @return void
  */
 function ts_the_order_number() {
 	echo ts_get_the_order_number();
 }
 	/**
-	 * Retrieves the current offer's order number in the current store query
+	 * Retrieves the current offer's order number in the current store query.
 	 *
+	 * @access public
 	 * @global object $tsOffer
 	 * @global object $tsQuery
-	 * @return int
+	 * @return int					The current offer's order number in the store query.
 	 */
 	function ts_get_the_order_number() {
 		global $tsOffer, $tsQuery;
@@ -251,27 +273,27 @@ function ts_the_order_number() {
 	}
 
 /**
- * Echoes the current offer's ID
+ * Echoes the offer's post ID. If no offer is specified, it will default to the current offer in The Topspin Loop.
  * 
  * @access public
- * @global object $tsOffer The current offer
- * @return int|bool
+ * @param object|int $offer			(default: null)
+ * @return void
  */
 function ts_the_ID($offer=null) {
 	if(!$offer) {
 		global $tsOffer;
 		$offer = $tsOffer;
 	}
-	echo ts_get_the_ID($offer);
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { echo ts_get_the_ID($offer); }
 }
 
 	/**
-	 * Returns the current offer's ID
+	 * Retrieve the offer's post ID. If no offer is specified, it will default to the current offer in The Topspin Loop.
 	 * 
 	 * @access public
-	 * @global object $tsOffer The current offer
-	 * @param object|int $offer (default: null)
-	 * @return int The WordPress post ID
+	 * @param object|int $offer			(default: null)
+	 * @return int|bool					The offer's post ID or false on failure.
 	 */
 	function ts_get_the_ID($offer=null) {
 		if(!$offer) {
@@ -280,50 +302,64 @@ function ts_the_ID($offer=null) {
 		}
 		else if(is_int($offer)) { $offer = ts_get_offer($offer); }
 		if($offer) { return $offer->ID; }
+		return false;
 	}
 
 /**
- * Echoes the current offer's campaign ID
+ * Echoes the offer's campaign ID. If no offer is specified, it will default to the current offer in The Topspin Loop.
  * 
  * @access public
- * @global object $tsOffer The current offer
+ * @param object|int $offer			(default: null)
  * @return void
  */
-function ts_the_offer_id() {
-	echo ts_get_the_offer_id();
-}
-
-	/**
-	 * Returns the current offer's campaign ID
-	 * 
-	 * @access public
-	 * @global object $tsOffer The current offer
-	 * @return int The offer's campaign ID
-	 */
-	function ts_get_the_offer_id() {
+function ts_the_offer_id($offer=null) {
+	if(!$offer) {
 		global $tsOffer;
-		if($tsOffer) { return $tsOffer->meta->id; }
+		$offer = $tsOffer;
 	}
-
-/**
- * Echoes the title of the offer
- * 
- * @access public
- * @global object $tsOffer The current offer
- * @return void
- */
-function ts_the_title() {
-	echo ts_get_the_title();
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { echo ts_get_the_offer_id($offer); }
 }
 
 	/**
-	 * Returns the title of the offer
-	 *
-	 * If the offer is not set, it will return the current offer's title in the Topspin Loop
+	 * Retrieve the offer's campaign ID. If no offer is specified, it will default to the current offer in The Topspin Loop.
 	 * 
 	 * @access public
-	 * @global object|int $offer (Optional) The current offer object or ID
-	 * @return string The offer's post title
+	 * @param object|int $offer			(default: null)
+	 * @return int|bool					The offer's campaign ID or false on failure.
+	 */
+	function ts_get_the_offer_id($offer=null) {
+		if(!$offer) {
+			global $tsOffer;
+			$offer = $tsOffer;
+		}
+		else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+		if($offer) { return $offer->meta->id; }
+		return false;
+	}
+
+/**
+ * Echoes the offer's title. If no offer is specified, it will default to the current offer in The Topspin Loop.
+ * 
+ * @access public
+ * @param object|int $offer			(default: null)
+ * @return void
+ */
+function ts_the_title($offer=null) {
+	if(!$offer) {
+		global $tsOffer;
+		$offer = $tsOffer;
+	}
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { echo ts_get_the_title($offer); }
+}
+
+	/**
+	 * Retrieve the offer's title. If no offer is specified, it will default to the current offer in The Topspin Loop.
+	 * 
+	 * @access public
+	 * @param object|int $offer			(default: null)
+	 * @return string					The offer's title.
 	 */
 	function ts_get_the_title($offer=null) {
 		$ID = false;
@@ -340,66 +376,90 @@ function ts_the_title() {
 	}
 
 /**
- * Echoes the content of the current offer
+ * Echoes the offer's content/description. If no offer is specified, it will default to the current offer in The Topspin Loop.
  * 
  * @access public
+ * @param object|int $offer			(default: null)
  * @return void
  */
-function ts_the_content() {
-	echo ts_get_the_content();
+function ts_the_content($offer=null) {
+	if(!$offer) {
+		global $tsOffer;
+		$offer = $tsOffer;
+	}
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { echo ts_get_the_content($offer); }
 }
 
 	/**
-	 * Returns the name of the current offer
+	 * Retrieve the offer's content/description. If no offer is specified, it will default to the current offer in The Topspin Loop.
 	 * 
 	 * @access public
-	 * @return string The offer's post content
+	 * @param object|int $offer			(default: null)
+	 * @return string					The offer's content/description.
 	 */
-	function ts_get_the_content() {
-		global $tsOffer;
-		if($tsOffer) { return $tsOffer->post_content; }
+	function ts_get_the_content($offer=null) {
+		if(!$offer) {
+			global $tsOffer;
+			$offer = $tsOffer;
+		}
+		else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+		if($offer) { return $offer->post_content; }
 	}
 
 /**
- * Echoes the permalink of the offer
+ * Echoes the offer's permalink. If no offer is specified, it will default to the current offer in The Topspin Loop.
  * 
  * @access public
+ * @param object|int $offer			(default: null)
  * @return void
  */
-function ts_the_permalink() {
-	global $tsOffer;
-	echo get_permalink($tsOffer->ID);
+function ts_the_permalink($offer=null) {
+	if(!$offer) {
+		global $tsOffer;
+		$offer = $tsOffer;
+	}
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { echo ts_get_the_permalink($offer); }
 }
 
 	/**
-	 * Returns the permalink of the offer
+	 * Retrieve the offer's permalink. If no offer is specified, it will default to the current offer in The Topspin Loop.
 	 * 
 	 * @access public
-	 * @return string The offer's post permalink
+	 * @param object|int $offer			(default: null)
+	 * @return string					The offer's permalink.
 	 */
-	function ts_get_the_permalink() {
-		global $tsOffer;
-		$permalink = get_permalink($tsOffer->ID);
-		return $permalink;
+	function ts_get_the_permalink($offer=null) {
+		if(!$offer) {
+			global $tsOffer;
+			$offer = $tsOffer;
+		}
+		else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+		if($offer) { return get_permalink($offer->ID); }
 	}
 
 /**
- * Echoes the name of the offer
+ * Echoes the offer's name. If no offer is specified, it will default to the current offer in The Topspin Loop.
  * 
  * @access public
- * @global object $tsOffer The current offer
+ * @param object|int $offer			(default: null)
  * @return void
  */
-function ts_the_name() {
-	global $tsOffer;
-	echo $tsOffer->meta->name;
+function ts_the_name($offer=null) {
+	if(!$offer) {
+		global $tsOffer;
+		$offer = $tsOffer;
+	}
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { echo $offer->meta->name; }
 }
 
 /**
- * Echoes the price of the offer
+ * Echoes the offer's price. If no offer is specified, it will default to the current offer in The Topspin Loop.
  * 
  * @access public
- * @global object $tsOffer The current offer
+ * @param object|int $offer			(default: null)
  * @return void
  */
 function ts_the_price($offer=null) {
@@ -407,25 +467,26 @@ function ts_the_price($offer=null) {
 		global $tsOffer;
 		$offer = $tsOffer;
 	}
-	echo ts_get_the_price($offer);
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { echo ts_get_the_price($offer); }
 }
 
 	/**
-	 * Returns the price of the offer
+	 * Retrieve the offer's price. If no offer is specified, it will default to the current offer in The Topspin Loop.
 	 * 
 	 * @access public
-	 * @global object $tsOffer The current offer
-	 * @param object|int $offer (default: null)
-	 * @return string
+	 * @param object|int $offer			(default: null)
+	 * @return string					The offer's price.
 	 */
 	function ts_get_the_price($offer=null) {
-		$currency = '$';
-		$price = 0;
 		if(!$offer) {
 			global $tsOffer;
 			$offer = $tsOffer;
 		}
 		else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+		// Set the defaults
+		$currency = '$';
+		$price = 0;
 		// If it is a buy button
 		if($offer->meta->offer_type=='buy_button') {
 			$currency = Topspin_API::getCurrentSymbol($offer->meta->currency);
@@ -435,21 +496,51 @@ function ts_the_price($offer=null) {
 	}
 
 /**
- * Echoes the offer URL of the offer
+ * Echoes the offer's purchase link. If no offer is specified, it will default to the current offer in The Topspin Loop.
  * 
  * @access public
- * @global object $tsOffer The current offer
+ * @param object|int $offer			(default: null)
  * @return void
  */
-function ts_the_purchaselink() {
-	global $tsOffer;
-	switch($tsOffer->offer_type) {
-		case 'buy_button':
-			echo $tsOffer->meta->offer_url;
-			break;
+function ts_the_purchaselink($offer=null) {
+	if(!$offer) {
+		global $tsOffer;
+		$offer = $tsOffer;
 	}
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { echo ts_get_the_purchaselink($offer); }
 }
 
+	/**
+	 * Retrieve the offer's purchase link. If no offer is specified, it will default to the current offer in The Topspin Loop.
+	 * 
+	 * @access public
+	 * @param object|int $offer			(default: null)
+	 * @return string					The offer's purchase link.
+	 */
+	function ts_get_the_purchaselink($offer=null) {
+		if(!$offer) {
+			global $tsOffer;
+			$offer = $tsOffer;
+		}
+		else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+		if($offer) {
+			switch($offer->offer_type) {
+				case 'buy_button':
+					return $offer->meta->offer_url;
+					break;
+			}
+		}
+	}
+
+/**
+ * Retrieve the previous link for the current store. This tag must be used within The Topsin Loop.
+ *
+ * @access public
+ * @global object $tsOffer
+ * @global object $tsQuery
+ * @return string					A URL for the previous page for the store query.
+ */
 function ts_prev_link() {
 	global $tsOffer, $tsQuery;
 	if($tsQuery->current_page>1) {
@@ -462,8 +553,17 @@ function ts_prev_link() {
 		if($is_permalink) { $link = sprintf('%s%s', $currentLink, $prevPage); }
 		return $link;
 	}
+	return '';
 }
 
+/**
+ * Retrieve the next link for the current store. This tag must be used within The Topsin Loop.
+ *
+ * @access public
+ * @global object $tsOffer
+ * @global object $tsQuery
+ * @return string					A URL for the next page for the store query.
+ */
 function ts_next_link() {
 	global $tsOffer, $tsQuery;
 	if($tsQuery->current_page < $tsQuery->max_num_pages) {
@@ -476,24 +576,25 @@ function ts_next_link() {
 		if($is_permalink) { $link = sprintf('%s%s', $currentLink, $nextPage); }
 		return $link;
 	}
+	return '';
 }
 
 /**
- * Checks to see if the gallery exists for the offer
+ * Checks to see if the gallery exists for the offer. This tag must be used within The Topspin Loop.
  *
  * @access public
- * @return bool
+ * @return bool						True if the current offer has more than 1 image.
  */
 function ts_have_gallery() {
 	return (count(ts_gallery_images())>1) ? true : false;
 }
 
 /**
- * Retrieves the gallery images
+ * Retrieve the gallery images. This tag must be used within The Topspin Loop.
  *
  * @access public
- * @global object $tsOffer The current offer
- * @return array An array of image objects
+ * @global object $tsOffer			The current offer
+ * @return array					An array of image objects.
  */
 function ts_gallery_images() {
 	global $tsOffer;
@@ -501,11 +602,10 @@ function ts_gallery_images() {
 }
 
 /**
- * Echoes the embed code for the offer
+ * Echoes the offer's embed code. If no offer is specified, it will default to the current offer in The Topspin Loop.
  * 
  * @access public
- * @global object $tsOffer The current offer
- * @param object|int $offer (default: null)
+ * @param object|int $offer			(default: null)
  * @return void
  */
 function ts_the_embed_code($offer=null) {
@@ -513,16 +613,16 @@ function ts_the_embed_code($offer=null) {
 		global $tsOffer;
 		$offer = $tsOffer;
 	}
-	return ts_get_the_embed_code($offer);
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { echo ts_get_the_embed_code($offer); }
 }
 
 	/**
-	 * Returns the embed code of the offer
+	 * Retrieve the offer's embed code. If no offer is specified, it will default to the current offer in The Topspin Loop.
 	 * 
 	 * @access public
-	 * @global object $tsOffer The current offer
-	 * @param object|int $offer (default: null)
-	 * @return string
+	 * @param object|int $offer			(default: null)
+	 * @return string					The offer's embed code.
 	 */
 	function ts_get_the_embed_code($offer=null) {
 		if(!$offer) {
@@ -530,7 +630,7 @@ function ts_the_embed_code($offer=null) {
 			$offer = $tsOffer;
 		}
 		else if(is_int($offer)) { $offer = ts_get_offer($offer); }
-		if($offer) { echo $offer->meta->embed_code; }
+		if($offer) { return $offer->meta->embed_code; }
 	}
 
 /* !----- TS_Query ----- */

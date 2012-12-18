@@ -132,7 +132,6 @@ class WP_Topspin_CMS_Controller {
 	 * @return void
 	 */
 	public static function topspin_register_post_type() {
-		$showUI = (TOPSPIN_GROUP_PANELS) ? false : true;
 		$showInMenu = (TOPSPIN_GROUP_PANELS) ? false : true;
 		$showInAdminBar = (TOPSPIN_GROUP_PANELS) ? false : true;
 	
@@ -188,7 +187,7 @@ class WP_Topspin_CMS_Controller {
 			'labels' => $labels,
 			'public' => true,
 			'public_queryable' => true,
-			'show_ui' => $showUI,
+			'show_ui' => true,
 			'show_in_menu' => $showInMenu,
 			'show_in_admin_bar' => $showInAdminBar,
 			'query_var' => true,
@@ -220,7 +219,7 @@ class WP_Topspin_CMS_Controller {
 			'labels' => $labels,
 			'public' => true,
 			'public_queryable' => true,
-			'show_ui' => $showUI,
+			'show_ui' => true,
 			'show_in_menu' => $showInMenu,
 			'show_in_admin_bar' => $showInAdminBar,
 			'query_var' => true,
@@ -252,7 +251,7 @@ class WP_Topspin_CMS_Controller {
 			'labels' => $productLabels,
 			'public' => false,
 			'public_queryable' => false,
-			'show_ui' => $showUI,
+			'show_ui' => true,
 			'show_in_menu' => $showInMenu,
 			'show_in_admin_bar' => $showInAdminBar,
 			'query_var' => false,

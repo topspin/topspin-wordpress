@@ -342,6 +342,12 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 
 # [Changelog](id:changelog)
 
+## 4.0.4
+* Updated PHP docblocks.
+* Fixed ts_the_embed_code() and ts_get_the_embed_code().
+* Fixed Group Panel features bug.
+* Several bug fixes.
+
 ## 4.0.3
 * Added the ability to change the default grid thumb size (for narrow or wider templates)
 

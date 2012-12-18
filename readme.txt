@@ -3,7 +3,7 @@ Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
 Tested up to: 3.5
-Stable tag: 4.0.3
+Stable tag: 4.0.4
 Requires at least: 3.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -96,7 +96,7 @@ It is highly recommended that you upgrade your WordPress installation to the lat
 5. Go to the *Topspin -> Settings* menu and add in your Topspin API User and API Key (you can get these from your Account settings at [http://app.topspin.net](http://app.topspin.net)) and select the Artist Account you wish to work with from the drop-down (if you have more than one account associated with your API User/Key)
 6. Make sure the Offers you want to use have the *Offer API* checkbox selected.  If they don't, they won't be output by Topspin's API and won't show up as available Offers in the plugin.
 
-== Upgrade Notice ==
+= Upgrades =
 
 = Upgrading from v3.0 or later =
 
@@ -252,7 +252,18 @@ This plugin is in open development.  Over the weeks and months we hope to roll o
 7. Front-End -> View of a Store Page's "More Details" Colorbox overlay
 8. Front-End -> View of the Topspin Checkout Flow overlay
 
+== Upgrade Notice ==
+
+= 4.0.1 =
+* This fixes several issues for version 3.0 plugin users who are upgrading to 4.0.
+
 == Changelog ==
+
+= 4.0.4 =
+* Updated PHP docblocks.
+* Fixed ts_the_embed_code() and ts_get_the_embed_code().
+* Fixed Group Panel features bug.
+* Several bug fixes.
 
 = 4.0.3 =
 * Added the ability to change the default grid thumb size (for narrow or wider templates)
