@@ -594,11 +594,13 @@ function ts_have_gallery() {
  *
  * @access public
  * @global object $tsOffer			The current offer
- * @return array					An array of image objects.
+ * @return array|bool				An array of image objects or false on failure.
  */
 function ts_gallery_images() {
 	global $tsOffer;
-	return $tsOffer->meta->campaign->product->images;
+	if($tsOffer) {
+		return isset($tsOffer->meta->campaign->product->images) ? $tsOffer->meta->campaign->product->images : false;
+	}
 }
 
 /**
