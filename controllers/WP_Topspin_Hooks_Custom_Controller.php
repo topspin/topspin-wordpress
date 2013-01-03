@@ -66,6 +66,8 @@ class WP_Topspin_Hooks_Custom_Controller {
 		}
 		// Display success message if available
 		if(isset($_GET['settings-updated']) && $_GET['settings-updated']=='true') {
+			// If it the API credentials is verified, remove the admin notice
+			if(TOPSPIN_API_VERIFIED) { remove_action('admin_notices', array('WP_Topspin_Notices', 'checkVerification')); }
 			do_action('topspin_flush_permalinks');
 			do_action('topspin_notices_changes_saved');
 		}
