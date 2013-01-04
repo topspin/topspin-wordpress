@@ -94,8 +94,11 @@ class WP_Topspin_Cache {
 									unlink($artistAttachmentFile);
 									// Delete all thumbnail files
 									$globPath = sprintf('%s/%s-*', $pathInfo['dirname'], $pathInfo['filename']);
-									foreach(glob($globPath) as $file) {
-										if(file_exists($file)) { unlink($file); }
+									$globFiles = glob($globPath);
+									if($globFiles !== false) {
+										foreach($globFiles as $file) {
+											if(file_exists($file)) { unlink($file); }
+										}
 									}
 								}
 								// Update attachment file
@@ -339,10 +342,12 @@ class WP_Topspin_Cache {
 						unlink($thumbAttachment);
 						// Delete all thumbnail files
 						$globPath = sprintf('%s/%s-*', $pathInfo['dirname'], $pathInfo['filename']);
-						foreach(glob($globPath) as $file) {
-							if(file_exists($file)) { unlink($file); }
+						$globFiles = glob($globPath);
+						if($globFiles !== false) {
+							foreach($globFiles as $file) {
+								if(file_exists($file)) { unlink($file); }
+							}
 						}
-						
 					}
 					// Update attachment file
 					update_attached_file($thumbPostId, $thumbFile['path']);
