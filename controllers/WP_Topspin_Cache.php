@@ -88,7 +88,16 @@ class WP_Topspin_Cache {
 								$artistAttachmentId = get_post_thumbnail_id($artistPostId);
 								$artistAttachmentFile = get_attached_file($artistAttachmentId);
 								// Delete the old file
-								if(file_exists($artistAttachmentFile)) { unlink($artistAttachmentFile); }
+								if(file_exists($artistAttachmentFile)) {
+									$pathInfo = pathinfo($artistAttachmentFile);
+									// Delete the original file
+									unlink($artistAttachmentFile);
+									// Delete all thumbnail files
+									$globPath = sprintf('%s/%s-*', $pathInfo['dirname'], $pathInfo['filename']);
+									foreach(glob($globPath) as $file) {
+										if(file_exists($file)) { unlink($file); }
+									}
+								}
 								// Update attachment file
 								update_attached_file($artistAttachmentId, $artistAvatarFile['path']);
 								// Re-generate attachment metadata
@@ -324,7 +333,17 @@ class WP_Topspin_Cache {
 					$thumbPostId = get_post_thumbnail_id($offerPostId);
 					$thumbAttachment = get_attached_file($thumbPostId);
 					// Delete the old file
-					if(file_exists($thumbAttachment)) { unlink($thumbAttachment); }
+					if(file_exists($thumbAttachment)) {
+						$pathInfo = pathinfo($thumbAttachment);
+						// Delete the original file
+						unlink($thumbAttachment);
+						// Delete all thumbnail files
+						$globPath = sprintf('%s/%s-*', $pathInfo['dirname'], $pathInfo['filename']);
+						foreach(glob($globPath) as $file) {
+							if(file_exists($file)) { unlink($file); }
+						}
+						
+					}
 					// Update attachment file
 					update_attached_file($thumbPostId, $thumbFile['path']);
 					// Re-generate attachment metadata
