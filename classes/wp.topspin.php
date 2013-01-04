@@ -609,7 +609,7 @@ EOD;
 	 */
 	public static function isOnSale($offer) {
 		$saleTag = self::getStoreSaleTag();
-		$tags = wp_get_post_terms($offer->ID,'spin-tags');
+		$tags = wp_get_post_terms($offer->ID, 'spin-tags');
 		if(count($tags)) {
 			foreach($tags as $tag) {
 				if($tag->slug==$saleTag) { return true; }
