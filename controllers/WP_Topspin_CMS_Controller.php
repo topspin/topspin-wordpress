@@ -125,6 +125,45 @@ class WP_Topspin_CMS_Controller {
 		include(sprintf('%s/views/metabox/offer/sync.php', TOPSPIN_PLUGIN_PATH));
 	}
 	/**
+	 * Displays the offer poster image metabox content
+	 * 
+	 * @access public
+	 * @static
+	 * @param object $post
+	 * @return void
+	 */
+	public static function topspin_metabox_offer_poster_image($post) {
+		global $tsOffer;
+		$tsOffer = ts_get_offer($post->ID);
+		include(sprintf('%s/views/metabox/offer/poster-image.php', TOPSPIN_PLUGIN_PATH));
+	}
+	/**
+	 * Displays the offer content metabox content
+	 * 
+	 * @access public
+	 * @static
+	 * @param object $post
+	 * @return void
+	 */
+	public static function topspin_metabox_offer_content($post) {
+		global $tsOffer;
+		$tsOffer = ts_get_offer($post->ID);
+		include(sprintf('%s/views/metabox/offer/content.php', TOPSPIN_PLUGIN_PATH));
+	}
+	/**
+	 * Displays the offer spin tags metabox content
+	 * 
+	 * @access public
+	 * @static
+	 * @param object $post
+	 * @return void
+	 */
+	public static function topspin_metabox_offer_spin_tags($post) {
+		global $tsOffer;
+		$tsOffer = ts_get_offer($post->ID);
+		include(sprintf('%s/views/metabox/offer/spin-tags.php', TOPSPIN_PLUGIN_PATH));
+	}
+	/**
 	 * Registers the custom post types
 	 *
 	 * @access public
@@ -281,7 +320,10 @@ class WP_Topspin_CMS_Controller {
 		$args = array(
 			'labels' => $labels,
 			'hierarchical' => false,
-			'show_ui' => true,
+			'show_ui' => false,
+			'show_in_nav_menus' => false,
+			'show_tagcloud' => false,
+			'show_admin_column' => false,
 			'query_var' => true
 		);
 		register_taxonomy('spin-tags', array(TOPSPIN_CUSTOM_POST_TYPE_OFFER), $args);

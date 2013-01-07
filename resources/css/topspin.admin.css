@@ -39,27 +39,31 @@
 .topspin-artists-list {
 }
 	.topspin-artists-list .topspin-artist-item {
-		float:left;
-		width:150px;
-		text-align:center;
-		margin-right:10px;
-		margin-bottom:10px;
+		float: left;
+		width: 150px;
+		text-align: center;
+		margin-right: 10px;
+		margin-bottom: 10px;
 	}
 		.topspin-artists-list .topspin-artist-item .topspin-artist-item-thumb {
-			height:150px;
+			height: 150px;
 		}
 		.topspin-artists-list .topspin-artist-item .topspin-artist-item-footer {
-			height:36px;
-			line-height:18px;
+			height: 36px;
+			line-height: 18px;
 		}
 
 
+.wp-list-table #id {
+	width: 50px;
+}
+
 .wp-list-table #post-thumbnail {
-	width:125px;
+	width: 140px;
 }
 
 .wp-list-table #price {
-	width:125px;
+	width: 125px;
 }
 
 .wp-list-table #in_stock {
@@ -72,20 +76,20 @@
 
 
 .topspin-metabox-row {
-	margin-bottom:15px;
+	margin-bottom: 15px;
 }
 	.topspin-metabox-row label {
-		float:left;
-		display:block;
-		width:200px;
+		float: left;
+		display: block;
+		width: 200px;
 	}
 
 .topspin-preview-item {
-	float:left;
-	width:150px;
-	height:150px;
-	text-align:center;
-	margin:10px;
+	float: left;
+	width: 150px;
+	height: 150px;
+	text-align: center;
+	margin: 10px;
 }
 
 .group-sortable {
@@ -94,9 +98,9 @@
 		width: 200px;
 	}
 		.group-sortable .menu-item input {
-			float:left;
-			margin-left:5px;
-			margin-top:10px;
+			float: left;
+			margin-left: 5px;
+			margin-top: 10px;
 		}
 		.group-sortable .menu-item label {
 			display: block;

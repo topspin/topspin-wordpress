@@ -6,6 +6,7 @@ add_action('add_meta_boxes',				array('WP_Topspin_Hooks_Controller', 'addMetaBox
 add_action('admin_enqueue_scripts',			array('WP_Topspin_Hooks_Controller', 'adminEnqueueScripts'));
 add_action('admin_init',					array('WP_Topspin_Hooks_Controller', 'adminInit'));
 add_action('admin_menu',					array('WP_Topspin_Hooks_Controller', 'adminMenu'));
+add_action('admin_head',					array('WP_Topspin_Hooks_Controller', 'adminHead'));
 add_action('after_setup_theme',				array('WP_Topspin_Hooks_Controller', 'afterSetupTheme'));
 add_action('init',							array('WP_Topspin_Hooks_Controller', 'init'));
 add_action('parse_query',					array('WP_Topspin_Hooks_Controller', 'parse_query'));
@@ -44,8 +45,14 @@ class WP_Topspin_Hooks_Controller {
 		// Tags
 		add_meta_box('topspin-store-tags', 'Tags', array('WP_Topspin_CMS_Controller', 'topspin_metabox_store_tags'), TOPSPIN_CUSTOM_POST_TYPE_STORE, 'side', 'default');
 		/* !----- Offer Metaboxes ----- */
+		// Content
+		add_meta_box('topspin-offer-content', 'Description', array('WP_Topspin_CMS_Controller', 'topspin_metabox_offer_content'), TOPSPIN_CUSTOM_POST_TYPE_OFFER, 'normal', 'default');
 		// Sync
 		add_meta_box('topspin-offer-sync', 'Sync', array('WP_Topspin_CMS_Controller', 'topspin_metabox_offer_sync'), TOPSPIN_CUSTOM_POST_TYPE_OFFER, 'side', 'default');
+		// Poster Image
+		add_meta_box('topspin-offer-poster-image', 'Poster Image', array('WP_Topspin_CMS_Controller', 'topspin_metabox_offer_poster_image'), TOPSPIN_CUSTOM_POST_TYPE_OFFER, 'side', 'default');
+		// Spin Tags
+		add_meta_box('topspin-offer-spin-tags', 'Spin Tags', array('WP_Topspin_CMS_Controller', 'topspin_metabox_offer_spin_tags'), TOPSPIN_CUSTOM_POST_TYPE_OFFER, 'side', 'default');
 	}
 
 	/**
@@ -136,6 +143,27 @@ class WP_Topspin_Hooks_Controller {
 				add_submenu_page('topspin/page/general', 'View Products', 'View Products', 'edit_posts', 'edit.php?post_type='.TOPSPIN_CUSTOM_POST_TYPE_PRODUCT);
 			}
 		}
+	}
+	
+	public static function adminHead() {
+		$html = <<<EOD
+<script type="text/javascript" language="javascript">
+jQuery(function() {
+	var opts = {
+		post_types : {
+			store : '%s',
+			offer : '%s',
+			product : '%s'
+		}
+	};
+	topspin_admin.init(opts);
+});
+</script>
+EOD;
+		echo sprintf($html,
+			TOPSPIN_CUSTOM_POST_TYPE_STORE,
+			TOPSPIN_CUSTOM_POST_TYPE_OFFER,
+			TOPSPIN_CUSTOM_POST_TYPE_PRODUCT);
 	}
 
 	/**
@@ -367,7 +395,11 @@ class WP_Topspin_Hooks_Controller {
 				ts_the_ID($post_ID);
 				break;
 			case 'post-thumbnail':
-				if(ts_has_thumbnail()) { echo ts_get_the_thumbnail($post_ID,'wp-list-table-thumb'); }
+				if(ts_has_thumbnail()) {
+					echo '<a href="' . get_admin_url(null, 'post.php?post=' . $post_ID . '&action=edit') . '">';
+					echo ts_get_the_thumbnail($post_ID, 'wp-list-table-thumb');
+					echo '</a>';
+				}
 				break;
 			case 'price':
 				ts_the_price($post_ID);
@@ -439,7 +471,7 @@ class WP_Topspin_Hooks_Controller {
 	 * @param array $columns
 	 * @return array
 	 */
-	function offerCustomColumns($columns) {
+	public static function offerCustomColumns($columns) {
 		$cols = array(
 			'cb' => $columns['cb'],
 			'id' => 'ID',
@@ -460,7 +492,7 @@ class WP_Topspin_Hooks_Controller {
 	 * @param array $columns
 	 * @return array
 	 */
-	function artistCustomColumns($columns) {
+	public static function artistCustomColumns($columns) {
 		$cols = array(
 			'cb' => $columns['cb'],
 			'id' => 'ID',
@@ -479,7 +511,7 @@ class WP_Topspin_Hooks_Controller {
 	 * @param array $columns
 	 * @return array
 	 */
-	function productCustomColumns($columns) {
+	public static function productCustomColumns($columns) {
 		$cols = array(
 			'cb' => $columns['cb'],
 			'id' => 'ID',

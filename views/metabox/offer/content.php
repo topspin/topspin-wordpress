@@ -1,0 +1,1 @@
+<?php ts_the_content(); ?>

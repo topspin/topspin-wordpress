@@ -1,6 +1,38 @@
 var topspin_admin = {
 
 	/**
+	 * Holds admin options
+	 *
+	 * @param object opts
+	 */
+	opts : {
+		/**
+		 * Holds custom post types
+		 *
+		 * @param object post_types
+		 */
+		post_types : {
+			/**
+			 * The custom offer post type
+			 *
+			 * @param string
+			 */
+			offer : false,
+			/**
+			 * The custom product post type
+			 *
+			 * @param string
+			 */
+			product : false,
+			/**
+			 * The custom store post type
+			 *
+			 * @param string
+			 */
+			store : false
+		}
+	},
+	/**
 	 * Holds all stored DOM elements
 	 *
 	 * @param object doms
@@ -13,7 +45,20 @@ var topspin_admin = {
 		 */
 		loader : false
 	},
-	init : function() {
+	/**
+	 * Initiate the Topspin admin
+	 *
+	 * @return void
+	 */
+	init : function(opts) {
+		// Merge options
+		topspin_admin.opts = jQuery.extend(topspin_admin.opts, opts);
+
+		// Hide some elements
+		jQuery('a[href="post-new.php?post_type=' + topspin_admin.opts.post_types.offer + '"]').remove();
+		jQuery('a[href="post-new.php?post_type=' + topspin_admin.opts.post_types.product + '"]').remove();
+
+		// Initialize the menus
 		switch(topspin_admin.getQueryValue('page')) {
 			case 'topspin/page/menus':
 				topspin_admin.menus.init();
@@ -23,7 +68,13 @@ var topspin_admin = {
 		topspin_admin.loader.init();
 		topspin_admin.store.init();
 		topspin_admin.offer.init();
+		topspin_admin.product.init();
 	},
+	/**
+	 * Register admin JS events
+	 *
+	 * @return void
+	 */
 	registerEvents : function() {
 	},
 	/* !----- Events ----- */
@@ -184,7 +235,19 @@ var topspin_admin = {
 	},
 	/* !----- Offer ----- */
 	offer : {
+		/**
+		 * Initializes the offer JS
+		 *
+		 * @global string typenow
+		 * @return void
+		 */
 		init : function() {
+			// Remove row-actions
+			jQuery('.type-' + topspin_admin.opts.post_types.offer + ' .row-actions').remove();
+			// Remove elements in the Edit page
+			if(typenow == topspin_admin.opts.post_types.offer) {
+				jQuery('#major-publishing-actions, #postimagediv, #postdivrich, #wp-fullscreen-body').remove();
+			}
 			topspin_admin.offer.registerEvents();
 		},
 		registerEvents : function() {
@@ -263,8 +326,30 @@ var topspin_admin = {
 			});
 		}
 	},
+	/* !----- Product ----- */
+	product : {
+		/**
+		 * Initializes the product JS
+		 *
+		 * @global string typenow
+		 * @return void
+		 */
+		init : function() {
+			// Remove row-actions
+			jQuery('.type-' + topspin_admin.opts.post_types.product + ' .row-actions').remove();
+			// Remove elements in the Edit page
+			if(typenow == topspin_admin.opts.post_types.product) {
+				jQuery('#major-publishing-actions, #postimagediv').remove();
+			}
+		}
+	},
 	/* !----- Menus ----- */
 	menus : {
+		/**
+		 * Initializes the Topspin menus
+		 *
+		 * @return void
+		 */
 		init : function() {
 			topspin_admin.menus.registerEvents();
 		},
@@ -341,7 +426,3 @@ var topspin_admin = {
 		}
 	}
 };
-
-jQuery(function() {
-	topspin_admin.init();
-});
