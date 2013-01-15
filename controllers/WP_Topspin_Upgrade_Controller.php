@@ -18,14 +18,17 @@ class WP_Topspin_Upgrade_Controller {
 	 * @return void
 	 */
 	public static function init() {
-		$oldVersion = self::getPluginVersion();
-		if($oldVersion > 0 && version_compare($oldVersion, '4.0.0', '<')) {
-			self::doUpgrade();
-			// Remove notices
-			remove_action('admin_notices', array('WP_Topspin_Notices', 'checkArtists'));
-			remove_action('admin_notices', array('WP_Topspin_Notices', 'checkSyncedArtists'));
-			// Add notices
-			add_action('admin_notices', array('WP_Topspin_Notices', 'upgradeSuccess'));
+		$exists = self::tableExists($wpdb->prefix.'topspin_settings');
+		if($exists) {
+			$oldVersion = self::getPluginVersion();
+			if($oldVersion > 0 && version_compare($oldVersion, '4.0.0', '<')) {
+				self::doUpgrade();
+				// Remove notices
+				remove_action('admin_notices', array('WP_Topspin_Notices', 'checkArtists'));
+				remove_action('admin_notices', array('WP_Topspin_Notices', 'checkSyncedArtists'));
+				// Add notices
+				add_action('admin_notices', array('WP_Topspin_Notices', 'upgradeSuccess'));
+			}
 		}
 	}
 	/**
@@ -128,6 +131,26 @@ class WP_Topspin_Upgrade_Controller {
 	}
 
 	/* !----- Old Table Structure Methods ----- */
+	/**
+	 * Checks if a table exists
+	 *
+	 * @access public
+	 * @static
+	 * @global object $wpdb
+	 * @return bool
+	 */
+	public static function tableExists($name) {
+		global $wpdb;
+		$sql = <<<EOD
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = '%s'
+AND table_name = %s;
+EOD;
+		$exists = $wpdb->get_var($wpdb->prepare($sql, array(DB_NAME, $name)));
+		return ($exists) ? true : false;
+	}
+
 	/**
 	 * Retrieves an array of old topspin store settings
 	 *
