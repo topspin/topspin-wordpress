@@ -78,6 +78,9 @@ var topspin = {
 	 * Callback function after the fancybox has finished loading and showing when the view more lightbox is launched
 	 */
 	onViewAfterShow : function() {
-		if(TSPF) { TSPF.BuyButton.initializeBuyButtons(); }
+		if(TSPF) {
+			var fancyBoxes = document.getElementsByClassName('fancybox-inner');
+			TSPF.BuyButton.initializeBuyButtons(fancyBoxes ? fancyBoxes[0] : null);
+		}
 	}
 };
