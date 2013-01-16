@@ -379,13 +379,13 @@ class WP_Topspin_Cache {
 	public static function cacheProduct($offerPostId) {
 		global $topspin_order_api;
 		// Set default in stock
-		$inStock = false;
+		$inStock = 0;
 		$offer = WP_Topspin::getOfferMeta($offerPostId);
 		if($offer) {
 			// Digital items and tickets are always in stock
-			if(in_array($offer->product_type, array('digital_package', 'ticket'))) { $inStock = true; }
+			if(in_array($offer->product_type, array('digital_package', 'ticket'))) { $inStock++; }
 			// Campaigns where product type is package are always in stock
-			if(isset($offer->campaign->product) && $offer->campaign->product->type == 'package') { $inStock = true; }
+			if(isset($offer->campaign->product) && $offer->campaign->product->type == 'package') { $inStock++; }
 			// Else, request the product
 			else if(isset($offer->mobile_url)) {
 				$params = array(
@@ -397,8 +397,10 @@ class WP_Topspin_Cache {
 						// Purge attached products
 						WP_Topspin::deleteOfferProducts($offerPostId);
 						foreach($res->response->skus as $sku) {
-							// Flag in stock to true if any of the sku is available
-							if($sku->available) { $inStock = true; }
+							// Increment the in stock quantity if the sku is available
+							if($sku->available) {
+								$inStock += $sku->in_stock_quantity;
+							}
 							// Retrieve the post ID for the product
 							$productPostId = WP_Topspin::getProductPostId($sku);
 							// Create a new post array for update/create
@@ -422,7 +424,8 @@ class WP_Topspin_Cache {
 					}
 				}
 			}
-			update_post_meta($offerPostId, 'topspin_offer_in_stock', $inStock);
+			update_post_meta($offerPostId, 'topspin_offer_in_stock_quantity', $inStock);
+			update_post_meta($offerPostId, 'topspin_offer_in_stock', ($inStock) ? true : false);
 			return true;
 		}
 		return false;
