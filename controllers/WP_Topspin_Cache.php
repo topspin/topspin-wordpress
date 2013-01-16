@@ -382,8 +382,10 @@ class WP_Topspin_Cache {
 		$inStock = false;
 		$offer = WP_Topspin::getOfferMeta($offerPostId);
 		if($offer) {
-			// Digital items are always in stock
+			// Digital items and tickets are always in stock
 			if(in_array($offer->product_type, array('digital_package', 'ticket'))) { $inStock = true; }
+			// Campaigns where product type is package are always in stock
+			if(isset($offer->campaign->product) && $offer->campaign->product->type == 'package') { $inStock = true; }
 			// Else, request the product
 			else if(isset($offer->mobile_url)) {
 				$params = array(

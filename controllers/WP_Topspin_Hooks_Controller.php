@@ -53,6 +53,8 @@ class WP_Topspin_Hooks_Controller {
 		add_meta_box('topspin-offer-poster-image', 'Poster Image', array('WP_Topspin_CMS_Controller', 'topspin_metabox_offer_poster_image'), TOPSPIN_CUSTOM_POST_TYPE_OFFER, 'side', 'default');
 		// Spin Tags
 		add_meta_box('topspin-offer-spin-tags', 'Spin Tags', array('WP_Topspin_CMS_Controller', 'topspin_metabox_offer_spin_tags'), TOPSPIN_CUSTOM_POST_TYPE_OFFER, 'side', 'default');
+		/* !----- Product Metaboxes ----- */
+		add_meta_box('topspin-product-inventory', 'Inventory', array('WP_Topspin_CMS_Controller', 'topspin_metabox_product_inventory'), TOPSPIN_CUSTOM_POST_TYPE_PRODUCT, 'normal' ,'default');
 	}
 
 	/**

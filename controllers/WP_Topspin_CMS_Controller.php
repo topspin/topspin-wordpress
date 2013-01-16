@@ -164,6 +164,19 @@ class WP_Topspin_CMS_Controller {
 		include(sprintf('%s/views/metabox/offer/spin-tags.php', TOPSPIN_PLUGIN_PATH));
 	}
 	/**
+	 * Displays the product inventory metabox content
+	 * 
+	 * @access public
+	 * @static
+	 * @param object $post
+	 * @return void
+	 */
+	public static function topspin_metabox_product_inventory($post) {
+		global $tsProduct;
+		$tsProduct = ts_get_product($post->ID);
+		include(sprintf('%s/views/metabox/product/inventory.php', TOPSPIN_PLUGIN_PATH));
+	}
+	/**
 	 * Registers the custom post types
 	 *
 	 * @access public

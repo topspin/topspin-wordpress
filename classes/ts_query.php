@@ -24,6 +24,18 @@ function ts_get_offer($offer_ID) {
 }
 
 /**
+ * Retrieves the current product
+ *
+ * @access public
+ * @param int $product_ID
+ * @return object|bool If the product ecists, returns the product object or false if it doesn't exist
+ */
+function ts_get_product($product_ID) {
+	$tsProduct = new TS_Product($product_ID);
+	return ($tsProduct) ? $tsProduct : false;
+}
+
+/**
  * Load a template part into a template
  *
  * Note: Behaves like get_template_part()
