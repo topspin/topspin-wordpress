@@ -18,6 +18,7 @@ class WP_Topspin_Upgrade_Controller {
 	 * @return void
 	 */
 	public static function init() {
+		global $wpdb;
 		$exists = self::tableExists($wpdb->prefix.'topspin_settings');
 		if($exists) {
 			$oldVersion = self::getPluginVersion();
