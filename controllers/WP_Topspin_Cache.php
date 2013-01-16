@@ -382,6 +382,8 @@ class WP_Topspin_Cache {
 		$inStock = 0;
 		$offer = WP_Topspin::getOfferMeta($offerPostId);
 		if($offer) {
+			// E4M are always in stock
+			if(in_array($offer->offer_type, array('email_for_media'))) { $inStock++; }
 			// Digital items and tickets are always in stock
 			if(in_array($offer->product_type, array('digital_package', 'ticket'))) { $inStock++; }
 			// Campaigns where product type is package are always in stock
