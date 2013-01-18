@@ -384,8 +384,8 @@ class WP_Topspin_Cache {
 		if($offer) {
 			// E4M are always in stock
 			if(in_array($offer->offer_type, array('email_for_media'))) { $inStock++; }
-			// Digital items and tickets are always in stock
-			if(in_array($offer->product_type, array('digital_package', 'ticket'))) { $inStock++; }
+			// Videos, digital items, and tickets are always in stock
+			if(in_array($offer->product_type, array('video', 'digital_package', 'ticket'))) { $inStock++; }
 			// Campaigns where product type is package are always in stock
 			if(isset($offer->campaign->product) && $offer->campaign->product->type == 'package') { $inStock++; }
 			// Campaigns where product type is track are always in stock
