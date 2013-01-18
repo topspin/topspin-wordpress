@@ -3,7 +3,7 @@ Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
 Tested up to: 3.5
-Stable tag: 4.0.8
+Stable tag: 4.0.9
 Requires at least: 3.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -120,6 +120,10 @@ Please refer to our [Wiki](https://github.com/topspin/topspin-wordpress/wiki/Fre
 * This fixes several issues for version 3.0 plugin users who are upgrading to 4.0.
 
 == Changelog ==
+
+= 4.0.9 =
+* Added manual sorting show/hide toggling
+* Video offers now bypasses sold out check
 
 = 4.0.8 =
 * Added an inventory metabox to Products post type
