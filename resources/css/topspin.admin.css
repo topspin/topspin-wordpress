@@ -90,6 +90,32 @@
 	height: 150px;
 	text-align: center;
 	margin: 10px;
+	border: 2px solid transparent;
+}
+	.topspin-preview-item:hover {
+		border-color: #dddddd;
+	}
+	.topspin-preview-item img {
+		cursor: pointer;
+		margin-top: 10px;
+	}
+
+.ui-sortable .topspin-preview-item {
+	opacity: 0.5;
+	-moz-opacity: 0.5;
+	-o-opacity: 0.5;
+	-ms-opacity: 0.5;
+	-webkit-opacity: 0.5;
+	filter: alpha(opacity=50);
+}
+.ui-sortable.ui-sortable-disabled .topspin-preview-item,
+.ui-sortable .topspin-preview-item.topspin-item-show {
+	opacity: 1;
+	-moz-opacity: 1;
+	-o-opacity: 1;
+	-ms-opacity: 1;
+	-webkit-opacity: 1;
+	filter: alpha(opacity=100);
 }
 
 .group-sortable {

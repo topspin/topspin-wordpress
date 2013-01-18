@@ -336,6 +336,11 @@ EOD;
 		$store = array_merge($defaults, $store);
 		foreach($store as $key=>$value) {
 			switch($key) {
+				case 'items_visible':
+					foreach($value as $offerPostId=>$isVisible) {
+						update_post_meta($offerPostId, sprintf('topspin_offer_%d_visible', $post_ID), $isVisible);
+					}
+					break;
 				case 'featured':
 					if(count($value) && $value[0]!=0) { update_post_meta($post_ID, sprintf('topspin_store_%s', $key), $value); }
 					else { update_post_meta($post_ID, sprintf('topspin_store_%s', $key), 0); }

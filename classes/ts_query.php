@@ -188,6 +188,24 @@ function ts_is_sold_out($offer=null) {
 }
 
 /**
+ * Checks to see if the offer is visible or not.
+ *
+ * @access public
+ * @param object|int $offer			(default: null)
+ * @return bool						True if the item is visible in the current store.
+ */
+function ts_is_visible($offer=null) {
+	global $tsQuery;
+	if(!$offer) {
+		global $tsOffer;
+		$offer = $tsOffer;
+	}
+	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
+	if($offer) { return (isset($offer->is_visible) && $offer->is_visible) ? true : false; }
+	return true;
+}
+
+/**
  * Retrieves the offer type. If no offer is specified, it will default to the current offer in The Topspin Loop.
  *
  * @access public
@@ -682,6 +700,7 @@ class TS_Query {
 	 * * offer_type array
 	 * * tags array
 	 * * page int
+	 * * show_hidden bool			Shows hidden products? (applies to manual sorting only)
 	 *
 	 * @access public
 	 * @static
@@ -708,7 +727,8 @@ class TS_Query {
 			'default_sorting_by' => 'offertypes',
 			'offer_type' => array(),
 			'tags' => array(),
-			'page' => 1
+			'page' => 1,
+			'show_hidden' => (is_admin()) ? true : false
 		);
 
 		$args = array_merge($defaults, $args);
@@ -983,7 +1003,8 @@ SELECT
 	SQL_CALC_FOUND_ROWS up1.*,
 	ut1.slug AS `tag`,
 	(SELECT upm1.meta_value FROM {$wpdb->postmeta} upm1 WHERE upm1.meta_key = '%s' AND upm1.post_id = up1.ID) AS `offer_type`,
-	(SELECT upm2.meta_value FROM {$wpdb->postmeta} upm2 WHERE upm2.meta_key = '%s' AND upm2.post_id = up1.ID) AS `artist_id`
+	(SELECT upm2.meta_value FROM {$wpdb->postmeta} upm2 WHERE upm2.meta_key = '%s' AND upm2.post_id = up1.ID) AS `artist_id`,
+	(SELECT upm3.meta_value FROM {$wpdb->postmeta} upm3 WHERE upm3.meta_key = '%s' AND upm3.post_id = up1.ID) AS `is_visible`
 	FROM {$wpdb->posts} up1
 	LEFT JOIN {$wpdb->term_relationships} utr1 ON up1.ID = utr1.object_id
 	LEFT JOIN {$wpdb->term_taxonomy} utt1 ON utr1.term_taxonomy_id = utt1.term_taxonomy_id
@@ -994,14 +1015,17 @@ SELECT
 		AND up1.post_status = 'publish'
 		AND up1.ID IN (%s)
 	GROUP BY up1.ID
+	%s
 	ORDER BY FIND_IN_SET(ID, '%s')
 EOD;
 					$selectManualOrder = sprintf($_selectManualOrder,
-						WP_Topspin::offerMetaKey('offer_type'),		// select meta_key as offer_tye
-						WP_Topspin::offerMetaKey('artist_id'),		// select meta_key as artist_id
-						TOPSPIN_CUSTOM_POST_TYPE_OFFER,				// the custom offer post type
-						$findSetInList,								// where up1.ID IN list,
-						$findSetInList								// order by find in set list
+						WP_Topspin::offerMetaKey('offer_type'),									// select meta_key as offer_tye
+						WP_Topspin::offerMetaKey('artist_id'),									// select meta_key as artist_id
+						WP_Topspin::offerMetaKey(sprintf('%d_visible', $args['post_ID'])),		// select topspin is visible  where topspin store visible meta key
+						TOPSPIN_CUSTOM_POST_TYPE_OFFER,											// the custom offer post type
+						$findSetInList,															// where up1.ID IN list,
+						($args['show_hidden']) ? '' : 'HAVING `is_visible` IN(true, 1, \'true\')',				// having show hidden?
+						$findSetInList															// order by find in set list
 					);
 
 					$sqlFirstSelectStatement = $selectManualOrder;
@@ -1038,7 +1062,6 @@ EOD;
 			$offers = $wpdb->get_results($request);
 			$offer_count = $wpdb->get_var('SELECT FOUND_ROWS()');
 		}
-		
 		// Set the query properties
 		$this->query = $args;
 		$this->current_offer = -1;

@@ -96,6 +96,7 @@ var topspin_admin = {
 	},
 	/* !----- Store ----- */
 	store : {
+		sortingEnabled : false,
 		init : function() {
 			topspin_admin.store.registerEvents();
 
@@ -121,8 +122,27 @@ var topspin_admin = {
 	
 			// Bind Featured Item Delete
 			jQuery('.topspin-featured-delete').live('click', topspin_admin.store.events.onClickDeleteFeaturedItem);
+			
+			// Bind Manual Sorting Hide Toggle
+			jQuery('.topspin-item-thumbnail-image').live('click', topspin_admin.store.events.onClickManualItemThumbnailImage);
 		},
 		events : {
+			/**
+			 * onclick callback for manual item hide/show toggling
+			 */
+			onClickManualItemThumbnailImage : function(e) {
+				e.preventDefault();
+				if(topspin_admin.store.sortingEnabled) {
+					var theImage = jQuery(this);
+					var theItem = theImage.parents('.topspin-preview-item');
+					var theVisibleInput = jQuery('.topspin-item-is-visible', theItem);
+					var isVisible = theVisibleInput.val();
+					var newVisibility = (isVisible == 'true') ? false : true;
+					theVisibleInput.val(newVisibility);
+					if(newVisibility) { theItem.addClass('topspin-item-show'); }
+					else { theItem.removeClass('topspin-item-show'); }
+				}
+			},
 			/**
 			 * onChange callback for Sort By select dropdown
 			 *
@@ -186,6 +206,7 @@ var topspin_admin = {
 		enableManualSorting : function() {
 			jQuery('#topspin-preview-grid').sortable().disableSelection();
 			jQuery('#topspin-preview-grid').sortable('enable');
+			topspin_admin.store.sortingEnabled = true;
 		},
 		/**
 		 * Disables manual sorting
@@ -194,6 +215,7 @@ var topspin_admin = {
 		 */
 		disableManualSorting : function() {
 			jQuery('#topspin-preview-grid').sortable('disable');
+			topspin_admin.store.sortingEnabled = false;
 		},
 		checkSortingBy : function() {
 			// Check sorting
