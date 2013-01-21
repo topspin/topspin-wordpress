@@ -1013,19 +1013,19 @@ SELECT
 		1 = 1
 		AND up1.post_type = '%s'
 		AND up1.post_status = 'publish'
-		AND up1.ID IN (%s)
+		%s
 	GROUP BY up1.ID
 	%s
 	ORDER BY FIND_IN_SET(ID, '%s')
 EOD;
 					$selectManualOrder = sprintf($_selectManualOrder,
-						WP_Topspin::offerMetaKey('offer_type'),									// select meta_key as offer_tye
-						WP_Topspin::offerMetaKey('artist_id'),									// select meta_key as artist_id
-						WP_Topspin::offerMetaKey(sprintf('%d_visible', $args['post_ID'])),		// select topspin is visible  where topspin store visible meta key
-						TOPSPIN_CUSTOM_POST_TYPE_OFFER,											// the custom offer post type
-						$findSetInList,															// where up1.ID IN list,
+						WP_Topspin::offerMetaKey('offer_type'),													// select meta_key as offer_tye
+						WP_Topspin::offerMetaKey('artist_id'),													// select meta_key as artist_id
+						WP_Topspin::offerMetaKey(sprintf('%d_visible', $args['post_ID'])),						// select topspin is visible  where topspin store visible meta key
+						TOPSPIN_CUSTOM_POST_TYPE_OFFER,															// the custom offer post type
+						($findSetInList) ? sprintf('AND up1.ID IN (%s)', $findSetInList) : '',					// where up1.ID IN list,
 						($args['show_hidden']) ? '' : 'HAVING `is_visible` IN(true, 1, \'true\')',				// having show hidden?
-						$findSetInList															// order by find in set list
+						$findSetInList																			// order by find in set list
 					);
 
 					$sqlFirstSelectStatement = $selectManualOrder;
