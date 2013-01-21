@@ -121,6 +121,10 @@ Please refer to our [Wiki](https://github.com/topspin/topspin-wordpress/wiki/Fre
 
 == Changelog ==
 
+= 4.0.9.1 =
+* Fixed manual sorting query bug
+* Fixed inventory count for "other_media" offer types
+
 = 4.0.9 =
 * Added manual sorting show/hide toggling
 * Video offers now bypasses sold out check
