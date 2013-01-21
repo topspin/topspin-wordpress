@@ -386,10 +386,8 @@ class WP_Topspin_Cache {
 			if(in_array($offer->offer_type, array('email_for_media'))) { $inStock++; }
 			// Videos, digital items, and tickets are always in stock
 			if(in_array($offer->product_type, array('video', 'digital_package', 'ticket'))) { $inStock++; }
-			// Campaigns where product type is package are always in stock
-			if(isset($offer->campaign->product) && $offer->campaign->product->type == 'package') { $inStock++; }
-			// Campaigns where product type is track are always in stock
-			if(isset($offer->campaign->product) && $offer->campaign->product->type == 'track') { $inStock++; }
+			// Campaigns where product type is package, track, or other media is always in stock
+			if(isset($offer->campaign->product) && in_array($offer->campaign->product->type, array('package', 'track', 'other_media'))) { $inStock++; }
 			// Else, request the product
 			else if(isset($offer->mobile_url)) {
 				$params = array(
