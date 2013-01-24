@@ -59,7 +59,6 @@ class WP_Topspin_AJAX {
 		die();
 	
 	}
-
 	/**
 	 * Retrieves the lightbox content for the offer
 	 * 
@@ -68,13 +67,8 @@ class WP_Topspin_AJAX {
 	 * @return string A JSON-encoded string
 	 */
 	public static function viewMore() {
-	
-		$ret = array(
-			'status' => 'error'
-		);
-		
+		$ajaxResponse = new TS_AjaxResponse();
 		$offer_id = esc_attr($_GET['offer_id']);
-		
 		// Make the query
 		$args = array(
 			'offer_ID' => $offer_id
@@ -84,15 +78,12 @@ class WP_Topspin_AJAX {
 		include(WP_Topspin_Template::getFile('lightbox.php'));
 		$response = ob_get_contents();
 		ob_end_clean();
-		$ret = array(
-			'status' => 'success',
-			'response' => $response
-		);
-		
-		echo json_encode($ret);
+		// Update the AJAX Response object
+		$ajaxResponse->setStatus('success');
+		$ajaxResponse->setResponse($response);
+		echo $ajaxResponse->output();
 		die();
 	}
-
 	/**
 	 * Re-syncs the given offer
 	 * 
@@ -101,22 +92,15 @@ class WP_Topspin_AJAX {
 	 * @return string A JSON-encoded string
 	 */
 	public static function resyncOffer() {
-		$ret = array(
-			'status' => 'error'
-		);
+		$ajaxResponse = new TS_AjaxResponse();
 		if($_SERVER['REQUEST_METHOD']=='POST' && current_user_can('edit_posts')) {
 			$offer_id = esc_attr($_POST['offer_id']);
 			$success = WP_Topspin_Cache::syncOffersSingle($offer_id);
-			if($success) {
-				$ret = array(
-					'status' => 'success'
-				);
-			}
+			if($success) { $ajaxResponse->setStatus('success'); }
 		}
-		echo json_encode($ret);
+		echo $ajaxResponse->output();
 		die();
 	}
-	
 	/**
 	 * Re-syncs the given offer's product and inventory data
 	 *
@@ -125,19 +109,13 @@ class WP_Topspin_AJAX {
 	 * @return string A JSON-encoded string
 	 */
 	public static function resyncOfferInventory() {
-		$ret = array(
-			'status' => 'error'
-		);
+		$ajaxResponse = new TS_AjaxResponse();
 		if($_SERVER['REQUEST_METHOD']=='POST' && current_user_can('edit_posts')) {
 			$offer_id = esc_attr($_POST['offer_id']);
 			$success = WP_Topspin_Cache::syncProductsSingle($offer_id);
-			if($success) {
-				$ret = array(
-					'status' => 'success'
-				);
-			}
+			if($success) { $ajaxResponse->setStatus('success'); }
 		}
-		echo json_encode($ret);
+		echo $ajaxResponse->output();
 		die();
 	}
 

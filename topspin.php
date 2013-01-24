@@ -31,6 +31,7 @@ require_once(sprintf('%s/classes/topspin.api.php', TOPSPIN_PLUGIN_PATH));
 require_once(sprintf('%s/classes/topspinArtist.api.php', TOPSPIN_PLUGIN_PATH));
 require_once(sprintf('%s/classes/topspinOrder.api.php', TOPSPIN_PLUGIN_PATH));
 require_once(sprintf('%s/classes/topspinStore.api.php', TOPSPIN_PLUGIN_PATH));
+require_once(sprintf('%s/classes/ts_ajaxResponse.php', TOPSPIN_PLUGIN_PATH));
 require_once(sprintf('%s/classes/ts_query.php', TOPSPIN_PLUGIN_PATH));
 require_once(sprintf('%s/classes/ts_product.php', TOPSPIN_PLUGIN_PATH));
 require_once(sprintf('%s/classes/wp.mediaHandler.php', TOPSPIN_PLUGIN_PATH));

@@ -316,9 +316,8 @@ var topspin_admin = {
 				offer_id : offer_id
 			};
 			topspin_admin.loader.show();
-			jQuery.post(ajaxurl, data, function(ret) {
-				var json = jQuery.parseJSON(ret);
-				if(json.status=='success') { window.location.reload(); }
+			jQuery.post(ajaxurl, data, function(response) {
+				if(response.status=='success') { window.location.reload(); }
 				else {
 					alert('Error trying to re-sync offer.');
 					topspin_admin.loader.hide();
@@ -338,9 +337,8 @@ var topspin_admin = {
 				offer_id : offer_id
 			};
 			topspin_admin.loader.show();
-			jQuery.post(ajaxurl, data, function(ret) {
-				var json = jQuery.parseJSON(ret);
-				if(json.status=='success') { window.location.reload(); }
+			jQuery.post(ajaxurl, data, function(response) {
+				if(response.status=='success') { window.location.reload(); }
 				else {
 					alert('Error trying to re-sync offer\'s inventory.');
 					topspin_admin.loader.hide();
