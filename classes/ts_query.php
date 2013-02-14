@@ -745,6 +745,9 @@ class TS_Query {
 		// Merge the store's meta and the args
 		$args = array_merge($args, $storeMeta, $overrides);
 
+		// Strip out non-existing tags
+		$args['tags'] = WP_Topspin::stripNonExistingTags($args['tags']);
+
 		// Parse sorting/sorting by
 		$unionSelectTags = $unionSelectOfferTypes = $unionSelectManualOrder = '';
 
@@ -1059,7 +1062,7 @@ EOD;
 		$offer_count = 0;
 		// Make the query
 		if(strlen(trim($request))) {
-			$offers = $wpdb->get_results($request);
+		  $offers = $wpdb->get_results($request);
 			$offer_count = $wpdb->get_var('SELECT FOUND_ROWS()');
 		}
 		// Set the query properties
