@@ -141,12 +141,12 @@ class WP_Topspin_Cache {
 	public static function syncOffers($prefetch=true, $force=false) {
 		set_time_limit(0);
 		global $topspin_artist_ids, $topspin_cached_ids, $topspin_cached_terms;
-		// Set syncing flag to true
-		update_option('topspin_is_syncing_offers', true);
 		if($force || (TOPSPIN_API_VERIFIED && TOPSPIN_POST_TYPE_DEFINED && TOPSPIN_HAS_ARTISTS && TOPSPIN_HAS_SYNCED_ARTISTS)) {
 			$topspin_cached_ids = array();
 			$topspin_cached_terms = array();
 			if($topspin_artist_ids && is_array($topspin_artist_ids)) {
+    		// Set syncing flag to true
+    		update_option('topspin_is_syncing_offers', true);
 				foreach($topspin_artist_ids as $artist_id) {
 					$results = false;
 					// Retrieve the prefetched JSON file
@@ -179,6 +179,34 @@ class WP_Topspin_Cache {
 			}
 		}
 	}
+
+  /**
+   * Pulls offers images into WordPress
+   *
+   * @access public
+   * @static
+   * @return void
+   */
+  public static function syncOffersImages() {
+    $st = microtime(true);
+		set_time_limit(0);
+		global $topspin_artist_ids, $topspin_cached_ids, $topspin_cached_terms;
+		if($topspin_artist_ids && is_array($topspin_artist_ids)) {
+  		// Set syncing flag to true
+  		update_option('topspin_is_syncing_offers_images', true);
+			foreach($topspin_artist_ids as $artist_id) {
+				$results = false;
+				$params = array(
+					'artist_id' => $artist_id
+				);
+				self::syncOffersImagesPage($params);
+			}
+      // Do action
+      do_action('topspin_finish_sync_offers_images');
+      $et = microtime(true);
+      error_log('Image Caching Bench: '.($et-$st).' seconds');
+		}
+  }
 
 	/**
 	 * Pulls offers into WordPress based on parameters.
@@ -213,12 +241,48 @@ class WP_Topspin_Cache {
 	}
 
 	/**
+	 * Pulls offers images into WordPress based on parameters.
+	 * 
+	 * @access public
+	 * @static
+	 * @global object $topspin_store_api
+	 * @param array $params
+	 * @return void
+	 */
+  public static function syncOffersImagesPage($params) {
+		global $topspin_store_api;
+		$defaults = array(
+			'page' => 1,
+			'per_page' => 100
+		);
+		$params = array_merge($defaults, $params);
+		$results = $topspin_store_api->getList($params);
+		// Store total image count
+		if($results) { update_option('topspin_sync_offers_image_total', $results->total_entries); }
+		self::syncOffersImageData($results);
+		// If it's not the last page, sync the next page
+		if($results->current_page < $results->total_pages) {
+			$nextPageParams = array(
+				'page' => $results->current_page+1
+			);
+			$params = array_merge($params, $nextPageParams);
+			self::syncOffersImagesPage($params);
+		}
+		// Last page, delete the counts
+		else {
+  		delete_option('topspin_sync_offers_image_current');
+  		delete_option('topspin_sync_offers_image_total');
+		}
+  }
+
+	/**
 	 * Syncs a Topspin API offer results into WordPress
 	 *
-	 * @param object $results						The Topspin returned response
-	 * @static
+   * @access public
+   * @static
 	 * @global array $topspin_cached_ids			An array of post IDs that were updated
 	 * @global array $topspin_cached_terms			An array of terms that were updated
+	 * @param object $results						The Topspin returned response
 	 * @return void
 	 */
 	public static function syncOffersData($results) {
@@ -239,6 +303,26 @@ class WP_Topspin_Cache {
 		}
 	}
 
+  /**
+   * Syncs a Topspin API offer image results into WordPress
+   *
+   * @access public
+   * @static
+	 * @param object $results						The Topspin returned response
+	 * @return void
+   */
+  public static function syncOffersImageData($results) {
+		if($results && $results->total_entries) {
+			foreach($results->offers as $key=>$offer) {
+  			update_option('topspin_sync_offers_image_current', $key);
+    		// Retrieve the post ID for the offer
+    		$offerPostId = WP_Topspin::getOfferPostId($offer);
+    		// Cache the offer image
+    		self::cacheOfferImage($offer, $offerPostId);
+			}
+		}
+  }
+
 	/**
 	 * Syncs an individual offer post ID
 	 *
@@ -256,6 +340,8 @@ class WP_Topspin_Cache {
 		$newOffer = $topspin_store_api->getOffer($offerMeta->id);
 		// Cache this offer
 		$offerPostId = self::cacheOffer($newOffer);
+		// Cache this offers image
+		self::cacheOfferImage($newOffer, $offerPostId);
 		// Returns true
 		return true;
 	}
@@ -304,8 +390,10 @@ class WP_Topspin_Cache {
 	/**
 	 * Caches the offer into WordPress
 	 *
-	 * @param object $offer			The offer data returned from the Topspin API
-	 * @return int|bool				The new offer ID if successful
+	 * @access public
+	 * @static
+	 * @param object $offer			       The offer data returned from the Topspin API
+	 * @return int|bool				         The new offer ID if successful
 	 */
 	public static function cacheOffer($offer) {
 		// Retrieve the post ID for the offer
@@ -325,15 +413,28 @@ class WP_Topspin_Cache {
 			// Update the offer post meta
 			WP_Topspin::updateOfferMeta($offerPostId, $offer);
 		}
+		return ($offerPostId) ? $offerPostId : false;
+	}
+
+  /**
+   * Caches the offer's image into WordPress
+   *
+   * @access public
+   * @static
+   * @param object $offer             The offer data returned from the Topspin API
+   * @param int $offerPostID          The WordPress offer post ID to attach the offer to
+   * @return void
+   */
+  public static function cacheOfferImage($offer, $offerPostId) {
 		// If an image exists, cache it!
 		if(isset($offer->poster_image) && strlen($offer->poster_image)) {
-			// If the post has a thumbnail, update it!
-			if(has_post_thumbnail($offerPostId)) {
+  		// Retrieve the thumb post ID
+			$thumbPostId = get_post_thumbnail_id($offerPostId);
+			if((bool) $thumbPostId) {
 				// Save the new file
 				$thumbFile = WP_MediaHandler::cacheURL($offer->poster_image);
 				// If the file was successfully cached
 				if($thumbFile) {
-					$thumbPostId = get_post_thumbnail_id($offerPostId);
 					$thumbAttachment = get_attached_file($thumbPostId);
 					// Delete the old file
 					if(file_exists($thumbAttachment)) {
@@ -365,8 +466,18 @@ class WP_Topspin_Cache {
 				if($thumbPostId) { set_post_thumbnail($offerPostId, $thumbPostId); }
 			}
 		}
-		return ($offerPostId) ? $offerPostId : false;
-	}
+		// Deletes old attachments
+		self::purgeOldImages($offerPostId, array($thumbPostId));
+		// Cache gallery images for the offer
+		if(isset($offer->campaign->product->images) && $offer->campaign->product->images && is_array($offer->campaign->product->images) && count($offer->campaign->product->images)) {
+  		foreach($offer->campaign->product->images as $image) {
+    		// If product image is not the same as the poster image, skip it!
+    		if($image->source_url === $offer->poster_image_source) { continue; }
+    		// Cache and save the source URL and attach it to the given post ID
+    		$attachmentId = WP_MediaHandler::saveURL($image->source_url, $offerPostId);
+  		}
+		}
+  }
 
 	/**
 	 * Caches the offer's product and inventory into WordPress via the Order API
@@ -477,6 +588,27 @@ class WP_Topspin_Cache {
 			}
 		}
 	}
+
+  /**
+   * Retrieves all attached images for the given offer and deletes the corresponding post and deletes the file
+   *
+   * @access public
+   * @static
+   * @param int $offerPostId        The offer post ID to retrieve attachments
+   * @param array $excludes         (default: array) An array of attachment post ID to exclude
+   * @return void
+   */
+  public static function purgeOldImages($offerPostId, $excludes=array()) {
+    $attachments = WP_Topspin::getGallery($offerPostId);
+    // If attachments are found, loop through and force delete all
+    if($attachments && is_array($attachments) && count($attachments)) {
+      foreach($attachments as $attachment) {
+        if(!in_array($attachment->ID, $excludes)) {
+          wp_delete_attachment($attachment->ID, true);
+        }
+      }
+    }
+  }
 
 	/**
 	 * Purges the cached prefetch files

@@ -3,12 +3,14 @@ Contributors: theuprising
 Donate link: http://theuprisingcreative.com/
 Tags: Topspin,store,merchandise,shop,music
 Tested up to: 3.5
-Stable tag: 4.0.9
+Stable tag: 3.3.3.3
 Requires at least: 3.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Quickly, easily integrate Topspin Offers into customized, dynamically generated Store Pages; recoded and optimized for better Wordpress integration. 
+
+This plugin is no longer supported by The Uprising Creative and is now 100% open-source; any issues should be opened up on GitHub, and anyone who wants to help can respond on GitHub as well as pull forks of the plugin and develop as needed.
 
 == Description ==
 

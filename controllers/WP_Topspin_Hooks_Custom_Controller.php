@@ -2,11 +2,12 @@
 
 // Actions
 add_action('topspin_flush_permalinks',						array('WP_Topspin_Hooks_Custom_Controller', 'flushPermalinks'));
-add_action('topspin_post_action',							array('WP_Topspin_Hooks_Custom_Controller', 'postAction'));
+add_action('topspin_post_action',							    array('WP_Topspin_Hooks_Custom_Controller', 'postAction'));
 add_action('topspin_register_post_types',					array('WP_Topspin_Hooks_Custom_Controller', 'registerPostTypes'));
 add_action('topspin_cron_prefetching',						array('WP_Topspin_Hooks_Custom_Controller', 'prefetchApi'));
 add_action('topspin_finish_sync_offers',					array('WP_Topspin_Hooks_Custom_Controller', 'finishSyncOffers'));
-add_action('topspin_finish_sync_products',					array('WP_Topspin_Hooks_Custom_Controller', 'finishSyncProducts'));
+add_action('topspin_finish_sync_offers_images',		array('WP_Topspin_Hooks_Custom_Controller', 'finishSyncOffersImages'));
+add_action('topspin_finish_sync_products',				array('WP_Topspin_Hooks_Custom_Controller', 'finishSyncProducts'));
 
 /**
  * Handles WordPress custom hooks
@@ -50,12 +51,20 @@ class WP_Topspin_Hooks_Custom_Controller {
 					WP_Topspin_Cache::syncOffers(TOPSPIN_API_PREFETCHING);
 					do_action('topspin_notices_synced');
 					break;
+				case 'sync_offers_images':
+  				WP_Topspin_Cache::syncOffersImages();
+  				do_action('topspin_notices_synced');
+  				break;
 				case 'sync_products':
 					WP_Topspin_Cache::syncProducts(true);
 					do_action('topspin_notices_synced');
 					break;
 				case 'reset_cron':
 					WP_Topspin_Cron::resetSchedules();
+					do_action('topspin_notices_schedules_reset');
+					break;
+				case 'reset_cron_images':
+					WP_Topspin_Cron::resetSchedulesImages();
 					do_action('topspin_notices_schedules_reset');
 					break;
 				case 'purge_prefetch':
@@ -164,6 +173,19 @@ class WP_Topspin_Hooks_Custom_Controller {
 		}
 	}
 	
+	/**
+	 * Updates the last cached offers images time and turn off sync notification
+	 *
+	 * @access public
+	 * @static
+	 * @return void
+	 */
+	public static function finishSyncOffersImages() {
+		// Update last cached time
+		update_option('topspin_last_cache_offers_images', time());
+		update_option('topspin_is_syncing_offers_images', false);
+	}
+
 	/**
 	 * Updates the last cached products time and turn off sync notification
 	 *

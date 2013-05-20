@@ -20,6 +20,8 @@ Quickly, easily integrate Topspin Offers into customized, dynamically generated 
 
 Developed by [The Uprising Creative](http://theuprisingcreative.com)
  
+***This plugin is no longer supported by The Uprising Creative and is now 100% open-source; any issues should be opened up on GitHub, and anyone who wants to help can respond on GitHub as well as pull forks of the plugin and develop as needed.***
+ 
 This plugin is open-source and we offer limited support.  If you do have an issue or question, please [open a GitHub issue](https://github.com/topspin/topspin-wordpress/issues) and we'll work to help you out when time allows.
  
 *PLEASE NOTE: This plugin is meant to be customized! It will work "out of the box" with just about any theme, but it may not match your site or be as "pretty" as you'd like.  Additionally, if your theme uses featured images in the header of posts, you may have to make adjustments to ensure the display of the products is to your liking.*

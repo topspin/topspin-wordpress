@@ -7,6 +7,18 @@ if(!class_exists('WP_MediaHandler')) {
 	 * @subpackage MediaHandler
 	 */
 	class WP_MediaHandler {
+
+    /**
+     * @access public
+     * @static
+     */
+    public static function getUploadsPath() {
+      if(!defined('WP_MEDIAHANDLER_UPLOADS_PATH')) {
+  			$wpUploadDir = wp_upload_dir();
+  			define('WP_MEDIAHANDLER_UPLOADS_PATH', $wpUploadDir['path']);
+      }
+			return WP_MEDIAHANDLER_UPLOADS_PATH;
+    }
 	
 		/**
 		 * Caches a remote image URL to into the WordPress Media Library
@@ -55,8 +67,7 @@ if(!class_exists('WP_MediaHandler')) {
 			if(strlen($src)) {
 				$valid = self::checkRemoteUrl($src);
 				if($valid) {
-					$wpUploadDir = wp_upload_dir();
-					$cachePath = $wpUploadDir['path'];
+					$cachePath = self::getUploadsPath();
 					$srcLocation = $src;
 					//If stripped extension is the same as src basename, than there is no extension, so add one!
 					$urlParts = parse_url($srcLocation);
@@ -64,21 +75,24 @@ if(!class_exists('WP_MediaHandler')) {
 					$hasExtension = 0;
 					if(isset($pathInfo['extension']) && strlen($pathInfo['extension'])) { $hasExtension = 1; }
 					//Set the src basename
-					$srcBasename = array_shift(explode('?', basename($srcLocation)));
-					//If doens't have an extension, add it!
-					if(!$hasExtension) { $srcBasename .= '.jpeg'; }
-					//Set the full title name
-					$fullFilename = sprintf('%s-%s',time(), $srcBasename);
-					$postTitle = preg_replace('/\.[^.]+$/','', $srcBasename);
-					if(wp_mkdir_p($cachePath)) {
-						$destPath = sprintf('%s/%s', $cachePath, $fullFilename);
-						self::copy($srcLocation, $destPath); // copies the remote file
-						$file = array(
-							'path' => $destPath,
-							'filename' => $fullFilename,
-							'title' => $postTitle
-						);
-						return $file;
+					$fileParts = explode('?', basename($srcLocation));
+					if($fileParts && is_array($fileParts)) {
+  					$srcBasename = array_shift($fileParts);
+  					//If doesn't have an extension, add it!
+  					if(!$hasExtension) { $srcBasename .= '.jpeg'; }
+  					//Set the full title name
+  					$fullFilename = sprintf('%s-%s',time(), $srcBasename);
+  					$postTitle = preg_replace('/\.[^.]+$/','', $srcBasename);
+  					if(wp_mkdir_p($cachePath)) {
+  						$destPath = sprintf('%s/%s', $cachePath, $fullFilename);
+  						self::copy($srcLocation, $destPath); // copies the remote file
+  						$file = array(
+  							'path' => $destPath,
+  							'filename' => $fullFilename,
+  							'title' => $postTitle
+  						);
+  						return $file;
+  					}
 					}
 				}
 			}
@@ -103,7 +117,7 @@ if(!class_exists('WP_MediaHandler')) {
 			if($res !== false) { return true; }
 			else { return false; }
 		}
-		
+
 		/**
 		 * Copes a source location to the destination path
 		 *
@@ -111,14 +125,21 @@ if(!class_exists('WP_MediaHandler')) {
 		 * @param string $destPath
 		 */
 		public static function copy($srcLocation, $destPath) {
-			// copy($srcLocation, $destPath); // copies source location (deprecated)
-			// cUrl method
-			$fp = fopen($destPath, 'w');
+      // Method 1 - copy (deprecated)
+      /* copy($srcLocation, $destPath); */
+			// Method 2 - curl (deprecated)
+			/* $fp = fopen($destPath, 'w');
 			$ch = curl_init($srcLocation);
 			curl_setopt($ch, CURLOPT_FILE, $fp);
 			$data = curl_exec($ch);
 			curl_close($ch);
-			fclose($fp);
+			fclose($fp); */
+			// Method 3 - stream copy
+      $fsrc = fopen($srcLocation, 'r');
+      $fdest = fopen($destPath, 'w+');
+      $len = stream_copy_to_stream($fsrc, $fdest);
+      fclose($fsrc);
+      fclose($fdest);
 		}
 
 	}

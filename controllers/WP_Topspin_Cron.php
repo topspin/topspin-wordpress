@@ -1,7 +1,8 @@
 <?php
 
-add_action(WP_Topspin_Cron::SCHEDULE_NAME,				array('WP_Topspin_Cron', 'doCron'));
-add_filter('cron_schedules',							array('WP_Topspin_Cron', 'addCustomSchedules'));
+add_action(WP_Topspin_Cron::SCHEDULE_NAME,				      array('WP_Topspin_Cron', 'doCron'));
+add_action(WP_Topspin_Cron::IMAGE_SCHEDULE_NAME,				array('WP_Topspin_Cron', 'doCronImages'));
+add_filter('cron_schedules',							              array('WP_Topspin_Cron', 'addCustomSchedules'));
 
 /**
  * Handles the cron tasks of Topspin data on WordPress
@@ -11,12 +12,19 @@ add_filter('cron_schedules',							array('WP_Topspin_Cron', 'addCustomSchedules'
  */
 class WP_Topspin_Cron {
 
-	const PREFETCH_DELAY = 300;					// number of seconds to prefetch before the cron event
-	const SCHEDULE_TIMEOUT = 'every_30_min';
+  // Number of seconds to do API prefetching before the main cron is scheduled to run
+	const PREFETCH_DELAY = 300;
+
+  // Main cron settings
+	const SCHEDULE_TIMEOUT = 'hourly';
 	const SCHEDULE_NAME = 'topspin_cron_sync';
 
+	// Image cron settings
+	const IMAGE_SCHEDULE_NAME = 'topspin_cron_sync_images';
+	const IMAGE_SCHEDULE_TIMEOUT = 'daily';
+
 	/**
-	 * Initializes the WP-Cron events
+	 * Initializes the main and image cron events
 	 *
 	 * @access public
 	 * @static
@@ -24,28 +32,38 @@ class WP_Topspin_Cron {
 	 */
 	public static function initSchedules() {
 		$next = self::nextScheduled();
+		$nextImage = self::nextScheduledImage();
 		// Check prefetching
 		self::prefetch();
-		// If there are no cron scheduled, schedule a new one
-		if(!$next) { wp_schedule_event(time(), self::SCHEDULE_TIMEOUT, self::SCHEDULE_NAME); }
+		// If there are no main cron scheduled, schedule a new one
+		if(!$next) { wp_schedule_event(time()+5, self::SCHEDULE_TIMEOUT, self::SCHEDULE_NAME); }
+		if(!$nextImage) { wp_schedule_event(time()+5, self::IMAGE_SCHEDULE_TIMEOUT, self::IMAGE_SCHEDULE_NAME); }
 	}
 
 	/**
-	 * Reschedules the cron event
+	 * Reschedules the main cron event
 	 * 
 	 * @access public
 	 * @static
 	 * @return void
 	 */
 	public static function resetSchedules() {
-		$next = self::nextScheduled();
 		wp_clear_scheduled_hook(self::SCHEDULE_NAME);
-		// If the cron is scheduled, reschedule it!
-		wp_schedule_event(time(), self::SCHEDULE_TIMEOUT, self::SCHEDULE_NAME);
 	}
 
 	/**
-	 * Retrieves the next timestamp for the cron event
+	 * Reschedules the image cron event
+	 * 
+	 * @access public
+	 * @static
+	 * @return void
+	 */
+	public static function resetSchedulesImages() {
+		wp_clear_scheduled_hook(self::IMAGE_SCHEDULE_NAME);
+	}
+
+	/**
+	 * Retrieves the next timestamp for the main cron event
 	 * 
 	 * @access public
 	 * @static
@@ -58,7 +76,20 @@ class WP_Topspin_Cron {
 	}
 
 	/**
-	 * Retrieves the next time difference for the cron event
+	 * Retrieves the next timestamp for the image cron event
+	 * 
+	 * @access public
+	 * @static
+	 * @return int
+	 */
+	public static function nextScheduledImage() {
+		$now = time();
+		$time = wp_next_scheduled(self::IMAGE_SCHEDULE_NAME);
+		return ($time) ? $time : 0;
+	}
+
+	/**
+	 * Retrieves the next time difference for the main cron event
 	 * 
 	 * @access public
 	 * @static
@@ -66,6 +97,19 @@ class WP_Topspin_Cron {
 	 */
 	public static function nextHit() {
 		$time = self::nextScheduled();
+		if($time) { return 'about ' . human_time_diff($time); }
+		else { return 'Not scheduled.'; }
+	}
+
+	/**
+	 * Retrieves the next time difference for the image cron event
+	 * 
+	 * @access public
+	 * @static
+	 * @return string
+	 */
+	public static function nextHitImages() {
+		$time = self::nextScheduledImage();
 		if($time) { return 'about ' . human_time_diff($time); }
 		else { return 'Not scheduled.'; }
 	}
@@ -95,21 +139,31 @@ class WP_Topspin_Cron {
 	}
 
 	/**
-	 * Runs the cron
+	 * Runs the main cron and syncs all offers
 	 * 
 	 * @access public
 	 * @static
 	 * @return void
 	 */
 	public static function doCron() {
-		// Sync Artists
-		WP_Topspin_Cache::syncArtists(TOPSPIN_API_PREFETCHING);
-		// Sync Offers
+		// Sync offers
 		WP_Topspin_Cache::syncOffers(TOPSPIN_API_PREFETCHING);
 		// Reset prefetch flag
 		update_option('topspin_prefetched', false);
 	}
-	
+
+	/**
+	 * Runs the image cron and syncs all offer images
+	 * 
+	 * @access public
+	 * @static
+	 * @return void
+	 */
+	public static function doCronImages() {
+		// Sync offer images
+		WP_Topspin_Cache::syncOffersImages(TOPSPIN_API_PREFETCHING);
+	}
+
 	/**
 	 * Checks the next scheduled, and does the prefetching actions
 	 *

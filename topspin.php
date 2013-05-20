@@ -2,7 +2,7 @@
 /*
 Plugin Name: Topspin Store Plugin 4.0
 Plugin URI: http://wordpress.org/extend/plugins/official-topspin-wordpress-plugin/
-Description: Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages using the Topspin API
+Description: Quickly and easily integrate your Topspin Offers into customized, sortable and dynamically generated Store Pages using the Topspin API.<em><strong>This plugin is no longer supported by The Uprising Creative and is now 100% open-source; any issues should be opened up on GitHub, and anyone who wants to help can respond on GitHub as well as pull forks of the plugin and develop as needed.</strong></em>
 Author: The Uprising Creative for Topspin Media
 Author URI: http://theuprisingcreative.com
 Version: 4.0.9.1

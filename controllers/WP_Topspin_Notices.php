@@ -8,6 +8,7 @@ add_action('admin_notices', array('WP_Topspin_Notices', 'checkVerification'));
 add_action('admin_notices', array('WP_Topspin_Notices', 'checkArtists'));
 add_action('admin_notices', array('WP_Topspin_Notices', 'checkSyncedArtists'));
 add_action('admin_notices', array('WP_Topspin_Notices', 'checkIsSyncingOffers'));
+add_action('admin_notices', array('WP_Topspin_Notices', 'checkIsSyncingOffersImages'));
 add_action('admin_notices', array('WP_Topspin_Notices', 'checkIsSyncingProducts'));
 
 /**
@@ -124,6 +125,19 @@ EOD;
 	public static function checkIsSyncingOffers() {
 		if(get_option('topspin_is_syncing_offers')) {
 			self::output('Your offers are currently being updated via the API.', 'updated');
+		}
+	}
+	/**
+	 * Checks if offers images are currently syncing and displays the notice
+	 *
+	 * @access public
+	 * @static
+	 */
+	public static function checkIsSyncingOffersImages() {
+		if(get_option('topspin_is_syncing_offers_images')) {
+  		$current = get_option('topspin_sync_offers_image_current');
+  		$total = get_option('topspin_sync_offers_image_total');
+			self::output(sprintf('Your images are currently being updated via the API. (Progress: %d/%d)', $current, $total), 'updated');
 		}
 	}
 	/**

@@ -234,23 +234,6 @@ EOD;
 		return $mergedTags;
 	}
 
-	/**
-	 * Loops through an array of tag terms and strips out those that are non-existing
-	 *
-	 * @access public
-	 * @static
-	 * @param array $tags An array of tag terms
-	 * @return array
-	 */
-	public static function stripNonExistingTags($tags) {
-    if($tags && is_array($tags)) {
-      foreach($tags as $key=>$tag) {
-        if(!term_exists($tag, 'spin-tags')) { unset($tags[$key]); }
-      }
-    }
-    return $tags;
-	}
-
 	/* !----- STORE ----- */
 
 	/**
@@ -508,12 +491,13 @@ EOD;
 	 * If the post ID is not set, it will default to the current post in the Loop
 	 *
 	 * @access public
+	 * @static
 	 * @global object $post
 	 * @global object $wpdb
 	 * @param mixed $post_ID (default: null)
 	 * @return object
 	 */
-	public function getArtistMeta($post_ID=null) {
+	public static function getArtistMeta($post_ID=null) {
 		global $wpdb;
 		if(!$post_ID) {
 			global $post;
@@ -910,6 +894,25 @@ EOD;
 		fclose($fp);
 		return true;
 	}
+
+  /**
+   * Retrieves an array of gallery attachment posts
+   *
+   * @access public
+   * @static
+   * @param int $offer_ID
+   */
+  public static function getGallery($offer_ID) {
+    $args = array(
+      'post_parent' => $offer_ID,
+      'numberposts' => -1,
+      'post_status' => 'any',
+      'post_type' => 'attachment',
+      'exclude' => get_post_thumbnail_id($offer_ID)
+    );
+    $attachments = get_children($args);
+    return $attachments;
+  }
 	
 	/* !----- PRODUCTS ----- */
 
@@ -972,12 +975,13 @@ EOD;
 	 * If the post ID is not set, it will default to the current post in the Loop
 	 *
 	 * @access public
+	 * @static
 	 * @global object $post
 	 * @global object $wpdb
 	 * @param mixed $post_ID (default: null)
 	 * @return object
 	 */
-	public function getProductMeta($post_ID=null) {
+	public static function getProductMeta($post_ID=null) {
 		global $wpdb;
 		if(!$post_ID) {
 			global $post;

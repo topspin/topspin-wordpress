@@ -628,9 +628,8 @@ function ts_have_gallery() {
  */
 function ts_gallery_images() {
 	global $tsOffer;
-	if($tsOffer) {
-		return isset($tsOffer->meta->campaign->product->images) ? $tsOffer->meta->campaign->product->images : false;
-	}
+	if($tsOffer) { return isset($tsOffer->meta->campaign->product->images) ? $tsOffer->meta->campaign->product->images : false; }
+	return false;
 }
 
 /**
@@ -744,9 +743,6 @@ class TS_Query {
 
 		// Merge the store's meta and the args
 		$args = array_merge($args, $storeMeta, $overrides);
-
-		// Strip out non-existing tags
-		$args['tags'] = WP_Topspin::stripNonExistingTags($args['tags']);
 
 		// Parse sorting/sorting by
 		$unionSelectTags = $unionSelectOfferTypes = $unionSelectManualOrder = '';
@@ -1062,7 +1058,7 @@ EOD;
 		$offer_count = 0;
 		// Make the query
 		if(strlen(trim($request))) {
-		  $offers = $wpdb->get_results($request);
+			$offers = $wpdb->get_results($request);
 			$offer_count = $wpdb->get_var('SELECT FOUND_ROWS()');
 		}
 		// Set the query properties
@@ -1121,6 +1117,22 @@ EOD;
 		$this->offer = $this->offers[$this->getCurrentIndex()];
 		$this->offer->meta = WP_Topspin::getOfferMeta($this->offer->ID);
 		$this->offer->index = $this->current_offer;
+		// Retrieve the gallery
+		$this->offer->gallery = WP_Topspin::getGallery($this->offer->ID);
+		// Map the Topspin structure with the gallery structure
+		$this->offer->meta->campaign->product->images = array();
+		if(count($this->offer->gallery)) {
+  		foreach($this->offer->gallery as $image) {
+    		$imageSrc = wp_get_attachment_image_src($image->ID, 'full');
+    		$image = array(
+      		'source_url' => $imageSrc[0],
+      		'small_url' => $imageSrc[0],
+      		'medium_url' => $imageSrc[0],
+      		'large_url' => $imageSrc[0]
+    		);
+    		array_push($this->offer->meta->campaign->product->images, (object) $image);
+  		}
+		}
 		$tsOffer = $this->offer;
 	}
 
