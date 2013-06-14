@@ -49,7 +49,7 @@ div#ts_ol_pflow {
 				vertical-align: middle;
 			}
 			.topspin-item-purchase {
-				background-color: #ff0000;
+				background-color: #707070;
 				text-align: center;
 			}
 				.topspin-item-purchase-anchor {
@@ -58,7 +58,7 @@ div#ts_ol_pflow {
 					padding-right:10px;
 				}
 			.topspin-item-soldout {
-				background-color: #dfdfdf;
+					background-color: #dfdfdf;
 					padding-left:10px;
 					padding-right:10px;
 			}

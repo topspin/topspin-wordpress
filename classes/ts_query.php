@@ -183,7 +183,18 @@ function ts_is_sold_out($offer=null) {
 		$offer = $tsOffer;
 	}
 	else if(is_int($offer)) { $offer = ts_get_offer($offer); }
-	if($offer) { return (isset($offer->meta->in_stock) && $offer->meta->in_stock) ? false : true; }
+	if($offer) {
+		$soldOut = (isset($offer->meta->in_stock) && $offer->meta->in_stock) ? false : true; 
+		if($soldOut && $prodMeta = ts_get_product($offer->meta->product_post_id)){
+			if( is_numeric ($prodMeta->meta->product_max_backorder_quantity) 
+				&& is_numeric ($prodMeta->meta->product_sold_unshipped_quantity)
+				&& ($prodMeta->meta->product_max_backorder_quantity-$prodMeta->meta->product_sold_unshipped_quantity)>0	)
+			{
+				$soldOut = false;
+			}
+		}
+		return $soldOut;
+	}
 	return true;
 }
 
