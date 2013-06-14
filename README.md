@@ -22,7 +22,7 @@ Developed by [The Uprising Creative](http://theuprisingcreative.com)
   
 ***If you are updating an existing Topspin Wordpress store, please test the update on a separate development server before updating your live store to ensure a successful transition. Every Wordpress installation is unique and updating may cause unforeseen issues on your particular setup.***
 
-***Not sure what a development server is? The Topspin Wordpress Plugin is designed for developers or users who are comfortable troubleshooting and customizing web technologies. If you don't fall in to either of these categories, we recommend embedding Topspin's fully supported and easy to use [Spinshop](http://labs.topspin.net/features/spinshop/) ***
+***Not sure what a development server is? The Topspin Wordpress Plugin is designed for developers or users who are comfortable troubleshooting and customizing web technologies. If you don't fall in to either of these categories, we recommend embedding Topspin's fully supported and easy to use [Spinshop](http://labs.topspin.net/features/spinshop/).***
 
 ***This plugin is no longer supported by The Uprising Creative and is now 100% open-source. We offer limited support- if you do have an issue or question, please email[wordpress@topspinmedia.com](mailto:wordpress@topspinmedia.com) and we'll work to help you out when time allows. GithHub users are encouraged to pull forks of the plugin and develop as needed.***
  
